@@ -1,0 +1,1399 @@
+This is the document Transcript.txt
+
+WEBVTT
+
+1 "Anonymous" (931653120)
+00:00:04.435 --> 00:00:16.229
+Hello everyone, thank you for joining this session. My name is Anita, and today together with others, we will cover Cisco, secure firewall, upgrade topic.
+
+2 "Anonymous" (931653120)
+00:00:16.229 --> 00:00:38.209
+Before we dive into the main subject, I'd like to introduce a few key points about the Cisco customer success organization and this organization is dedicated to supporting our customers throughout their journey of adopting Cisco products.
+
+3 "Anonymous" (931653120)
+00:00:38.209 --> 00:00:55.560
+And when I speak of adoption, I refer to ensuring that our customers are making the, most of the features, their Cisco devices offer my colleague undress and I, our customer success specialist with a focus on security.
+
+4 "Anonymous" (931653120)
+00:00:55.560 --> 00:01:15.560
+In our role we offer various forms of support, including individual adoption, consultation and accelerators, which are 1 on 1 sessions. Uh, we also conduct Webinars and ask the expert sessions, which ones which are 1 to many sessions.
+
+5 "Anonymous" (931653120)
+00:01:15.560 --> 00:01:31.500
+And definitely 1 of our most popular offerings for security is health check, which involves evaluating current configuration to ensure that they align with the best practices.
+
+6 "Anonymous" (931653120)
+00:01:31.500 --> 00:01:39.270
+Before we move to the presentation itself, let me cover a few quick logistics items.
+
+7 "Anonymous" (931653120)
+00:01:39.270 --> 00:01:53.820
+During today's sessions, you will have the opportunity to ask questions so you can just utilize Q and a panel for that purpose. You will find it on the right hand side of your screen.
+
+8 "Anonymous" (931653120)
+00:01:53.820 --> 00:02:01.710
+If you are having any audio issues, please use the chat panel and 1 of our families will assist with that.
+
+9 "Anonymous" (931653120)
+00:02:01.710 --> 00:02:21.710
+And today's team, so me and we are presenters today. Additionally we have panelists heavier and Luka from customer success specialist, and our special guest from a product team.
+
+10 "Anonymous" (931653120)
+00:02:21.710 --> 00:02:38.610
+Daniella and this is the agenda for this session. So we will start with Cisco secure software life cycle and then we will tackle upgrade, planning and preparation.
+
+11 "Anonymous" (931653120)
+00:02:38.610 --> 00:02:52.260
+Next we will move to some key features, introducing secure firewall, version, 7, X and last, but not least we will share with you information about ongoing upgrade programs.
+
+12 "Anonymous" (931653120)
+00:02:52.260 --> 00:03:04.560
+So, our topic for today is about Cisco, secure firewall upgrades, but let's put firewalls aside for now. And let's tackle the upgrade part.
+
+13 "Anonymous" (931653120)
+00:03:04.560 --> 00:03:18.600
+In the world of tech as beings keeps changing, we got accepted upgrading our software is just part of the deal. So sooner or later, we all got to hit that upgrade button that pops up on our screen.
+
+14 "Anonymous" (931653120)
+00:03:18.600 --> 00:03:22.410
+It is, that's a matter of time and.
+
+15 "Anonymous" (931653120)
+00:03:22.410 --> 00:03:42.410
+You know, firewalls are no different, you can postpone the upgrade, but in reality, you cannot avoid it and with firewalls or any other devices upgrade is not just about keeping up with all these cool tech stuff upgrading our software is like, giving our.
+
+16 "Anonymous" (931653120)
+00:03:42.410 --> 00:03:50.400
+This is a boost, right? So more features, better security and just and all around. So smoother experience.
+
+17 "Anonymous" (931653120)
+00:03:50.400 --> 00:04:02.130
+So, we customer success team have been involved in number of conversations about the firewall upgrades and we get it.
+
+18 "Anonymous" (931653120)
+00:04:02.130 --> 00:04:05.490
+There are some pretty common worries that comes with it.
+
+19 "Anonymous" (931653120)
+00:04:05.490 --> 00:04:09.990
+So, here I would say there are some, most common of them.
+
+20 "Anonymous" (931653120)
+00:04:09.990 --> 00:04:12.990
+1st of all fear of distraction.
+
+21 "Anonymous" (931653120)
+00:04:12.990 --> 00:04:21.600
+Concerns that upgrading the firewall could cause a downtime or distraction or to the network or system.
+
+22 "Anonymous" (931653120)
+00:04:21.600 --> 00:04:26.849
+And that it could potentially impact the day to day operations.
+
+23 "Anonymous" (931653120)
+00:04:26.849 --> 00:04:46.849
+Fear of disruption is higher when there were challenges with previous upgrade activities. So, if a user or organization in general has a negative experience with a previous firewall upgrade, and they might be hesitant to go through the process again.
+
+24 "Anonymous" (931653120)
+00:04:46.849 --> 00:04:57.269
+And this could be related in general to issues, like, unexpected problems, some compatibility challenges, or, uh, disruptions even.
+
+25 "Anonymous" (931653120)
+00:05:00.749 --> 00:05:20.749
+Over confidence in current setups we here, why do I need to upgrade my firewall? It works now trust me believing that the existing firework with all software is sufficient of protects organization is a big assumption, and underestimating the evolving.
+
+26 "Anonymous" (931653120)
+00:05:20.749 --> 00:05:34.289
+The nature of cyber threats, perception of complexity upgrading a firewall may seem like a complex task, especially for individuals or organizations with limited technical expertise.
+
+27 "Anonymous" (931653120)
+00:05:34.289 --> 00:05:40.949
+And these are the ones that I just cover are just few examples of.
+
+28 "Anonymous" (931653120)
+00:05:40.949 --> 00:06:00.119
+Of of some common fears, but of course, there are more so lack of time concern about compatibility and so on, but it's not just about fields when it comes to firewall upgrades. There are also some motivations in the mix.
+
+29 "Anonymous" (931653120)
+00:06:00.119 --> 00:06:03.869
+So, let's have a look on the most common ones.
+
+30 "Anonymous" (931653120)
+00:06:03.869 --> 00:06:24.059
+Improve performance, so, firewall updates may include optimize optimization that enhance the software's performance. And this can lead in general to faster response times and in general more efficient use of system resources.
+
+31 "Anonymous" (931653120)
+00:06:24.059 --> 00:06:30.479
+Staying ahead of exploit hackers are always looking for vulnerabilities in software.
+
+32 "Anonymous" (931653120)
+00:06:30.479 --> 00:06:40.109
+By keeping your firewall up to date, you're staying ahead of potential exploits and reducing the chance of a successful attack.
+
+33 "Anonymous" (931653120)
+00:06:40.109 --> 00:06:48.659
+Firewall updates, often include patches for security vulnerabilities that have been discovered in previous versions.
+
+34 "Anonymous" (931653120)
+00:06:48.659 --> 00:06:56.459
+And failing to update your firewalls, leaves your systems exposed to potential exploits.
+
+35 "Anonymous" (931653120)
+00:06:56.459 --> 00:07:13.289
+Access to new features firewall updates may include new features or settings that enhance security. They usually provide additional control over network traffic in general better experience.
+
+36 "Anonymous" (931653120)
+00:07:13.289 --> 00:07:25.319
+Vendor support last, but not least. So using outdated software may mean that you're not eligible for assistance from the vendor.
+
+37 "Anonymous" (931653120)
+00:07:25.319 --> 00:07:29.909
+And how it is in case of Cisco, secure firewall, software.
+
+38 "Anonymous" (931653120)
+00:07:29.909 --> 00:07:35.039
+How long they release it supported? I will just cover it in a few minutes.
+
+39 "Anonymous" (931653120)
+00:07:35.039 --> 00:07:45.959
+So, now we've covered the fears, and we've covered the motivations that are tied to upgrading the firewall.
+
+40 "Anonymous" (931653120)
+00:07:45.959 --> 00:07:49.649
+And the aim of this session is.
+
+41 "Anonymous" (931653120)
+00:07:49.649 --> 00:08:00.089
+And in general decision, and customer success team overall is to ensure that your motivations outweighed any concerns, you might have.
+
+42 "Anonymous" (931653120)
+00:08:03.329 --> 00:08:10.499
+So, as a starting point, let's dive into understanding the Cisco secure firewalls of their life cycle.
+
+43 "Anonymous" (931653120)
+00:08:10.499 --> 00:08:24.959
+So there's a reason behind how we assign numbers to our firewall releases. So, each digit has represents changes that were made in the software.
+
+44 "Anonymous" (931653120)
+00:08:24.959 --> 00:08:29.069
+So, let's have a look at the following example.
+
+45 "Anonymous" (931653120)
+00:08:29.069 --> 00:08:34.079
+So this secure firewall version 7:2:5 1.
+
+46 "Anonymous" (931653120)
+00:08:34.079 --> 00:08:38.909
+1st digit represents major release.
+
+47 "Anonymous" (931653120)
+00:08:38.909 --> 00:08:46.139
+A new major release means that there are significant changes introduced in the software.
+
+48 "Anonymous" (931653120)
+00:08:46.139 --> 00:08:57.869
+And in case of new major release version, 7 X, we introduced snort 3 as this significant changing architecture.
+
+49 "Anonymous" (931653120)
+00:08:57.869 --> 00:09:07.829
+2nd dessert, which is minor release, uh, in this release, we introduce new features.
+
+50 "Anonymous" (931653120)
+00:09:07.829 --> 00:09:14.339
+1st digit maintenance, release a release that includes bug fixes.
+
+51 "Anonymous" (931653120)
+00:09:14.339 --> 00:09:22.499
+And the last 1 is a part build a release that addresses some specific critical issues.
+
+52 "Anonymous" (931653120)
+00:09:22.499 --> 00:09:29.729
+So, when it comes to.
+
+53 "Anonymous" (931653120)
+00:09:29.729 --> 00:09:41.369
+Minor feature releases, so the 2nd leaders we speak here about we categorize them into long term extra lock them and form the releases.
+
+54 "Anonymous" (931653120)
+00:09:41.369 --> 00:09:45.869
+So now, let me walk you through the distinctions.
+
+55 "Anonymous" (931653120)
+00:09:45.869 --> 00:09:52.889
+So essentially long term, an extra long term version carry an, even number.
+
+56 "Anonymous" (931653120)
+00:09:52.889 --> 00:09:56.759
+So, 2:4:6 in the 2nd, did.
+
+57 "Anonymous" (931653120)
+00:09:56.759 --> 00:10:00.239
+While short term release and.
+
+58 "Anonymous" (931653120)
+00:10:00.239 --> 00:10:05.879
+It it has the odd number on the secondary. So 3:5:7.
+
+59 "Anonymous" (931653120)
+00:10:05.879 --> 00:10:18.989
+So, for instance, let's take into account our example version 7 to 5:1:So you can quickly identify that it is a long term release.
+
+60 "Anonymous" (931653120)
+00:10:18.989 --> 00:10:23.399
+Because the 2nd digit is to indicating an, even number.
+
+61 "Anonymous" (931653120)
+00:10:23.399 --> 00:10:45.019
+What is the distinctions between these releases? So the primary distinctions among these releases lies in the support duration. So, a long term release strikes a balance between support time in new features and extra long term release.
+
+62 "Anonymous" (931653120)
+00:10:45.019 --> 00:10:52.829
+Specifically chosen for government certification and it both the longest support durations.
+
+63 "Anonymous" (931653120)
+00:10:52.829 --> 00:11:04.169
+And on the other hand side, a strong term release is an optimal choice when you're seeking for this latest feature sets that are implemented.
+
+64 "Anonymous" (931653120)
+00:11:04.169 --> 00:11:09.389
+So, now you might be wondering.
+
+65 "Anonymous" (931653120)
+00:11:09.389 --> 00:11:15.149
+How to differentiate between long term? An extra long term releases.
+
+66 "Anonymous" (931653120)
+00:11:15.149 --> 00:11:24.119
+As both of them have an, even number in the 2nd details. Right? So this is where the software release schedule comes in handy.
+
+67 "Anonymous" (931653120)
+00:11:27.659 --> 00:11:43.709
+So, in New Peter version is typically released approved approximately every 6 months, and we follow a specific pattern. So, let me illustrate it with an example.
+
+68 "Anonymous" (931653120)
+00:11:43.709 --> 00:11:48.839
+So, considering that version, 7:00:which is a word.
+
+69 "Anonymous" (931653120)
+00:11:48.839 --> 00:12:03.569
+Extra long term release and the previous extra long term release in the 6 x trial was 6:4:and since this version is chosen for the government certification.
+
+70 "Anonymous" (931653120)
+00:12:03.569 --> 00:12:08.369
+The software maintenance, period, so the duration during.
+
+71 "Anonymous" (931653120)
+00:12:08.369 --> 00:12:14.069
+Whichever developers focus on bug fixes expanse to 51 months.
+
+72 "Anonymous" (931653120)
+00:12:14.069 --> 00:12:20.039
+Additionally, there's a 12 months of tax supports period on top of that.
+
+73 "Anonymous" (931653120)
+00:12:20.039 --> 00:12:31.049
+Next we introduced a short short term release 7:1:with, an 18 month software maintenance, period.
+
+74 "Anonymous" (931653120)
+00:12:31.049 --> 00:12:34.799
+And the same 12 months of tax support on top of that.
+
+75 "Anonymous" (931653120)
+00:12:34.799 --> 00:12:46.769
+Following that we have version 7:2:which is a long term release with a 36 maintenance period and 12 months of tax support.
+
+76 "Anonymous" (931653120)
+00:12:46.769 --> 00:13:03.299
+Moving to version 73 being an odd number on the 2nd desert is a shorter short term release with an 18 month software support a software maintenance, period and 12 months of tax support.
+
+77 "Anonymous" (931653120)
+00:13:03.299 --> 00:13:14.549
+And lastly, uh, version 7th, 4, uh, which is our, our newest release selected for extra long term support with again.
+
+78 "Anonymous" (931653120)
+00:13:14.549 --> 00:13:20.369
+51 months of software, maintenance and 12 months of tax support.
+
+79 "Anonymous" (931653120)
+00:13:20.369 --> 00:13:24.539
+So, in summary.
+
+80 "Anonymous" (931653120)
+00:13:24.539 --> 00:13:35.459
+We've discussed release numbering distinctions, be between extra, long term, long term and short term releases as well as the software release schedule.
+
+81 "Anonymous" (931653120)
+00:13:35.459 --> 00:13:40.949
+It might seem like a law to consider when choosing a release.
+
+82 "Anonymous" (931653120)
+00:13:40.949 --> 00:13:45.659
+And to my wonder, is that a simpler way.
+
+83 "Anonymous" (931653120)
+00:13:45.659 --> 00:13:52.019
+And, yes, we get it keeping tabs on your vendors. Software. Life cycles can be quite a.
+
+84 "Anonymous" (931653120)
+00:13:52.019 --> 00:13:58.139
+Especially when you're dealing with various devices from different vendors.
+
+85 "Anonymous" (931653120)
+00:13:58.139 --> 00:14:04.109
+So, that's where our idea of suggested release comes into the place.
+
+86 "Anonymous" (931653120)
+00:14:04.109 --> 00:14:22.889
+So did suggest that release is peaked based on a software quality and stability, consider, considering factors, such as a number of reported barks in particular release and its longevity as well.
+
+87 "Anonymous" (931653120)
+00:14:22.889 --> 00:14:27.869
+So this means that it will always.
+
+88 "Anonymous" (931653120)
+00:14:27.869 --> 00:14:40.439
+That it's always at least a long term release that is selected for the suggested release and that's for 10 releases are never chosen for such as the release.
+
+89 "Anonymous" (931653120)
+00:14:40.439 --> 00:14:48.269
+Currently version 7 to 5:1:is the Cisco secure firewalls suggested the release.
+
+90 "Anonymous" (931653120)
+00:14:51.809 --> 00:15:11.809
+If you're still wondering why upgrading to secure firewalls version 7 to 5 is a good idea. So what besides being a suggested release, it's a world balance of features and improve stability in general. So, our developer team has invested substantial.
+
+91 "Anonymous" (931653120)
+00:15:11.809 --> 00:15:31.809
+Afford to focus to address both known and potential issues in this release, which, which is resulting in delivering of, uh, high quality software. Right? So Additionally, on upgrading to version 7 to 5, it will enhance your firewall product experience in.
+
+92 "Anonymous" (931653120)
+00:15:31.809 --> 00:15:35.069
+Improve product performance and.
+
+93 "Anonymous" (931653120)
+00:15:35.069 --> 00:15:42.899
+Let you benefit from new features that some of them we will cover later on in this presentation.
+
+94 "Anonymous" (931653120)
+00:15:42.899 --> 00:15:51.359
+Does the highlights for version? 7:4:that is already available for both FMC FTD.
+
+95 "Anonymous" (931653120)
+00:15:51.359 --> 00:16:06.899
+We will have an additional webinar upcoming, so stay tuned as soon as the release will become the suggested release, we will have again the webinar that will cover highlights of features targeted for version. 7.
+
+96 "Anonymous" (931653120)
+00:16:06.899 --> 00:16:12.569
+And with that, we read this slide a poll.
+
+97 "Anonymous" (931653120)
+00:16:12.569 --> 00:16:33.318
+So log in using URL or Webex link, and let's us let us know which firewall versions you are running, you can select more than 1 answer. So please take a minute and answer the questions. And meanwhile I will pass the ball to address the rest.
+
+98 "Andres Vega" (4166511872)
+00:16:33.318 --> 00:16:40.049
+It is yours. Thank you Eva. Okay, so, let's give.
+
+99 "Andres Vega" (4166511872)
+00:16:40.049 --> 00:16:44.099
+10 seconds more to people to scan the call so we can start the.
+
+100 "Andres Vega" (4166511872)
+00:16:44.099 --> 00:16:49.109
+Then, yeah, the main topic.
+
+101 "Andres Vega" (4166511872)
+00:16:56.249 --> 00:17:13.589
+Okay, so I'm gonna be sharing with you, uh, before I want to show you, what are the key to successful to collaborate and then I will be moving to a demo. Right? So there are few things that we just need to consider when it comes to. Agree. So, questions you make.
+
+102 "Andres Vega" (4166511872)
+00:17:13.589 --> 00:17:22.259
+Need to know, before starting an average so you need to start creating a plan and some of them might be, for example.
+
+103 "Andres Vega" (4166511872)
+00:17:22.259 --> 00:17:29.759
+Um, what kind of device do I have in my name? What kind of file was do I have my network? Is there any device? Uh.
+
+104 "Andres Vega" (4166511872)
+00:17:29.759 --> 00:17:35.609
+Or running, if it's waves, eh, in in my environment.
+
+105 "Andres Vega" (4166511872)
+00:17:35.609 --> 00:17:49.619
+Or what version I'm running, uh, is this an, I prefer a standalone device, or is high availability or cluster so those are questions we should consider when we are performing an airplane.
+
+106 "Andres Vega" (4166511872)
+00:17:49.619 --> 00:18:07.139
+So, I will show you in this demo, uh, an upgrade for, uh, from version seats that sits to 72 that 5, which is the recommended version and I will take you through the steps or through the.
+
+107 "Andres Vega" (4166511872)
+00:18:07.139 --> 00:18:11.249
+Yeah, put the right steps to, to achieve it.
+
+108 "Andres Vega" (4166511872)
+00:18:11.249 --> 00:18:15.779
+So, let me give you a 2nd, I'm going to start sharing my screen.
+
+109 "Andres Vega" (4166511872)
+00:18:15.779 --> 00:18:20.759
+So usually just please, let me know if you can see my screen this.
+
+110 "Andres Vega" (4166511872)
+00:18:25.709 --> 00:18:29.579
+Okay, can you see my screen? Yes. Okay. Perfect.
+
+111 "Andres Vega" (4166511872)
+00:18:29.579 --> 00:18:36.029
+So, 1 of the 1st things, when we are considering to break the firewall is like, where should I go?
+
+112 "Andres Vega" (4166511872)
+00:18:36.029 --> 00:18:56.029
+Okay, and how how do I know if I can just upgrade this device or not to the recommended version? So few things to know, 1st of all, there's something that we call compatibility Matrix, this compatibility matrix. It's for both devices in the case in in this environment for the.
+
+113 "Andres Vega" (4166511872)
+00:18:56.029 --> 00:19:02.579
+World management center or FMC, or for the firewall threat. Defense FTD. Okay.
+
+114 "Andres Vega" (4166511872)
+00:19:02.579 --> 00:19:18.479
+So, make sure to go through all of these, um, we will be sharing with you, the links on this on the chart uh, make sure to read the, the guy. So you will know whether your devices compatible or not with the version you want to upgrade.
+
+115 "Andres Vega" (4166511872)
+00:19:18.479 --> 00:19:27.749
+So, for example, in this case, we will have the option to check is my device, or in my hardware compatible with the version. I want to I want to take it.
+
+116 "Andres Vega" (4166511872)
+00:19:27.749 --> 00:19:34.799
+You can double check whether your firewall or your FMC call it hardware device.
+
+117 "Andres Vega" (4166511872)
+00:19:34.799 --> 00:19:38.909
+Or call it virtual device is a.
+
+118 "Andres Vega" (4166511872)
+00:19:38.909 --> 00:19:51.179
+It's compatible or not. You may be able to see, okay I want to reach in our case to 7.2in my case or in the, for this lab proposed, we're gonna do it using them.
+
+119 "Andres Vega" (4166511872)
+00:19:51.179 --> 00:19:57.839
+Virtual device, right or with so we will have to take a look on. Okay.
+
+120 "Andres Vega" (4166511872)
+00:19:57.839 --> 00:20:03.089
+What kind of device do I have? It's ready to sign that too. Okay cool. What.
+
+121 "Andres Vega" (4166511872)
+00:20:03.089 --> 00:20:23.189
+Eh, virtualization platform isn't running is being word is hyper Flex. Is it compatible or not in our case or the, for the purpose of this demo? Uh, we have been worse 7:7:00. so this is running 7:00:So I can upgrade the device to 7.2without. Any problem.
+
+122 "Andres Vega" (4166511872)
+00:20:23.189 --> 00:20:32.699
+Right. So make sure to go through this documentation to make to understand whether your device is capable, not to upgrade.
+
+123 "Andres Vega" (4166511872)
+00:20:32.699 --> 00:20:38.519
+Something else before going forward and you need to know is like, uh.
+
+124 "Andres Vega" (4166511872)
+00:20:38.519 --> 00:20:46.499
+Consider that the device, once you bring the device, it will be will be capable only to manage or.
+
+125 "Andres Vega" (4166511872)
+00:20:46.499 --> 00:20:49.589
+To to, to to manage.
+
+126 "Andres Vega" (4166511872)
+00:20:49.589 --> 00:21:02.279
+Some specific version in our case, the oldest version this device can support is seats that says so, if you, if you are coming from previous version, it says that 2 sees that 1.
+
+127 "Andres Vega" (4166511872)
+00:21:02.279 --> 00:21:11.999
+Take a look on this, because probably you just need to plan a proper upgrade in order to take your devices to the design version or to the support version.
+
+128 "Andres Vega" (4166511872)
+00:21:11.999 --> 00:21:31.999
+So, we have the same information for the FTD when it comes to the hardware and today with the devices, we will be able to take a look for example, within the hardware information, there is a table. It is telling you. Okay. Which device can we upgrade to the 72 or to the 73? Depends on the version. We.
+
+129 "Andres Vega" (4166511872)
+00:21:31.999 --> 00:21:51.999
+To to to go, uh, this is the same for the, uh, environment you will be able to see. Okay. 72 is it supported in wss and assurance or Oracle cloud infrastructure? And what about if I have an on Prem solution or on Prem device.
+
+130 "Andres Vega" (4166511872)
+00:21:51.999 --> 00:22:11.999
+Support it, in our case yes. Right. So we always try to make sure that you you have this documented so you can plan your average in the proper way. So, just remember the 1st thing is to make sure to create a plan, this plan, or this average comes with reading the.
+
+131 "Andres Vega" (4166511872)
+00:22:11.999 --> 00:22:19.499
+Also written information about the outbreak, so I'm pretty sure that before going or to 72.
+
+132 "Andres Vega" (4166511872)
+00:22:19.499 --> 00:22:25.529
+You read the notes on okay, what is new on this version?
+
+133 "Andres Vega" (4166511872)
+00:22:25.529 --> 00:22:30.629
+It is important or let me highlight something very, very quick here besides.
+
+134 "Andres Vega" (4166511872)
+00:22:30.629 --> 00:22:50.629
+Taking a look on what is new on what a new features are, or what books are fits. There's something that we just need to consider after upgrade. Right? There are some tasks or sensitive tax that is highly important to focus when we perform. Right. So there are some.
+
+135 "Andres Vega" (4166511872)
+00:22:50.629 --> 00:22:55.049
+I mean, it's a different troubleshooting, an actions, uh, that.
+
+136 "Andres Vega" (4166511872)
+00:22:55.049 --> 00:23:00.419
+Is good too is good to read to understand what happened once the upgrade is.
+
+137 "Andres Vega" (4166511872)
+00:23:00.419 --> 00:23:06.539
+So, I will stop here in the.
+
+138 "Andres Vega" (4166511872)
+00:23:06.539 --> 00:23:10.889
+Showing the documentation, and then we will go with them. So.
+
+139 "Andres Vega" (4166511872)
+00:23:10.889 --> 00:23:30.889
+We have read the notes, we have read the notes. We understand that. Our device is compatible. So, the 1st thing that we have to, the, that we have to upgrade is the efficiency. If we have episodes, then that will be the case. We'll have to go with the, and finally with the FTD. So, in our case.
+
+140 "Andres Vega" (4166511872)
+00:23:30.889 --> 00:23:34.049
+For this demo we have only and.
+
+141 "Andres Vega" (4166511872)
+00:23:34.049 --> 00:23:39.749
+High availability and pair uh, both of them are beautiful. So.
+
+142 "Andres Vega" (4166511872)
+00:23:39.749 --> 00:23:54.059
+We will proceed to upgrade the the devices. So 1st of all, we will go with the, uh, we created this demo, this recording to reduce the time. And to show you all all the steps that you just need to consider when upgrade.
+
+143 "Andres Vega" (4166511872)
+00:23:54.059 --> 00:24:15.769
+So, when it comes to the 1st thing, you need to do is to upload the image, but before uploading the image, you just need to download it. There are different ways. But to go through the image or to download it. But the 1st or the most important thing, you just need to notice that you should go to the software that Cisco dot com, you might be able to select the product from the.
+
+144 "Andres Vega" (4166511872)
+00:24:15.769 --> 00:24:30.299
+Search bar, or from the browse option. In this case, we just need to download the image. Right. Uh, because I know the version I want to go and in this specific case, it's only 7 is the 72. I usually need 1 for.
+
+145 "Andres Vega" (4166511872)
+00:24:30.299 --> 00:24:36.209
+To to reach that version, I can start for the FTD version. So I'm going to.
+
+146 "Andres Vega" (4166511872)
+00:24:36.209 --> 00:24:47.939
+Top here for a while, and you can see as a, as Anita mentioned that we are always suggesting a version specific a specific version, which is marked with a golden start. Right?
+
+147 "Andres Vega" (4166511872)
+00:24:47.939 --> 00:24:54.149
+Uh, this is how we're going to recognize what is the suggest version and for the upgrade.
+
+148 "Andres Vega" (4166511872)
+00:24:54.149 --> 00:25:14.149
+Few things to consider here, you just need to find or to make sure you are choosing the right packet, right? You have patch and make sure always to download the app when you are moving from 1 version to another version from 1 release to another release specific thing. So.
+
+149 "Andres Vega" (4166511872)
+00:25:14.149 --> 00:25:29.099
+You will then know the packet accept the, the agreement users and then you will go back to the, to the main menu. On this case. I just click on the firewall option because it was on top of the bar and it will just let me go faster today.
+
+150 "Andres Vega" (4166511872)
+00:25:29.099 --> 00:25:45.119
+To the session I want to go so this 1 is just the same process for the. I'm going to download the 7 that to that. 5. I just need to double check that I'm going to download the right package. So, I'm not gonna download the patch, but I'm going to download the hybrid packet.
+
+151 "Andres Vega" (4166511872)
+00:25:45.119 --> 00:25:49.199
+Right. So we can see here, I'm just double check in the information.
+
+152 "Andres Vega" (4166511872)
+00:25:49.199 --> 00:25:55.619
+And this is how we know the right package, same procedure as the license agreement. And then.
+
+153 "Andres Vega" (4166511872)
+00:25:55.619 --> 00:26:02.819
+Once the once the software is downloaded, I will start moving on uploading the images.
+
+154 "Andres Vega" (4166511872)
+00:26:02.819 --> 00:26:11.249
+Okay, uh, so when when it comes to to upload, uh.
+
+155 "Andres Vega" (4166511872)
+00:26:11.249 --> 00:26:15.209
+A few things to consider. Okay we will see now, uh, I will.
+
+156 "Andres Vega" (4166511872)
+00:26:15.209 --> 00:26:31.619
+1st of all, you have 2 options to upload the image you can do it from the in this way, or you can do it from a repository when it comes to repository. It only applies. So, in this demo, once I'm log into the, I will go to the settings.
+
+157 "Andres Vega" (4166511872)
+00:26:31.619 --> 00:26:40.739
+And to the other this option, and here, we will look for the file that I want to upload. In this case I will.
+
+158 "Andres Vega" (4166511872)
+00:26:40.739 --> 00:27:00.739
+Upload 2 files 1 for decency and 1 for the FTD. So I don't need to do this step, eh, later. So, I can just do it immediately on the FMC upload both packets, uh, make sure you are uploading the right path. So just double check click on upload. You will see that. There is a confirmation.
+
+159 "Andres Vega" (4166511872)
+00:27:00.739 --> 00:27:19.349
+When the packet is properly uploaded, you can see that in the lease or the package is there. You can just double check verify that the version you decide to, or you want to upgrade a upgrade is there and do the same for the other packet right? So, in this case, I will do the same for the FTD.
+
+160 "Andres Vega" (4166511872)
+00:27:19.349 --> 00:27:22.889
+This is how we upload the file.
+
+161 "Andres Vega" (4166511872)
+00:27:22.889 --> 00:27:38.429
+Right. Uh, so with this part, we are covering the downloading and uploading the, the, the packets. However, this is not enough. We just need to continue, right? So the next step is to double check.
+
+162 "Andres Vega" (4166511872)
+00:27:38.429 --> 00:27:58.429
+We have the right and this space to perform the outbreak, right? Actually, that's something you can start doing as well at the beginning. But okay, so we will need to update statistics. We will choose the device in this case. Remember, I'm gonna stop here for a while. We just need to go 1st with.
+
+163 "Andres Vega" (4166511872)
+00:27:58.429 --> 00:28:02.669
+Infancy, so I'm going to choose the FMC and I will take a look within the.
+
+164 "Andres Vega" (4166511872)
+00:28:02.669 --> 00:28:12.749
+It's a path to make sure I have enough space to perform this hybrid. In this case, as you can see in screen there is.
+
+165 "Andres Vega" (4166511872)
+00:28:12.749 --> 00:28:16.079
+Plenty of space to to.
+
+166 "Andres Vega" (4166511872)
+00:28:16.079 --> 00:28:19.349
+To do this upgrade, um, as any.
+
+167 "Andres Vega" (4166511872)
+00:28:19.349 --> 00:28:37.679
+Upgrade process is highly recommended to take a backup, so you just go again to settings back up. You will have 2 options 1 for the fancy another 1 for the Mac device, or in this case, the FTD. So we will give a name for the backup. We will select the information we want to back up.
+
+168 "Andres Vega" (4166511872)
+00:28:37.679 --> 00:28:42.629
+And this will take some time. Depends on the amount of events you have in their, in their database.
+
+169 "Andres Vega" (4166511872)
+00:28:42.629 --> 00:28:52.439
+So, as you may know, every single process generates a task, you just can track this from the task center from the message center task.
+
+170 "Andres Vega" (4166511872)
+00:28:52.439 --> 00:29:04.439
+And he will let, you know, how much time lapse and since you start the product, the progress and how much time it took in our case, it took 6 minutes. Right? Uh.
+
+171 "Andres Vega" (4166511872)
+00:29:04.439 --> 00:29:07.709
+It depends I said before, from the number of events.
+
+172 "Andres Vega" (4166511872)
+00:29:07.709 --> 00:29:15.509
+So, again, uh, now we just need to check that our FMC is ready for average. So.
+
+173 "Andres Vega" (4166511872)
+00:29:15.509 --> 00:29:22.769
+We will, we will go back to the add this option and we will click on this style, eh, icon or uninstall link.
+
+174 "Andres Vega" (4166511872)
+00:29:22.769 --> 00:29:27.359
+So, why we just need 1st to make sure the device is.
+
+175 "Andres Vega" (4166511872)
+00:29:27.359 --> 00:29:32.819
+Ready for a grade, so we will click on. We would select the device we will launch in the readiness check.
+
+176 "Andres Vega" (4166511872)
+00:29:32.819 --> 00:29:40.049
+And this readiness check is going to tell us. Okay so from which version to which version we are going.
+
+177 "Andres Vega" (4166511872)
+00:29:40.049 --> 00:30:00.049
+It takes sometimes you will see it is more alive, eh, stuff. So you will get information about the scripts. You will get information about in progress and once the, the is to see, we can just proceed with the upgrade. So, here you can see the screen. It is running on a specific scripts, which is basically.
+
+178 "Andres Vega" (4166511872)
+00:30:00.049 --> 00:30:13.919
+Pre check to make sure the device is ready in this case everything and shows that there is there's a success and we're going to the brain. So.
+
+179 "Andres Vega" (4166511872)
+00:30:13.919 --> 00:30:19.169
+From, eh, we just need to click on install and it will start the process.
+
+180 "Andres Vega" (4166511872)
+00:30:19.169 --> 00:30:31.619
+Make sure I understand this process record requires a reboot. You can see that information on top on the left side that this FMC is going to be reported.
+
+181 "Andres Vega" (4166511872)
+00:30:31.619 --> 00:30:38.519
+So when you start the process again, you can see notification Mrs Mrs. center task.
+
+182 "Andres Vega" (4166511872)
+00:30:38.519 --> 00:30:50.129
+And eventually the device will kick you out of the session. Don't worry about that. This is just that the device is joining into maintenance mode, and you can just log in with your actual credentials.
+
+183 "Andres Vega" (4166511872)
+00:30:50.129 --> 00:31:10.129
+So you will log in here in this part, and you will see the progress of the upgrade. So you will be able to see the status bar. You will see from which version 2, which version how much time has the labs since the moment they start. What is the estimated time and what are the screens that it is running to perform this?
+
+184 "Andres Vega" (4166511872)
+00:31:10.129 --> 00:31:26.369
+Uh, just setting expectations, uh, when it comes to FMC, uh, once everything is done, the root might take some time because service needs to come up and database as well needs to be a up and running.
+
+185 "Andres Vega" (4166511872)
+00:31:26.369 --> 00:31:37.769
+Uh, but actually, this is, eh, it depends from from from and see, I want to say for, I'm just referring to the amount of data that it has to.
+
+186 "Andres Vega" (4166511872)
+00:31:37.769 --> 00:31:43.739
+To to bring up, so, in, in this case, the device was reboot. Um.
+
+187 "Andres Vega" (4166511872)
+00:31:43.739 --> 00:31:51.209
+And now it will take me to the, to the main login page. I will log in again.
+
+188 "Andres Vega" (4166511872)
+00:31:51.209 --> 00:32:01.529
+And it will pop up an end user license agreement that it has to be accepted. Right. Uh, so you just click on a.
+
+189 "Andres Vega" (4166511872)
+00:32:01.529 --> 00:32:08.549
+And this is how you can see your device has been upgraded uh.
+
+190 "Andres Vega" (4166511872)
+00:32:08.549 --> 00:32:21.089
+You may be able to see probably some alerts don't worry. It's expected just remember the device was reporting so there's no way to obtain. Probably it wasn't it was not getting any heartbeat from FTD at that time.
+
+191 "Andres Vega" (4166511872)
+00:32:21.089 --> 00:32:31.649
+That's the device, uh, that's how the average is done. So now we will continue with the habit of, of the FTD.
+
+192 "Andres Vega" (4166511872)
+00:32:31.649 --> 00:32:46.289
+So, but from the from the previous library, from the previous side, I'm going to stop here for a while. I want to show you that you can see the well, in this case, it starts on this page. Uh.
+
+193 "Andres Vega" (4166511872)
+00:32:46.289 --> 00:32:57.959
+That I wanted to check 1st, what was the status of the device and I can see that everything is on green. So this is a good sign. Now that the device or the health of the of the.
+
+194 "Andres Vega" (4166511872)
+00:32:57.959 --> 00:33:09.449
+ftd's and let them see, everything is in green. Uh, so we can, we can go with the, we can continue with the this is just for checking communication or some potential alerts.
+
+195 "Andres Vega" (4166511872)
+00:33:09.449 --> 00:33:27.689
+So, same procedure, we just need to go to the settings and okay. 1st of all. Let's show you here that we have to FTD to build both of them running that 1 and we are going to take to the 75.
+
+196 "Andres Vega" (4166511872)
+00:33:27.689 --> 00:33:31.619
+So, what is the part that we are missing here?
+
+197 "Andres Vega" (4166511872)
+00:33:31.619 --> 00:33:43.499
+We are not ready. I mean, we are not uploading images that are not the images because we did it in the step before. So that's well, that's that's the reason that we just studied. Immediately we check in.
+
+198 "Andres Vega" (4166511872)
+00:33:43.499 --> 00:33:55.199
+How our devices are prepared in terms of space to perform this library. So we can just see here on top that there's plenty of space in the slash bar. A.
+
+199 "Andres Vega" (4166511872)
+00:33:55.199 --> 00:34:04.169
+A path to partition to, to, to perform this doing the same for both. I was don't just.
+
+200 "Andres Vega" (4166511872)
+00:34:04.169 --> 00:34:07.169
+Throws on 1 verification, make sure that you are.
+
+201 "Andres Vega" (4166511872)
+00:34:07.169 --> 00:34:24.719
+If you are uploading, uh, 10 devices by devices, make sure you are doing this in every single device. So we have upload previously the images to the FMC and now we just need to push from the FMC to the FTD. So we'll go to settings updates and.
+
+202 "Andres Vega" (4166511872)
+00:34:24.719 --> 00:34:29.129
+The difference and the difference compared with a.
+
+203 "Andres Vega" (4166511872)
+00:34:29.129 --> 00:34:46.589
+Fmc and FTD is that we have 3 icons here 1, is for installing the other 1 is for a push them into the device and the other 1 is to delete the image. So, in this case, we will just need to double check. What is the image that we want to.
+
+204 "Andres Vega" (4166511872)
+00:34:46.589 --> 00:35:04.199
+Upgrade and we will push it within the devices. So just remember this is pushing from the fncc to the local devices. This is going to take some time still as every single task. It can be monitored. You can just double check. What is the current status of the upgrade?
+
+205 "Andres Vega" (4166511872)
+00:35:04.199 --> 00:35:14.609
+And it just perform the upgrade. Uh, this is basically, this is basically how the, uh, pushing is happening still.
+
+206 "Andres Vega" (4166511872)
+00:35:14.609 --> 00:35:29.279
+Step number, 3. same highly recommended to take a backup. You can see in my case, I had a backup, but we're going to take them back up the game. So we will select the devices that we're going to do. We want to take them back up in this case.
+
+207 "Andres Vega" (4166511872)
+00:35:29.279 --> 00:35:49.279
+Take a look that I should ha pair so it will take the devices from this. It will take a backup from these devices and I'm retrieving the backup file to the management center. So I can have it handy. Uh, however you can just pull as well from this location from the storage location, the backup, and you can have it in your under your own.
+
+208 "Andres Vega" (4166511872)
+00:35:49.279 --> 00:36:09.119
+Repository so same as every single process, as you can see, the process is basically is taking you on hand you just need to make sure that you are not missing this notification because it's going to give you high visibility and understanding on what you are doing.
+
+209 "Andres Vega" (4166511872)
+00:36:09.119 --> 00:36:15.899
+So our backup is complete, so I think, uh, we just need to check for readiness.
+
+210 "Andres Vega" (4166511872)
+00:36:15.899 --> 00:36:31.499
+And this is important, and this is nice from the point of view that this is something that we will be discussing later in the upcoming feature uh, which is the readiness check after India in version 7 that 1 we introduce, which is basically the rather than a check.
+
+211 "Andres Vega" (4166511872)
+00:36:31.499 --> 00:36:51.499
+Uh, for FTD, which is something that it was not before this version so now we have ready to check, we can also take a look on the devices and make sure that the devices are ready for upgrade. So, same as they you can see there is a progress and if I go to the to the.
+
+212 "Andres Vega" (4166511872)
+00:36:51.499 --> 00:36:56.819
+Okay, so it is completed that actually is quite quite quite fast.
+
+213 "Andres Vega" (4166511872)
+00:36:56.819 --> 00:37:01.529
+Um, there is something else and I will show you here.
+
+214 "Andres Vega" (4166511872)
+00:37:01.529 --> 00:37:21.529
+Uh, let me stop here. There are 3 features as well that has been introduced in 7 version right? Which is the option to automatically cancel or upgrade failure and roll back to the previous version, enable, revert after successful upgrade and I break the snort snort. So, uh, I would say.
+
+215 "Andres Vega" (4166511872)
+00:37:21.529 --> 00:37:41.529
+You can just leave it as they are. However, I would highly recommend to take a look on the upgrade snort snort 3 just to make sure for instance, if you have some custom roles, intrusion policies rules that they will not be impacted by this average. So, I highly recommend that if you have.
+
+216 "Andres Vega" (4166511872)
+00:37:41.529 --> 00:37:50.129
+Uh, some custom introduction roles, take a look on, uh, take a look on them and analyze what would be, what will it impact right?
+
+217 "Andres Vega" (4166511872)
+00:37:50.129 --> 00:38:03.749
+So, let's continue, I will just choose the devices click on install, uh, 1, more thing. Sorry? Um, on this screen, you can see that there's an arrow on green. This means that they.
+
+218 "Andres Vega" (4166511872)
+00:38:03.749 --> 00:38:14.340
+The image is already loaded into the devices so this, it means that the, that the process of pushing the image, it was successful.
+
+219 "Andres Vega" (4166511872)
+00:38:14.340 --> 00:38:24.210
+So, we will continue from here, uh, same confirmation. Do you want to continue? Yes and it will start the process when you have a.
+
+220 "Andres Vega" (4166511872)
+00:38:24.210 --> 00:38:27.510
+Or high availability and, uh.
+
+221 "Andres Vega" (4166511872)
+00:38:27.510 --> 00:38:37.560
+Repaired, uh, this average will always start with the stand by Union. So, in this case, the process will start with FTD number 2.
+
+222 "Andres Vega" (4166511872)
+00:38:37.560 --> 00:38:44.520
+It will, it will, uh, make the upgrade once the average is done.
+
+223 "Andres Vega" (4166511872)
+00:38:44.520 --> 00:38:50.880
+This unit and, I mean, all the checks are are are passed this unit will take the.
+
+224 "Andres Vega" (4166511872)
+00:38:50.880 --> 00:39:10.880
+Primary role after the once immediately after the, the active unit takes started, it starts the upgrade. So here you can just see, you can just see that we are moving from that 1 to 72.5we can just take a look on this on.
+
+225 "Andres Vega" (4166511872)
+00:39:10.880 --> 00:39:15.540
+Um, logs or status information that we are just and that.
+
+226 "Andres Vega" (4166511872)
+00:39:15.540 --> 00:39:26.220
+Is just visibility about the current status of the outbreak so you will see it now uh, disable. It is complete and it will start. Immediately. They agree with the.
+
+227 "Andres Vega" (4166511872)
+00:39:26.220 --> 00:39:44.520
+With the FTD number 1, so it might take few minutes. Okay. Here we can see. So, every for FTW, eh, 2 is complete and immediately restart the upgrade process in the other 1 in the other machine. So, this is the moment when the FTD 2 becomes.
+
+228 "Andres Vega" (4166511872)
+00:39:44.520 --> 00:39:53.370
+Active and FTD 1 becomes well, it starts the process and when it comes back, it will be the standard unit.
+
+229 "Andres Vega" (4166511872)
+00:39:53.370 --> 00:40:03.450
+Same as the previous 1 I just want to make sure I'm doing some modifications to make sure this is what we are planning to do in our athletes. I used to have some visibility.
+
+230 "Andres Vega" (4166511872)
+00:40:03.450 --> 00:40:14.970
+So, here there are some, uh, the, the average has been completed, the reboot took place. So I'm going to the devices device management.
+
+231 "Andres Vega" (4166511872)
+00:40:14.970 --> 00:40:19.080
+And I will see, I will stop here for a while.
+
+232 "Andres Vega" (4166511872)
+00:40:19.080 --> 00:40:28.530
+Okay, uh, in this case, in this case, uh, this is part of the, the, something with the video, but the, the.
+
+233 "Andres Vega" (4166511872)
+00:40:28.530 --> 00:40:32.730
+Ftd 2 should be the, uh, actually sorry.
+
+234 "Andres Vega" (4166511872)
+00:40:32.730 --> 00:40:40.410
+I study too is the active. There are some alerts. Don't worry about them. Right? Ftd 1 gets the stand by role.
+
+235 "Andres Vega" (4166511872)
+00:40:40.410 --> 00:40:55.710
+Uh, those sellers are basically because, uh, this is, uh, from the recording, uh, but once verifications are done, this moves to the status of dream and this is how the upgrade for takes place.
+
+236 "Andres Vega" (4166511872)
+00:40:55.710 --> 00:41:02.280
+Mm, hmm so let's continue. Yeah. So the next step.
+
+237 "Andres Vega" (4166511872)
+00:41:02.280 --> 00:41:06.030
+Is to, let's take a look on the on.
+
+238 "Andres Vega" (4166511872)
+00:41:06.030 --> 00:41:09.660
+On the on the features, right? So.
+
+239 "Andres Vega" (4166511872)
+00:41:09.660 --> 00:41:15.150
+I, I really show you, uh, some of the features, but let's go with the 1st 1. so.
+
+240 "Andres Vega" (4166511872)
+00:41:15.150 --> 00:41:30.180
+1 of the things that we have is the average improvements. Right? So what kind of improvements are we talking about here? So, before we will have the limitation of 550 data was recommended however, now we don't have that limit and actually, well, we can just do even.
+
+241 "Andres Vega" (4166511872)
+00:41:30.180 --> 00:41:34.260
+More than 15 devices at once uh.
+
+242 "Andres Vega" (4166511872)
+00:41:34.260 --> 00:41:46.200
+Basically, uh, this comes to the, it's more on the fncc bandwidth, right? So, if you are planning to upgrade, uh, many devices, you can use.
+
+243 "Andres Vega" (4166511872)
+00:41:46.200 --> 00:41:56.430
+Make choose all of the devices or make a plan to upgrade all the devices 1 and start the process follow with the swatches that I gave him.
+
+244 "Andres Vega" (4166511872)
+00:41:56.430 --> 00:42:08.160
+Uh, we are also reducing the FTD every time, which is now we are not cereal. I mean, we tried to run average in parallel, which is an advantage.
+
+245 "Andres Vega" (4166511872)
+00:42:08.160 --> 00:42:18.900
+Right. Uh, when it comes to to appraise, because you will be able to reduce a lot of time when, when we deliver when performing.
+
+246 "Andres Vega" (4166511872)
+00:42:18.900 --> 00:42:26.970
+A few things that I already mentioned, and they are there for ftds, for instance, or for fdms uh, they.
+
+247 "Andres Vega" (4166511872)
+00:42:26.970 --> 00:42:46.970
+Eh, for external devices is that you have the option to to perform an average readiness check. So basically you will before starting an IV, you will not in advance, whether you can or not start and upgrade. If you are missing something specific, it will let, you know, so, uh, this is, uh.
+
+248 "Andres Vega" (4166511872)
+00:42:46.970 --> 00:42:53.160
+Nice improvement. Right? So you will get more information before it starts in the.
+
+249 "Andres Vega" (4166511872)
+00:42:53.160 --> 00:43:05.550
+And a few things that I also mentioned, which is the option to enable after successful library. You have also the auction to revert upgrade.
+
+250 "Andres Vega" (4166511872)
+00:43:05.550 --> 00:43:10.200
+Uh, this applies for a.
+
+251 "Andres Vega" (4166511872)
+00:43:10.200 --> 00:43:13.950
+Eh, for the devices in the management page.
+
+252 "Andres Vega" (4166511872)
+00:43:13.950 --> 00:43:22.680
+And also, as their successful, within the 30 days, if you want to roll back to previous version, you can do, you can just take action.
+
+253 "Andres Vega" (4166511872)
+00:43:22.680 --> 00:43:39.570
+Few things to note as well, when it comes to deployments, there's an option to select the deployment. So what does it mean this it means that you have the option to choose, uh, what kind of deployment do you want to.
+
+254 "Andres Vega" (4166511872)
+00:43:39.570 --> 00:43:54.720
+If you have many, um, let's say you have you have done any changes or things like that you can just choose what kind of deployment you want to do, or you want to apply. And actually, as in the in the screen, you can see that VPN is not available for selected and deployment.
+
+255 "Andres Vega" (4166511872)
+00:43:54.720 --> 00:44:11.760
+So, another feature that was introduced is the option to see changes or history on history changes. So you can see, and you can identify what has been added what has been deleted or deleted from the configuration. And we are giving colors for all of them.
+
+256 "Andres Vega" (4166511872)
+00:44:11.760 --> 00:44:22.170
+So you can see on top of, uh, uh, on the right party. You will see that there is a legend, which is telling you, what, what are the colors or what represent each color.
+
+257 "Andres Vega" (4166511872)
+00:44:22.170 --> 00:44:25.800
+And besides that, we are also adding in.
+
+258 "Andres Vega" (4166511872)
+00:44:25.800 --> 00:44:32.520
+Eh, and the way or options to compare and.
+
+259 "Andres Vega" (4166511872)
+00:44:32.520 --> 00:44:42.720
+Configurations right, so that's, I mean, to compare version sorry to compare versions and and of configurations.
+
+260 "Andres Vega" (4166511872)
+00:44:42.720 --> 00:44:57.930
+As I said before you can go back now, and actually you can roll back configuration to the last 10 successful deployment. So before pushing on, uh, on your premium, compared back.
+
+261 "Andres Vega" (4166511872)
+00:44:57.930 --> 00:45:06.210
+So that's another that's another cool feature that has been introduced. You have the option as well to it.
+
+262 "Andres Vega" (4166511872)
+00:45:06.210 --> 00:45:18.570
+Track or to document, who did the who did the roll back so you will see that there are some deployment notes. You can see you can get information on that time on.
+
+263 "Andres Vega" (4166511872)
+00:45:18.570 --> 00:45:22.500
+Um, and those on those rollbacks.
+
+264 "Andres Vega" (4166511872)
+00:45:22.500 --> 00:45:26.280
+Which is something that was not the for now you have this option.
+
+265 "Andres Vega" (4166511872)
+00:45:26.280 --> 00:45:29.790
+And finally.
+
+266 "Andres Vega" (4166511872)
+00:45:29.790 --> 00:45:35.520
+Oh, well, finally yeah. Okay now, yes, they you have the options to.
+
+267 "Andres Vega" (4166511872)
+00:45:35.520 --> 00:45:38.880
+Select 1 or more devices to roll back.
+
+268 "Andres Vega" (4166511872)
+00:45:38.880 --> 00:45:45.540
+Right. So you have the option to select more than 1 devices and when it comes to rollback.
+
+269 "Andres Vega" (4166511872)
+00:45:45.540 --> 00:45:55.170
+You can also configure out to roll back settings as well. That's another feature, uh, that has been introduced in 7.1so just.
+
+270 "Andres Vega" (4166511872)
+00:45:55.170 --> 00:46:15.170
+You can get the most as well from from, or you can get advantage from from that features. And, of course, when it comes to dashboard, uh, it's not only about a, a features or, eh, we are also thinking on user experience and we have include a, or we make some dashboards available, right? Or improve the dashboards.
+
+271 "Andres Vega" (4166511872)
+00:46:15.170 --> 00:46:19.530
+So, you will have a fancy health dashboards for.
+
+272 "Andres Vega" (4166511872)
+00:46:19.530 --> 00:46:24.780
+Active and standby, eh, uh, units of FMC.
+
+273 "Andres Vega" (4166511872)
+00:46:24.780 --> 00:46:35.760
+Um, once again, you have the option, or you'd have a search global search option. So if you need to search for some specific.
+
+274 "Andres Vega" (4166511872)
+00:46:35.760 --> 00:46:44.400
+Uh, let's say, ITRs, cause of it, you can just click on in this global search option and you can just type the option. You can just type up.
+
+275 "Andres Vega" (4166511872)
+00:46:44.400 --> 00:46:52.260
+For instance, the, to understand if something has been, it's already being used, or he belongs to some specific Melbourne host.
+
+276 "Andres Vega" (4166511872)
+00:46:52.260 --> 00:46:58.830
+So, you have these options available now or this a improvements so.
+
+277 "Andres Vega" (4166511872)
+00:46:58.830 --> 00:47:04.050
+Now, that I have just complete, what is new after upgrade or what is.
+
+278 "Andres Vega" (4166511872)
+00:47:04.050 --> 00:47:09.417
+Related to the average, I will pass the ball to Anita so she can just continue with the.
+
+279 "Anonymous" (931653120)
+00:47:09.417 --> 00:47:16.170
+Features available. Okay. Thank you. Andres. So.
+
+280 "Anonymous" (931653120)
+00:47:16.170 --> 00:47:27.300
+Feature is not 3, which was not implemented the version specifically version 7, though, but in version 7:00:as a huge architectural change.
+
+281 "Anonymous" (931653120)
+00:47:27.300 --> 00:47:34.860
+And you might be wondering why we invested even on developing a new version of.
+
+282 "Anonymous" (931653120)
+00:47:34.860 --> 00:47:40.380
+So well, there are 3 key objectives. I would say we aim to tackle.
+
+283 "Anonymous" (931653120)
+00:47:40.380 --> 00:47:54.180
+So 1st of all enhance efficiency. So this involves the ability to handle malware to explore file attacks in depth and analyze the stream of data as the whole.
+
+284 "Anonymous" (931653120)
+00:47:54.180 --> 00:48:05.010
+Can improve performance of existing platforms so we aim to make snore perform better on the platforms that it already works with.
+
+285 "Anonymous" (931653120)
+00:48:05.010 --> 00:48:15.930
+And last, but certainly not least we aim for a greater modularity, coupled with simplified policy rules and management.
+
+286 "Anonymous" (931653120)
+00:48:15.930 --> 00:48:23.130
+And what is different in to compared to snap stream so there are.
+
+287 "Anonymous" (931653120)
+00:48:23.130 --> 00:48:43.130
+I would say 2 main differences. 1 of the biggest differences is the differences in architecture. So, in case of snow tool, it is pretty simple. So dependent on the platform. There are numbers of CPU course available and in each CPO, once not.
+
+288 "Anonymous" (931653120)
+00:48:43.130 --> 00:48:54.270
+Instance will be loaded on the flip side. Smart. 3 employees have more the threaded approach, which is utilizing multiple cars.
+
+289 "Anonymous" (931653120)
+00:48:54.270 --> 00:48:59.190
+And we've only one's not instance, and we are able to.
+
+290 "Anonymous" (931653120)
+00:48:59.190 --> 00:49:09.870
+Less memory at the same time, creating an opportunity to opportunity to enable more roles and more efficiency to process the.
+
+291 "Anonymous" (931653120)
+00:49:09.870 --> 00:49:14.430
+And the other difference is the difference with pocket processing.
+
+292 "Anonymous" (931653120)
+00:49:14.430 --> 00:49:22.020
+So, here we have just in case in Dustin time pocket processing in.
+
+293 "Anonymous" (931653120)
+00:49:22.020 --> 00:49:38.070
+So, in snot, 2 things happens literal and sequence while it's not 3, we talk about publish and subscribe model. So when a subscriber needs some data.
+
+294 "Anonymous" (931653120)
+00:49:38.070 --> 00:49:46.140
+The publisher just makes them available and it happens only when it's needed. So, just in time in this case.
+
+295 "Anonymous" (931653120)
+00:49:46.140 --> 00:50:02.460
+Next feature, encrypted visibility engine so Cisco secure firewall and encrypted visibility engine uses API and machine learning to block encrypted threads without decryption.
+
+296 "Anonymous" (931653120)
+00:50:02.460 --> 00:50:22.460
+And it does certain things. So, let me walk you through some of them. What are the use cases here? So, 1st of all, we want to simplify encrypted traffic inspections. So now we are able to block malicious connections. We bought the complicated, um.
+
+297 "Anonymous" (931653120)
+00:50:22.460 --> 00:50:25.470
+Inspections and encryption my thoughts.
+
+298 "Anonymous" (931653120)
+00:50:25.470 --> 00:50:38.520
+We are able to ensure internal and external privacy compliance. So, privacy and compliance preserved by maintaining original ends to encrypted flows.
+
+299 "Anonymous" (931653120)
+00:50:38.520 --> 00:50:46.470
+We have available indicators of compromise that since version 7, 3.
+
+300 "Anonymous" (931653120)
+00:50:46.470 --> 00:51:00.840
+Maintain the performance, so we preserve firewall performance by avoiding this decryption processors overhead when it's not required and we only the, when it's necessary.
+
+301 "Anonymous" (931653120)
+00:51:00.840 --> 00:51:12.960
+And last, but not least shine the light who had others can see with expensive TLS, 1.3and, quick protocol support.
+
+302 "Anonymous" (931653120)
+00:51:12.960 --> 00:51:17.790
+Next feature elephant flows, so.
+
+303 "Anonymous" (931653120)
+00:51:17.790 --> 00:51:26.400
+Typically, any flaw that exceeded 1 gigabits in a 10 seconds span is classified as an elephant flow.
+
+304 "Anonymous" (931653120)
+00:51:26.400 --> 00:51:34.770
+Although there are no, not a frequent elephant flows can consume a big amount of bandwidth over time.
+
+305 "Anonymous" (931653120)
+00:51:34.770 --> 00:51:42.750
+And it can potentially lead to various issues, such as high CPU usage or pocket flows.
+
+306 "Anonymous" (931653120)
+00:51:42.750 --> 00:51:55.380
+So starting version 7 to 7:2:00 of the management center, and it does work to highlight applicable for store 3 devices only.
+
+307 "Anonymous" (931653120)
+00:51:55.380 --> 00:52:01.890
+You can use the elf on flow features to the tech and remediate elephant flaws.
+
+308 "Anonymous" (931653120)
+00:52:01.890 --> 00:52:06.480
+Which will help you to reduce the stress on the devices.
+
+309 "Anonymous" (931653120)
+00:52:06.480 --> 00:52:15.690
+So, what are the remediation actions that can be applied? 1st of all? You can configure elephant flows to to bypass.
+
+310 "Anonymous" (931653120)
+00:52:15.690 --> 00:52:28.140
+So you have the option to set elephant flows to bypass snow inspection when enabled and in these ways, not will not process any packets from this bypass flow.
+
+311 "Anonymous" (931653120)
+00:52:28.140 --> 00:52:38.190
+And the other remediation is a throttling elephant flows and this allows you to impose a rate limit on the floor.
+
+312 "Anonymous" (931653120)
+00:52:38.190 --> 00:52:42.870
+Why it is still subject into the inspections.
+
+313 "Anonymous" (931653120)
+00:52:42.870 --> 00:52:50.280
+So, in this case, the flow rate is dynamically calculated and it will be reduced by 10%.
+
+314 "Anonymous" (931653120)
+00:52:50.280 --> 00:53:08.040
+And Additionally, snort, uh, will send the verdict of curious flow with 10% less low rate flow rate back to the firewall engines. So, 2 remediations for these big elephant flows that are coming through North.
+
+315 "Anonymous" (931653120)
+00:53:08.040 --> 00:53:13.950
+A version 1 thing now, let's move to the upgrade programs.
+
+316 "Anonymous" (931653120)
+00:53:13.950 --> 00:53:18.450
+1st program, Cisco secure a firewall level up program.
+
+317 "Anonymous" (931653120)
+00:53:18.450 --> 00:53:34.890
+So the level of program target customers with Cisco, secure firewall in place, it is a self service program that helps to prepare an upgrade plan by providing a best practices based on customers configuration.
+
+318 "Anonymous" (931653120)
+00:53:34.890 --> 00:53:46.980
+So, how it works at the bottom of the slide, I included the link to the level up form, which you just need to fill in. If you are interested in the program.
+
+319 "Anonymous" (931653120)
+00:53:46.980 --> 00:53:55.410
+And then what happens next in the form, a, you will specify the.
+
+320 "Anonymous" (931653120)
+00:53:55.410 --> 00:54:10.560
+And based on this ID, and your support case will be opened automatically. Uh, so if you have any questions regarding the report or any issues during the upgrade, all this can be addressed in this case.
+
+321 "Anonymous" (931653120)
+00:54:10.560 --> 00:54:27.240
+Next you will receive an email with instructions on how to generate and upload data. It the data we are asking for is a troubleshooting file from the firewalls. And based on this data, the report will be generated.
+
+322 "Anonymous" (931653120)
+00:54:27.240 --> 00:54:31.050
+And this is what the report in clause.
+
+323 "Anonymous" (931653120)
+00:54:31.050 --> 00:54:40.830
+So, just to summarize level up program helps us and helps you to upgrade your firewalls and helps us to scale.
+
+324 "Anonymous" (931653120)
+00:54:40.830 --> 00:55:00.830
+A part of level up, we have another program, which is called firewall, security, firewall, software, upgrade program and this is aimed customer, using a version, uh, secure firewall version, lower than 7 door. Eh, the programs.
+
+325 "Anonymous" (931653120)
+00:55:00.830 --> 00:55:06.060
+The goal is to assist customers in upgrading and and.
+
+326 "Anonymous" (931653120)
+00:55:06.060 --> 00:55:09.420
+In providing general support with the upgrade.
+
+327 "Anonymous" (931653120)
+00:55:09.420 --> 00:55:22.950
+And the supper can be offered either by Cisco, professional service system, uh, or a partner, or a global security services company called secure view.
+
+328 "Anonymous" (931653120)
+00:55:22.950 --> 00:55:38.940
+And a, a part of upgrade assistance, um, the migration from the essay, or from 3rd party firewalls is part of the scope it's considered on case by case basis here.
+
+329 "Anonymous" (931653120)
+00:55:38.940 --> 00:55:48.000
+And if you are interested in participating in the program, let us know, you can either email us on the email that is included here on the slide.
+
+330 "Anonymous" (931653120)
+00:55:48.000 --> 00:55:57.990
+Or you can contact directly or Cisco sales representative and mentioned about the program that you're interested in participation on this program.
+
+331 "Anonymous" (931653120)
+00:55:57.990 --> 00:56:05.340
+And what is it in fireworks program for you?
+
+332 "Anonymous" (931653120)
+00:56:05.340 --> 00:56:14.970
+So, initially you will receive a report, detailing Pre, average text and potential box that you might encounter in the new release.
+
+333 "Anonymous" (931653120)
+00:56:14.970 --> 00:56:22.950
+And you will receive an active support during the maintenance Windows, either from Cisco partner, or secure view.
+
+334 "Anonymous" (931653120)
+00:56:22.950 --> 00:56:29.460
+And on top of that 5 days of a Hypercard after the upgrade.
+
+335 "Anonymous" (931653120)
+00:56:29.460 --> 00:56:37.830
+Just keeping in mind that the current program, eh, ends in July 2024.
+
+336 "Anonymous" (931653120)
+00:56:37.830 --> 00:56:48.990
+So a B, eh, here proactive and let us know if you are interested in the program immediately. So we can start the process.
+
+337 "Anonymous" (931653120)
+00:56:48.990 --> 00:56:53.550
+In preparation.
+
+338 "Anonymous" (931653120)
+00:56:53.550 --> 00:57:02.070
+So is the summary now. So, what are our key takeaways? 1st of all successful upgrades, required planning and preparation.
+
+339 "Anonymous" (931653120)
+00:57:02.070 --> 00:57:16.200
+You are upgrading your firewall goes beyond just boosting the security, right? So, it also enhances performance. It allows you to take advantage of the latest features at the same time.
+
+340 "Anonymous" (931653120)
+00:57:16.200 --> 00:57:23.220
+And remember about the software lifecycle as it acts as a guide for choosing the right version.
+
+341 "Anonymous" (931653120)
+00:57:23.220 --> 00:57:28.290
+All to actions, so start planning your upgrade.
+
+342 "Anonymous" (931653120)
+00:57:28.290 --> 00:57:33.840
+Don't let your fears over shadow real motivations.
+
+343 "Anonymous" (931653120)
+00:57:33.840 --> 00:57:38.250
+Adopted recommended best practices for this mover upgrade.
+
+344 "Anonymous" (931653120)
+00:57:38.250 --> 00:57:48.540
+And remember that the Cisco secure firewall software upgrade programs are here for you and so leverage them based on your convenience.
+
+345 "Anonymous" (931653120)
+00:57:48.540 --> 00:57:59.040
+Few years for links that we will share with this presentation for you. Uh, so leverage your help us. Well, leverage our help here.
+
+346 "Anonymous" (931653120)
+00:57:59.040 --> 00:58:05.340
+Eh, and with that, eh, here we are at the final slide.
+
+347 "Anonymous" (931653120)
+00:58:05.340 --> 00:58:12.750
+So, following the session, you will get a survey so please share your thoughts on the session.
+
+348 "Anonymous" (931653120)
+00:58:12.750 --> 00:58:32.070
+Let us know what we can do better in future Webinars and suggest any interesting topics you like to hear about from us. And with that, thank you. Everyone for attending. I hope that the session was informative and it's myself as a starting point to plan your upgrade.
+
+349 "Anonymous" (931653120)
+00:58:32.070 --> 00:58:37.560
+Thank you a lot.

@@ -1,0 +1,27 @@
+This is the document Transcript.txt
+
+WEBVTT
+
+7 "Anonymous" (931653120)
+00:01:39.270 --> 00:01:53.820
+During today's sessions, you will have the opportunity to ask questions so you can just utilize Q and a panel for that purpose. You will find it on the right hand side of your screen.
+
+8 "Anonymous" (931653120)
+00:01:53.820 --> 00:02:01.710
+If you are having any audio issues, please use the chat panel and 1 of our families will assist with that.
+
+9 "Anonymous" (931653120)
+00:02:01.710 --> 00:02:21.710
+And today's team, so me and we are presenters today. Additionally we have panelists heavier and Luka from customer success specialist, and our special guest from a product team.
+
+10 "Anonymous" (931653120)
+00:02:21.710 --> 00:02:38.610
+Daniella and this is the agenda for this session. So we will start with Cisco secure software life cycle and then we will tackle upgrade, planning and preparation.
+
+11 "Anonymous" (931653120)
+00:02:38.610 --> 00:02:52.260
+Next we will move to some key features, introducing secure firewall, version, 7, X and last, but not least we will share with you information about ongoing upgrade programs.
+
+12 "Anonymous" (931653120)
+00:02:52.260 --> 00:03:04.560
+So, our topic for today is about Cisco, secure firewall upgrades, but let's put firewalls aside for now. And let's tackle the upgrade part.
