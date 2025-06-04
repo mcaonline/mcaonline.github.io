@@ -1,6 +1,6 @@
 # Nanoleaf Essentials Home Assistant Integration
 
-A custom integration for Home Assistant specifically developed for Nanoleaf Essentials devices. This integration solves known issues with the standard Nanoleaf integration (including POST/GET API communication problems documented in [Home Assistant Core Issue #132084](https://github.com/home-assistant/core/issues/132084)) and provides a more stable connection to Essentials devices.
+A custom integration for Home Assistant specifically developed for Nanoleaf Essentials devices. This integration solves known issues with the standard Nanoleaf integration and provides a more stable connection to Essentials devices.
 
 ## 🌟 Features
 
@@ -10,9 +10,7 @@ A custom integration for Home Assistant specifically developed for Nanoleaf Esse
 - ✅ Effects support
 - ✅ Automatic device discovery
 - ✅ German and English translations
-- ✅ Robust API communication with HTML response handling
-- ✅ Compatible with all Home Assistant versions
-- ✅ Solves POST/GET issues with Essentials devices
+- ✅ Robust API communication
 - ✅ Simple setup process
 
 ## 📋 Requirements
@@ -73,12 +71,8 @@ Restart Home Assistant:
 
 ```bash
 cd /config/custom_components
-git clone https://github.com/yourusername/nanoleaf-essentials-hass.git nanoleaf_essentials
+git clone https://github.com/yourusername/nanoleaf-essentials.git nanoleaf_essentials
 ```
-
-### Method 3: HACS (when available)
-
-This integration will be submitted to HACS for easier installation and automatic updates.
 
 ## ⚙️ Configuration
 
@@ -93,7 +87,7 @@ This integration will be submitted to HACS for easier installation and automatic
 
 #### Step 1: Enter IP Address
 - Enter the IP address of your Nanoleaf Essentials device
-- Example: `10.80.23.56`
+- Example: `192.168.0.80`
 - The integration automatically tests the connection on port 16021
 
 #### Step 2: Enable API Access
@@ -103,7 +97,7 @@ After entering the IP, instructions will appear:
 1. Open the Nanoleaf App
 2. Go to `More` → `My Devices`
 3. Select your Essentials Light
-4. Make sure you are connected (e.g. via Bluetooth)
+4. Make sure you are connected (e.g. APP via Bluetooth or IP)
 5. Tap the **three dots** (⋮)
 6. Select `Preferences`
 7. Tap `Connect to the API`
@@ -161,7 +155,7 @@ automation:
 #### "Cannot connect" error
 - ✅ Check the device's IP address
 - ✅ Ensure port 16021 is reachable
-- ✅ Verify the device is on the same network
+- ✅ Verify the device is reachable via ip / network
 
 #### "Timeout" during API setup
 - ✅ API access enabled in the app within 30 seconds?
@@ -203,26 +197,11 @@ curl -X PUT http://[IP]:16021/api/v1/[API_KEY]/state \
   -d '{"on":{"value":true}}'
 ```
 
-### Known Issues & Solutions
-
-#### JSON Parsing Errors
-The integration handles cases where Nanoleaf devices return HTML responses instead of pure JSON. This commonly occurs when:
-- Device is not in API pairing mode
-- Network connectivity issues
-- Device firmware differences
-
-**Solution**: The integration automatically extracts JSON from HTML responses using the same approach as the original MicroPython implementation.
-
-#### Import Errors in Older HA Versions
-If you see `ImportError: cannot import name 'color_rgb_to_hsv'`, this is due to changes in Home Assistant's color utility functions.
-
-**Solution**: The integration includes its own RGB↔HSV conversion functions for compatibility across all Home Assistant versions.
-
 ## 📊 Supported Devices
 
 This integration has been tested with:
-- ✅ Nanoleaf Essentials A19 Bulb
-- ✅ Nanoleaf Essentials Lightstrip
+- ✅ Nanoleaf Essentials Lightstrip HD (NL72K1) via IP Connectivity (WLAN)
+
 
 *Other Essentials devices should also work.*
 
@@ -268,9 +247,7 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 - Based on the official Nanoleaf integration
 - Inspired by community feedback on Essentials issues
-- Solves POST/GET API problems referenced in [HA Core Issue #132084](https://github.com/home-assistant/core/issues/132084)
-- Uses proven MicroPython-based API communication approach
-- Thanks to all beta testers and the Home Assistant community
+- Thanks to all beta testers
 
 ## 📚 Additional Resources
 
