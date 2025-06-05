@@ -1,0 +1,9 @@
+Hello, ahh uhh my name is Alicia García Sastre and I am a Customer Success Specialist focusing on ISE. Today, we are going to talk about how to install ISE on Azure and we will do this through the GUI through Azure Portal. We will go quickly over the platforms that ISE can be installed on and then a live demo to show you the installation and we will finish it up with some best practISEs and known limitations.
+
+ISE bähh nodes can be run in a variety of platforms including physical appliances, virtual machines and also public cloud instances. You can mix and match these instance types and have nodes installed in different platforms in your deployment and also have, of course, different sizes for your nodes. Hence, you could have, for example, a hybrid deployment with some nodes on-prem and some nodes in Azure, for example.
+
+And it is possible to install ISE on Azure platform since ISE 3.2 version. What are some of the benefits of installing ISE on the cloud and more specifically on Azure? First of all, you gain flexibility. You can maintain critical functions on-prem while centralizing administration in the cloud and also give you a great opportunity to scale if you need to increase your deployment.
+
+Regarding DevOps, you will be able to use zero-touch provisioning and automated orchestration through APIs. You will be able to enable access for users, devices and manage it from anywhere within any consoles through APIs. So now let's dive into the demo on how to install ISE on Azure.
+
+

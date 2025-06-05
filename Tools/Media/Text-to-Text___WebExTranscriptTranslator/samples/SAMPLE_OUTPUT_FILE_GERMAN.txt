@@ -1,0 +1,563 @@
+00:00:04.435 --> 00:04:12.990
+**Leitfaden zur Aktualisierung der Cisco Secure Firewall**
+
+**Willkommen und Einführung**
+
+Hallo zusammen, vielen Dank, dass Sie an dieser Sitzung teilnehmen. Mein Name ist [Name] und heute werden wir zusammen mit meinen Kollegen das Thema der Aktualisierung von Cisco Secure Firewalls behandeln.
+
+**Überblick über die Cisco Customer Success Organization**
+
+Bevor wir in das Hauptthema eintauchen, möchte ich einige wichtige Punkte über die Cisco Customer Success Organization vorstellen. Diese Organisation ist darauf spezialisiert, unsere Kunden während ihrer Reise zur Einführung von Cisco-Produkten zu unterstützen. Wenn ich von Einführung spreche, meine ich sicherzustellen, dass unsere Kunden das Beste aus den Funktionen ihrer Cisco-Geräte herausholen.
+
+Mein Kollege [Name] und ich sind Customer Success Specialists mit einem Fokus auf Sicherheit. In unseren Rollen bieten wir verschiedene Formen der Unterstützung an, einschließlich individueller Einführungskonsultationen und Beschleunigern, die Einzelgespräche sind. Wir führen auch Webinare und "Ask the Expert"-Sitzungen durch, die ein-zu-viele-Sitzungen sind. Eines unserer beliebtesten Angebote für Sicherheit ist der Gesundheitscheck, der die Bewertung der aktuellen Konfigurationen beinhaltet, um sicherzustellen, dass sie den Best Practices entsprechen.
+
+**Logistik**
+
+Bevor wir zur eigentlichen Präsentation kommen, möchte ich einige logistische Themen ansprechen:
+
+- Während der heutigen Sitzung haben Sie die Möglichkeit, Fragen zu stellen. Sie können dafür das Q&A-Panel verwenden, das Sie auf der rechten Seite Ihres Bildschirms finden.
+- Wenn Sie Audioprobleme haben, nutzen Sie bitte das Chat-Panel, und ein Teammitglied wird Ihnen weiterhelfen.
+
+**Referenten und Panelisten**
+
+Die heutigen Referenten sind [Ihr Name] und [Anderer Referent]. Zusätzlich haben wir die Panelisten [Name] und [Name], beide Customer Success Specialists, und unseren besonderen Gast aus dem Produktteam, Daniella.
+
+**Agenda für die Sitzung**
+
+Die Agenda für diese Sitzung lautet:
+
+1. **Cisco Secure Software Life Cycle**
+2. **Planung und Vorbereitung der Aktualisierung**
+3. **Hauptmerkmale der Secure Firewall Version 7.X**
+4. **Laufende Upgrade-Programme**
+
+**Einführung in Cisco Secure Firewall Upgrades**
+
+Unser heutiges Thema sind die Cisco Secure Firewall Upgrades. Lassen Sie uns jedoch zunächst das Thema Firewall beiseite legen und die Aktualisierungen im Allgemeinen betrachten. In der Tech-Welt ändert sich ständig etwas, und wir müssen akzeptieren, dass das Aktualisieren unserer Software Teil des Prozesses ist. Früher oder später müssen wir alle den Upgrade-Button drücken, der auf unseren Bildschirmen auftaucht.
+
+Das Upgrade von Firewalls oder anderen Geräten dreht sich nicht nur darum, mit neuen technischen Funktionen Schritt zu halten. Durch das Upgrade unserer Software verbessern wir die Leistung, indem wir mehr Funktionen, bessere Sicherheit und eine insgesamt reibungslosere Erfahrung bieten.
+
+**Häufige Bedenken**
+
+Das Customer Success Team hat an zahlreichen Gesprächen über Firewall-Upgrades teilgenommen, und wir verstehen, dass es häufige Bedenken gibt. Hier sind einige der typischen Sorgen:
+
+1. Angst vor Unterbrechungen
+
+Lassen Sie uns diese Bedenken zusammen mit Best Practices ansprechen, um ein reibungsloses und erfolgreiches Upgrade zu gewährleisten. Während der Sitzung können Sie jederzeit Fragen stellen, und wir werden unser Bestes tun, um umfassende Antworten zu geben.
+
+Lassen Sie uns beginnen!
+
+
+
+00:04:12.990 --> 00:07:49.649
+## Leitfaden zur Aktualisierung Ihrer Firewall
+
+### Bedenken und Herausforderungen
+
+1. **Angst vor Ausfallzeit und Unterbrechung**: Das Aktualisieren einer Firewall kann potenziell Ausfallzeiten oder Ablenkungen im Netzwerk oder System verursachen, was die täglichen Betriebsabläufe beeinträchtigen kann. Diese Angst wird verstärkt, wenn es bei früheren Aktualisierungen Herausforderungen gab.
+
+2. **Negative Erfahrungen in der Vergangenheit**: Wenn Benutzer oder Organisationen negative Erfahrungen mit früheren Firewall-Aktualisierungen gemacht haben, könnten sie zögern, den Prozess erneut durchzuführen. Frühere Probleme wie unerwartete Schwierigkeiten, Kompatibilitätsprobleme oder Unterbrechungen tragen zu diesem Zögern bei.
+
+3. **Übermäßiges Vertrauen in bestehende Setups**: Es kann der Glaube bestehen, dass die bestehende Firewall und ihre Software ausreichen, um die Organisation zu schützen, wobei die sich entwickelnde Natur von Cyber-Bedrohungen unterschätzt wird.
+
+4. **Wahrnehmung der Komplexität**: Das Aktualisieren einer Firewall kann als komplexe Aufgabe erscheinen, insbesondere für Einzelpersonen oder Organisationen mit begrenzter technischer Expertise.
+
+5. **Zeitmangel und Kompatibilitätsbedenken**: Mangelnde Zeit und Bedenken hinsichtlich der Kompatibilität können die Entscheidung zur Aktualisierung ebenfalls behindern.
+
+### Motivationen zur Aktualisierung
+
+1. **Verbesserte Leistung**: Firewall-Updates beinhalten oft Optimierungen, die die Softwareleistung verbessern, was zu schnelleren Reaktionszeiten und effizienterer Nutzung der Systemressourcen führt.
+
+2. **Vorsorge gegen Exploits**: Hacker suchen kontinuierlich nach Schwachstellen in Software. Durch das Aktualisieren Ihrer Firewall verringern Sie das Risiko eines erfolgreichen Angriffs. Updates beinhalten häufig Patches für entdeckte Sicherheitslücken.
+
+3. **Zugang zu neuen Funktionen**: Firewall-Updates können neue Funktionen oder Einstellungen enthalten, die die Sicherheit verbessern und eine zusätzliche Kontrolle über den Netzwerkverkehr sowie ein besseres Gesamterlebnis bieten.
+
+4. **Unterstützung durch den Anbieter**: Die Verwendung veralteter Software könnte Sie für Unterstützung durch den Anbieter unberechtigt machen. Beispielsweise bietet Cisco Support für seine Sicherheits-Firewall-Software für eine definierte Dauer nach deren Veröffentlichung.
+
+### Schlussfolgerung
+
+Das Verständnis sowohl der Bedenken als auch der Motivationen im Zusammenhang mit Firewall-Aktualisierungen kann dabei helfen, fundierte Entscheidungen zu treffen. Während Bedenken hinsichtlich Unterbrechungen und negativer Erfahrungen in der Vergangenheit berechtigt sind, überwiegen oft die Vorteile verbesserter Leistung, Sicherheit und Unterstützung die Herausforderungen.
+
+
+
+00:07:49.649 --> 00:10:23.399
+## Leitfaden: Verständnis des Lebenszyklus und der Versionierung von Cisco Secure Firewall
+
+### Einführung
+Das primäre Ziel des Entscheidungsträger- und Kundenbindungsteam ist es, sicherzustellen, dass Ihre Motivationen etwaige Bedenken überwiegen. Dieser Leitfaden wird Ihnen helfen, den Lebenszyklus der Cisco Secure Firewall und die Bedeutung der Nummerierung von Firewall-Releases zu verstehen.
+
+### Überblick über das Versionierungssystem
+Das Nummerierungssystem für Firewall-Releases soll die Art und den Umfang der durchgeführten Änderungen in der Software vermitteln. Jede Ziffer in der Versionsnummer repräsentiert bestimmte Arten von Updates oder Modifikationen.
+
+#### Beispiel: Secure Firewall Version 7.2.5.1
+- **Hauptversion (Erste Ziffer)**: Diese Ziffer bezeichnet eine Hauptversion, die signifikante Änderungen in der Softwarearchitektur beinhaltet. Zum Beispiel repräsentiert in Version 7.x die Einführung von Snort 3 eine solche wesentliche architektonische Änderung.
+  
+- **Nebenversion (Zweite Ziffer)**: Diese zeigt eine Nebenversion an, die neue Funktionen einführt.
+  
+- **Wartungsversion (Dritte Ziffer)**: Diese Ziffer bezieht sich auf eine Wartungsversion, die sich hauptsächlich auf Fehlerbehebungen konzentriert.
+  
+- **Spezifischer Build (Vierte Ziffer)**: Diese steht für einen Teil-Build, der spezifische kritische Probleme adressiert.
+
+### Kategorien von Releases
+Nebenversionen (zweite Ziffer) werden weiter kategorisiert in:
+
+- **Langfristige und extra langfristige Releases**: Diese Versionen haben eine gerade Zahl in der zweiten Ziffer (z. B. 2, 4, 6).
+  
+- **Kurzfristige Releases**: Diese Versionen haben eine ungerade Zahl in der zweiten Ziffer (z. B. 3, 5, 7).
+
+### Unterscheidungen der Versionstypen
+- **Langfristige und extra langfristige Versionen (Gerade Zahlen)**: Zum Beispiel kann Version 7.2.5.1 als langfristiges Release identifiziert werden, da die zweite Ziffer 2 ist, was eine gerade Zahl ist.
+
+Mit diesem Leitfaden können Sie leicht die Bedeutung hinter den Versionsnummern der Cisco Secure Firewall Releases verstehen und identifizieren, was Ihre Entscheidungsfindung erleichtert und den Erfolg der Kunden sicherstellt.
+
+
+
+00:10:23.399 --> 00:13:35.459
+### Unterschiede zwischen Software-Releases
+
+#### 1. Überblick über die Unterstützungsdauer
+
+Die Hauptunterschiede zwischen Software-Releases liegen in der Unterstützungsdauer. Ein Langzeit-Release findet einen Ausgleich zwischen Unterstützungszeit und neuen Funktionen, während ein Extra-Langzeit-Release speziell für Regierungszertifizierungen gewählt wird und die längsten Unterstützungsdauern bietet. Andererseits ist ein Kurzzeit-Release die optimale Wahl, wenn man die neuesten Features erhalten möchte.
+
+#### 2. Unterschiede zwischen Langzeit- und Extra-Langzeit-Releases
+
+Sowohl Langzeit- als auch Extra-Langzeit-Releases haben gerade Zahlen im zweiten Detail. Hierbei ist der Software-Release-Zeitplan nützlich. Eine neue Hauptversion wird typischerweise etwa alle sechs Monate veröffentlicht, wobei einem bestimmten Muster gefolgt wird.
+
+#### 3. Beispielzeitplan
+
+Zur Verdeutlichung betrachten wir die folgenden Versionen:
+
+- **Version 7.0**: Dies ist ein Extra-Langzeit-Release. Das vorherige Extra-Langzeit-Release in der 6.x-Serie war 6.4. Da diese Version für Regierungszertifizierungen ausgewählt wurde, erstreckt sich der Software-Wartungszeitraum, in dem sich Entwickler auf Fehlerbehebungen konzentrieren, auf 51 Monate. Zusätzlich gibt es eine 12-monatige erweiterte Unterstützung.
+  
+- **Version 7.1**: Dies ist ein Kurzzeit-Release mit einem 18-monatigen Software-Wartungszeitraum und der gleichen 12-monatigen erweiterten Unterstützung.
+  
+- **Version 7.2**: Dies ist ein Langzeit-Release mit einem 36-monatigen Wartungszeitraum und 12 Monaten erweiterter Unterstützung.
+  
+- **Version 7.3**: Da es sich um eine ungerade Zahl im zweiten Detail handelt, ist dies ein Kurzzeit-Release mit einem 18-monatigen Software-Wartungszeitraum und 12 Monaten erweiterter Unterstützung.
+  
+- **Version 7.4**: Dies ist das neueste Release, das für eine Extra-Langzeitunterstützung ausgewählt wurde und 51 Monate Software-Wartung und 12 Monate erweiterte Unterstützung bietet.
+
+#### 4. Zusammenfassung
+
+Zusammenfassend haben wir die Unterschiede zwischen den Releases basierend auf ihrer Unterstützungsdauer besprochen und uns auf Extra-Langzeit-, Langzeit- und Kurzzeit-Releases sowie den Software-Release-Zeitplan konzentriert.
+
+
+
+00:13:35.459 --> 00:16:49.109
+Bei der Auswahl einer Version gibt es mehrere Faktoren zu berücksichtigen. Es mag komplex erscheinen, aber wir möchten den Prozess vereinfachen. Es ist wichtig, den Lebenszyklus der Software Ihrer Anbieter im Auge zu behalten, insbesondere wenn Sie verschiedene Geräte von unterschiedlichen Quellen verwalten. Hier kommt unser vorgeschlagenes Release-Konzept ins Spiel.
+
+Das vorgeschlagene Release wird basierend auf der Softwarequalität und -stabilität ausgewählt, wobei Faktoren wie die Anzahl der gemeldeten Fehler in einer bestimmten Version und deren Langlebigkeit berücksichtigt werden. Dies stellt sicher, dass das ausgewählte Release immer ein langfristiges ist, da kurzfristige Releases niemals für den vorgeschlagenen Status gewählt werden.
+
+Derzeit ist Version 7.2.5.1 das vorgeschlagene Release für Cisco Secure Firewalls. Das Upgrade auf diese Version bietet eine ausgewogene Mischung aus Funktionen und verbesserter Stabilität. Unser Entwicklerteam hat beträchtliche Anstrengungen unternommen, um sowohl bekannte als auch potenzielle Probleme in dieser Version zu lösen, was zu der Bereitstellung hochwertiger Software führt. Darüber hinaus wird das Upgrade auf Version 7.2.5 Ihr Firewall-Produkterlebnis verbessern, die Produktleistung steigern und Zugang zu neuen Funktionen bieten.
+
+Für Highlights der Version 7.4, die bereits für sowohl FMC als auch FTD verfügbar ist, werden wir ein zusätzliches Webinar durchführen. Bleiben Sie auf dem Laufenden für Updates, wann diese Version zur vorgeschlagenen Version wird. Während des Webinars werden wir die wichtigsten Funktionen vorstellen, die für Version 7 vorgesehen sind.
+
+Bitte melden Sie sich mit der bereitgestellten URL oder dem Webex-Link an und lassen Sie uns wissen, welche Firewall-Versionen Sie derzeit verwenden. Sie können mehr als eine Option auswählen. Nehmen Sie sich einen Moment Zeit, um zu antworten, und wir leiten die Präsentation an den nächsten Abschnitt weiter.
+
+Vielen Dank, Eva. Wir geben allen noch 10 Sekunden Zeit, um den Code zu scannen, bevor wir mit dem Hauptthema beginnen.
+
+
+
+00:16:56.249 --> 00:20:03.089
+Leitfaden zu Erfolgreicher Zusammenarbeit und Durchführung eines Upgrades
+
+Einführung
+Dieser Leitfaden skizziert die wichtigsten Schritte, die notwendig sind, um erfolgreich bei einem Upgrade eines Netzgeräts zusammenzuarbeiten und dieses durchzuführen. Der Prozess umfasst die Planung, die Kompatibilitätsprüfung und die Durchführung des Upgrades.
+
+Schritte zur Erfolgreichen Zusammenarbeit und zum Upgrade
+
+1. Planung:
+   - Identifizieren Sie die Geräte in Ihrem Netzwerk.
+   - Bestimmen Sie die Dateitypen und Konfigurationen, die in Ihrem Netzwerk vorhanden sind.
+   - Überprüfen Sie, ob die Geräte in der Umgebung betriebsbereit sind oder ob im Voraus Probleme behoben werden müssen.
+   - Überprüfen Sie die Version der Software, die derzeit auf Ihren Geräten läuft.
+   - Entscheiden Sie, ob die Geräte eigenständig, Teil einer Hochverfügbarkeitskonfiguration oder eines Clusters sind.
+
+2. Durchführung eines Upgrades:
+   - Identifizieren Sie die aktuelle Version Ihrer Software und die Zielversion. In diesem Leitfaden werden wir von Version 6.6 auf 7.2.5 upgraden.
+   - Stellen Sie sicher, dass alle Voraussetzungen und Bedingungen für das Upgrade erfüllt sind.
+
+3. Anzeige und Übersicht:
+   - Teilen Sie Ihren Bildschirm, um den Prozess zu veranschaulichen. Bestätigen Sie, dass die Zuschauer Ihren Bildschirm sehen können, bevor Sie fortfahren.
+
+4. Wichtige Überlegungen:
+   - Verweisen Sie auf die Kompatibilitätsmatrix: Diese Matrix bestimmt die Kompatibilität der Geräte mit der Zielversion des Upgrades. Sie gilt sowohl für das World Management Center (FMC) als auch für die Firewall Threat Defense (FTD).
+   - Stellen Sie sicher, dass alle Geräte und Versionen in der Kompatibilitätsmatrix aufgeführt sind.
+
+5. Überprüfung:
+   - Überprüfen Sie, ob die Hardware- oder virtuellen Geräte in Ihrer Umgebung mit der Zielversion der Software kompatibel sind.
+   - Überprüfen Sie in diesem Beispiel, ob Ihre Firewall- oder FMC-Hardware/virtuelles Gerät mit Version 7.2 kompatibel ist, bevor Sie fortfahren.
+
+6. Praktisches Beispiel:
+   - In diesem spezifischen Leitfaden wird der Prozess mithilfe eines virtuellen Geräts für das Upgrade demonstriert.
+   - Stellen Sie sicher, dass Sie alle relevanten Details zu Ihren Geräten überprüfen, wie z.B. die Hardware-Bereitschaft für die Zielversion.
+
+Fazit
+Indem Sie diese beschriebenen Schritte befolgen, können Sie ein Software-Upgrade erfolgreich planen und durchführen und dabei die Kompatibilität und Betriebsbereitschaft der Netzwerkgeräte sicherstellen. Nutzen Sie Ressourcen wie die Kompatibilitätsmatrix und die Gerätedokumentation, um alle notwendigen Voraussetzungen zu überprüfen.
+
+
+
+00:20:03.089 --> 00:23:34.049
+## Wie Sie Ihre Virtualisierungsplattform aktualisieren
+
+### Schritt 1: Kompatibilität überprüfen
+
+Stellen Sie zuerst sicher, dass Ihre Virtualisierungsplattform, wie HyperFlex, mit dem Update kompatibel ist. In diesem Beispiel verwenden wir die Version 7:7:00. Bestätigen Sie, dass Ihr Gerät ohne Probleme auf Version 7.2 aktualisiert werden kann. Konsultieren Sie die Dokumentation, um zu überprüfen, dass Ihr Gerät die neue Version unterstützt.
+
+### Schritt 2: Vorbereitung auf das Upgrade
+
+Verstehen Sie, dass Ihr Gerät anfänglich möglicherweise nur die Verwaltung bestimmter Versionen unterstützt. In unserem Fall ist die älteste Version, die das Gerät unterstützen kann, 6. Stellen Sie sicher, dass Ihr Gerät den Übergang von früheren Versionen wie 6.2 oder 6.1 zur unterstützten Version vollziehen kann. Diese Vorbereitung beinhaltet die Planung eines ordnungsgemäßen Upgrade-Pfads, um die gewünschte Version zu erreichen.
+
+### Schritt 3: Hardware-Informationen sammeln
+
+Sammeln Sie Informationen über Ihre Hardware. Beziehen Sie sich auf eine Tabelle, die angibt, welche Geräte auf Versionen 7.2 oder 7.3, abhängig von der aktuellen Version, aktualisiert werden können. Stellen Sie sicher, dass Ihre Umgebung—ob WSS, Assurance, Oracle Cloud Infrastructure oder eine lokale Lösung—unterstützt wird.
+
+### Schritt 4: Dokumentation und Planung
+
+Erstellen Sie einen detaillierten Upgrade-Plan anhand der zugehörigen Dokumentation. Dieser Plan sollte Folgendes umfassen:
+
+1. Die neuen Funktionen, die in der Version eingeführt wurden.
+2. Behobene Fehler.
+3. Aufgaben und sensible Aktionen, die nach dem Upgrade erforderlich sind.
+
+### Schritt 5: Vorbereitende Aufgaben
+
+Lesen Sie sich vor dem Upgrade auf Version 7.2 sorgfältig die Notizen zur neuen Version durch. Heben Sie wichtige Aspekte wie neue Funktionen und Fehlerbehebungen hervor. Verstehen Sie die nach dem Upgrade erforderlichen Aufgaben, um sich auf mögliche Fehlersuche oder erforderliche Maßnahmen vorzubereiten.
+
+### Schritt 6: Upgrade ausführen
+
+Befolgen Sie für dieses Beispiel diese Schritte:
+
+1. Aktualisieren Sie zuerst das FMC (Firepower Management Center).
+2. Wenn Sie eine Episode haben, fahren Sie mit deren Upgrade fort.
+3. Aktualisieren Sie schließlich das FTD (Firepower Threat Defense).
+
+In dieser Demo werden wir nur das FMC upgraden.
+
+Durch das Befolgen dieser Schritte stellen Sie sicher, dass das Upgrade Ihrer Virtualisierungsplattform reibungslos und erfolgreich verläuft.
+
+
+
+00:23:34.049 --> 00:27:22.889
+## Wie man Geräte mit hoher Verfügbarkeit aktualisiert
+
+### Schritte zum Aktualisieren der Geräte:
+
+1. **Vorbereitung:**
+   - Stellen Sie vor dem Upgrade sicher, dass Sie die erforderlichen Image-Dateien von der offiziellen Cisco-Website (software.cisco.com) heruntergeladen haben.
+   - Verwenden Sie entweder die Suchleiste oder die Browsing-Option auf der Website, um die richtige Softwareversion zu finden.
+
+2. **Herunterladen des Images:**
+   - Identifizieren Sie die spezifische Version, die Sie benötigen. Für diesen Leitfaden ist es die Version 7.2.
+   - Cisco empfiehlt oft bestimmte Versionen, die mit einem goldenen Stern markiert sind.
+   - Stellen Sie sicher, dass Sie das vollständige Image-Paket und nicht nur den Patch herunterladen, besonders wenn Sie von einer Hauptversion zu einer anderen wechseln.
+
+3. **Akzeptanz und Navigation:**
+   - Akzeptieren Sie das Lizenzabkommen für die Software.
+   - Kehren Sie nach dem Herunterladen zum Hauptmenü zurück und navigieren Sie zum spezifischen Bereich für Firewalls, um den Prozess zu beschleunigen.
+
+4. **Doppelte Überprüfung des Pakets:**
+   - Überprüfen Sie, ob Sie das richtige Paket für Ihre Bedürfnisse haben (z.B. 7.2.5 Hybridpaket).
+
+5. **Hochladen des Images:**
+   - Sie können das Image direkt über die Benutzeroberfläche oder aus einem Repository hochladen.
+   - Für Repository-Uploads stellen Sie sicher, dass es korrekt eingerichtet ist. In diesem Leitfaden demonstrieren wir das direkte Hochladen über die Benutzeroberfläche.
+
+6. **Anmeldung beim FMC:**
+   - Greifen Sie auf das FMC-System zu und navigieren Sie zu den Einstellungen.
+   - Suchen Sie den Bereich, in dem Dateien hochgeladen werden können.
+
+7. **Hochladen der Dateien:**
+   - Laden Sie beide erforderlichen Dateien hoch: eine für den Sensor und eine für den FTD (Firepower Threat Defense).
+   - Stellen Sie sicher, dass die richtigen Dateien hochgeladen werden, indem Sie ihre Pfade und Versionen doppelt überprüfen.
+
+8. **Bestätigung des Uploads:**
+   - Bestätigen Sie den erfolgreichen Upload der Dateien über die Benutzeroberfläche.
+   - Überprüfen Sie, ob die hochgeladenen Versionen korrekt sind.
+
+Durch Befolgen dieser Schritte können Sie den Aktualisierungsprozess für Geräte mit hoher Verfügbarkeit reibungslos durchführen, Ausfallzeiten minimieren und potenzielle Fehler vermeiden.
+
+
+
+00:27:22.889 --> 00:30:31.619
+**Leitfaden zum Herunterladen, Hochladen und Aktualisieren von Paketen**
+
+**Schritt-für-Schritt-Anleitung:**
+
+**1. Vorbereitende Aufgaben:**
+   - Überprüfen Sie den ausreichend verfügbaren Speicherplatz für das Upgrade-Verfahren.
+   - Navigieren Sie zum relevanten Gerätepfad, um den verfügbaren Speicherplatz zu überprüfen. Stellen Sie sicher, dass genügend Platz für das Upgrade vorhanden ist.
+
+**2. Datensicherung:**
+   - Gehen Sie zum Einstellungsmenü und wählen Sie die Backup-Option aus.
+   - Es stehen Ihnen zwei Auswahlmöglichkeiten zur Verfügung: eine für FMC und eine für das Mac-Gerät oder FTD.
+   - Benennen Sie Ihr Backup und wählen Sie die spezifischen Daten aus, die Sie sichern möchten.
+   - Die Dauer des Backup-Prozesses hängt von der Datenmenge/Ereignissen in der Datenbank ab.
+   - Sie können den Fortschritt im Task Center oder Message Center überwachen, das die verstrichene Zeit und die Gesamtdauer des Backup-Prozesses anzeigt.
+
+**3. Überprüfung der Gerätebereitschaft:**
+   - Stellen Sie sicher, dass das FMC für das Upgrade vorbereitet ist, indem Sie das entsprechende Gerät auswählen.
+   - Führen Sie eine Bereitstellungsprüfung durch, indem Sie auf das angegebene Symbol oder den Uninstall-Link klicken.
+   - Wählen Sie das Gerät aus und starten Sie die Bereitstellungsprüfung, die die aktuellen und Zielversionen anzeigt.
+   - Die Bereitstellungsprüfung führt Skripts aus, um die Gerätekompatibilität und -bereitschaft für das Upgrade zu überprüfen.
+
+**4. Durchführung des Upgrades:**
+   - Sobald die Bereitstellungsprüfung Erfolg anzeigt, fahren Sie mit dem Upgrade fort.
+   - Klicken Sie auf die Install-Taste, um den Upgrade-Prozess zu starten.
+   - Beachten Sie, dass dieser Prozess einen Neustart erfordert. Bestätigen Sie die auf dem Bildschirm angezeigten Neustartinformationen.
+
+Durch Befolgung dieser Schritte wird Ihr Gerät erfolgreich aktualisiert und für zukünftige Aufgaben bereit sein.
+
+
+
+00:30:31.619 --> 00:34:07.169
+1. **Neustarten des Geräts**
+   - Beginnen Sie den Prozess und Sie werden eine Benachrichtigung sehen, die anzeigt, dass eine Aufgabe in Arbeit ist.
+   - Das Gerät könnte Sie anschließend aus der Sitzung abmelden, da es in den Wartungsmodus wechselt. Das ist normal, also machen Sie sich keine Sorgen.
+   - Melden Sie sich erneut an, wenn Sie dazu aufgefordert werden, mit Ihren Anmeldedaten.
+
+2. **Überwachung des Upgrade-Fortschritts**
+   - Nach dem erneuten Einloggen überwachen Sie den Upgrade-Fortschritt.
+   - Überprüfen Sie die Statusleiste, um Details wie:
+     - Die aktuelle Version und die Version, auf die aktualisiert wird.
+     - Die verstrichene Zeit seit Beginn des Upgrades.
+     - Die geschätzte verbleibende Zeit.
+     - Bildschirme, die Echtzeit-Upgrade-Prozesse anzeigen.
+
+3. **Erwartungen für FMC**
+   - Nach dem Upgrade könnte das Gerät einige Zeit benötigen, um neu zu starten, da Dienste, einschließlich der Datenbank, initialisiert werden müssen.
+   - Die Dauer variiert je nach Datenmenge, die das FMC verarbeitet.
+
+4. **Abschließen der Anmeldung**
+   - Nach dem Neustart erscheint die Hauptanmeldeseite erneut.
+   - Melden Sie sich erneut an.
+   - Ein Endbenutzer-Lizenzvertrag wird angezeigt. Akzeptieren Sie diesen Vertrag, um fortzufahren.
+
+5. **Upgrade-Verifizierung**
+   - Überprüfen Sie nach dem Upgrade auf etwaige Warnungen. Einige Warnungen können erscheinen, weil das Gerät neu gestartet wurde und vorübergehend keinen Herzschlag vom FTD erhalten konnte.
+
+6. **Fortsetzung des FTD-Upgrades**
+   - Überprüfen Sie den Status des Geräts nach dem Upgrade. Stellen Sie sicher, dass alles ordnungsgemäß funktioniert, indem Sie überprüfen, dass alle Statusanzeigen grün sind.
+
+7. **Vorbereitung auf das FTD-Upgrade**
+   - Überprüfen Sie die Gesundheit der FTD und FMC.
+   - Navigieren Sie zu den Einstellungen, um die Vorbereitung für das Upgrade abzuschließen.
+   - Bestätigen Sie, dass beide FTD-Geräte laufen und identifizieren Sie deren aktuelle Versionen (z.B. Version 1 bis Version 75).
+
+8. **Vor-Upgrade-Überprüfungen**
+   - Stellen Sie sicher, dass die notwendigen Abbilddateien hochgeladen wurden, da dies in einem vorherigen Schritt erfolgt sein sollte.
+   - Überprüfen Sie den verfügbaren Speicherplatz, um sicherzustellen, dass genügend Platz für das Upgrade vorhanden ist. Überprüfen Sie dies auf der '/var'-Partition oder anderen relevanten Partitionen.
+
+Diese Anleitung dient als umfassendes Handbuch zur Durchführung eines Geräte-Upgrades, einschließlich aller notwendigen Vorüberprüfungen und Nach-Upgrade-Verifizierungen.
+
+
+
+00:34:07.169 --> 00:38:27.510
+### So aktualisieren Sie Geräte erfolgreich mit FMC und FTD
+
+#### Schritt 1: Vorbereitung der Geräte
+1. Stellen Sie sicher, dass Sie die Geräte einzeln hochladen, wenn Sie mehrere Geräte verwalten.
+2. Laden Sie die erforderlichen Images auf das FMC hoch.
+3. Übertragen Sie die Images vom FMC auf das FTD.
+
+#### Schritt 2: Aktualisierung der Geräte
+1. Navigieren Sie zu **Einstellungen > Updates** im FMC.
+2. Beachten Sie drei Symbole:
+   - Installieren
+   - Auf das Gerät übertragen
+   - Image löschen
+3. Überprüfen Sie das Image, das Sie aktualisieren möchten, und übertragen Sie es auf die Geräte.
+4. Überwachen Sie den Fortschritt und den Status der Aufgabe über das FMC.
+
+#### Schritt 3: Sicherungskopie erstellen
+1. Es wird dringend empfohlen, vor dem Fortfahren eine Sicherungskopie zu erstellen.
+2. Wählen Sie die Geräte aus, von denen Sie eine Sicherungskopie erstellen möchten.
+3. Abrufen der Sicherungsdatei in das Management Center oder Ihr eigenes Speicher-Repository.
+4. Stellen Sie sicher, dass der Sicherungsvorgang abgeschlossen ist.
+
+#### Schritt 4: Überprüfung der Bereitschaft
+1. Führen Sie eine Bereitschaftsprüfung durch, um sicherzustellen, dass die Geräte für das Upgrade bereit sind.
+2. Ab Version 7 ist die Bereitschaftsprüfungsfunktion für FTD verfügbar.
+3. Überwachen Sie den Fortschritt und stellen Sie sicher, dass alle Geräte bereit sind.
+
+#### Schritt 5: Upgrade-Funktionen und Empfehlungen
+1. Beachten Sie drei neue Funktionen, die in Version 7 eingeführt wurden:
+   - Automatisches Abbrechen eines fehlgeschlagenen Upgrades und Rückkehr zur vorherigen Version.
+   - Ermöglichen des Zurücksetzens nach einem erfolgreichen Upgrade.
+   - Upgrade von Snort (Snort 3).
+2. Überprüfen Sie benutzerdefinierte Intrusionsrichtlinien oder -rollen, um sicherzustellen, dass sie vom Upgrade nicht betroffen sind.
+
+#### Schritt 6: Installation des Upgrades
+1. Wählen Sie die Geräte aus und klicken Sie auf **Installieren**.
+2. Bestätigen Sie, dass das Image erfolgreich auf die Geräte geladen wurde (angezeigt durch einen grünen Pfeil).
+3. Bestätigen Sie, um den Installationsvorgang fortzusetzen.
+
+Durch die Einhaltung dieser Schritte können Sie ein reibungsloses und erfolgreiches Geräte-Upgrade mit FMC und FTD sicherstellen.
+
+
+
+00:38:27.510 --> 00:41:30.180
+Der Upgrade-Prozess beginnt mit der Standby-Einheit, in diesem Fall speziell FTD Nummer 2. Das Upgrade wird gestartet, sobald die Standby-Einheit die erforderlichen Aufgaben verarbeitet hat. Sobald alle Überprüfungen bestanden sind, übernimmt diese Einheit die primäre Rolle. Sobald die aktive Einheit das Upgrade startet, wird FTD Nummer 2 in seinen aktualisierten Zustand übergehen.
+
+Überwachen Sie die Protokolle oder Statusinformationen, um den aktuellen Status des Upgrades zu sehen. Sobald das Upgrade auf FTD Nummer 2 abgeschlossen ist, wird das System das Upgrade auf FTD Nummer 1 initiieren. Dieser Prozess kann einige Minuten dauern. Während dieser Zeit wird FTD 2 zur aktiven Einheit, während FTD 1 das Upgrade durchführt und schließlich nach Abschluss die Standby-Rolle übernimmt.
+
+Sie können den Abschluss des Upgrades überprüfen, indem Sie zur Gerätemanagement-Navigation gehen. Dort sollten Sie FTD 2 als aktive Einheit und FTD 1 als Standby-Einheit finden. Alle angezeigten Warnungen beziehen sich wahrscheinlich auf den Aufzeichnungsprozess und sind nicht als Fehler zu verstehen.
+
+Sobald die Überprüfungen abgeschlossen sind, wird der Upgrade-Status bestätigt. Die FTD 2-Einheit sollte nun aktiv sein, während FTD 1 die Standby-Rolle übernimmt. Damit ist der Upgrade-Prozess für Ihre Geräte abgeschlossen.
+
+Als Nächstes werfen wir einen Blick auf die Funktionen und Verbesserungen des neuesten Updates. Bemerkenswert ist, dass die bisherige Begrenzung auf 550 Dateneinträge aufgehoben wurde. Diese Verbesserung erhöht die Gesamtfunktionalität und Leistungsfähigkeit des Systems, sodass mehr Daten effektiv verarbeitet werden können.
+
+
+
+00:41:30.180 --> 00:44:57.930
+### So aktualisieren Sie mehrere Geräte gleichzeitig
+
+**Bandbreitenüberlegungen**
+Wenn Sie planen, mehrere Geräte zu aktualisieren, sollten Sie die FNCC-Bandbreite berücksichtigen. Wenn Sie viele Geräte gleichzeitig aktualisieren möchten, können Sie entweder alle Geräte auswählen oder einen systematischen Plan zur Aktualisierung erstellen.
+
+**Aktualisierungsprozess**
+1. Starten Sie den Aktualisierungsprozess für alle ausgewählten Geräte.
+2. Folgen Sie den vorgegebenen Schritten.
+3. Beachten Sie, dass die FTD (Firepower Threat Defense)-Zeiten verkürzt werden, was eine parallele Verarbeitung ermöglicht und die Aktualisierungszeit erheblich verkürzt.
+
+**Bereitschaftsprüfung**
+Führen Sie vor dem Starten einer Aktualisierung eine durchschnittliche Bereitschaftsprüfung durch. Diese Vorabprüfung informiert Sie darüber, ob Sie mit der Aktualisierung beginnen können oder ob noch Voraussetzungen fehlen.
+
+**Rückgängigmachen von Aktualisierungen**
+Nach einer erfolgreichen Aktualisierung haben Sie die Möglichkeit, innerhalb von 30 Tagen auf eine vorherige Version zurückzukehren, falls erforderlich. Diese Funktion steht für Geräte auf der Verwaltungsseite zur Verfügung.
+
+**Bereitstellungsoptionen**
+Bei den Bereitstellungen haben Sie die Möglichkeit, die Art der Bereitstellung auszuwählen. Das könnte bedeuten, bestimmte Änderungen auszuwählen und zu entscheiden, wie sie angewendet werden. Beachten Sie, dass einige Optionen, wie z.B. VPN, für bestimmte Auswahlmöglichkeiten nicht verfügbar sind.
+
+**Änderungsverlauf und Vergleich**
+Neue Funktionen beinhalten die Möglichkeit, den Verlauf der an den Konfigurationen vorgenommenen Änderungen einzusehen. Änderungen sind farblich gekennzeichnet, um sie leicht zu identifizieren, und eine Legende erklärt, was jede Farbe darstellt. Zusätzlich können Sie Konfigurationen oder Versionen vergleichen und bei Bedarf auf die letzten 10 erfolgreichen Bereitstellungen zurückgreifen.
+
+Wenn Sie diesen Richtlinien folgen, können Sie mehrere Geräte effizient verwalten und aktualisieren, während Ausfallzeiten minimiert und die Systemstabilität gewährleistet werden.
+
+
+
+00:44:57.930 --> 00:47:27.300
+Leitfaden zu neuen Funktionen und Verbesserungen
+
+1. Rückverfolgbarkeit und Dokumentation von Rollbacks:
+Eine bedeutende Verbesserung ermöglicht es Ihnen nun, nachzuverfolgen und zu dokumentieren, wer einen Rollback initiiert hat. Dies umfasst Einsatznotizen und Zeitstempel, die ein umfassendes Protokoll der Rollback-Aktivitäten bieten.
+
+2. Auswahl mehrerer Geräte für Rollback-Operationen:
+Sie haben jetzt die Möglichkeit, ein oder mehrere Geräte für Rollback-Operationen auszuwählen. Darüber hinaus können Sie Einstellungen für automatisierte Rollbacks konfigurieren, was größere Kontrolle und Flexibilität im Rollback-Prozess bietet. Dieses Feature ist Teil des 7.1-Releases.
+
+3. Verbesserte Dashboards:
+Das Benutzererlebnis wurde durch die Einführung neuer und verbesserter Dashboards verbessert. Besonders hervorzuheben ist ein umfassendes Gesundheitsdashboard, das sowohl für aktive als auch für Standby-Einheiten der FMC verfügbar ist und eine detaillierte Ansicht der Systemgesundheit und -leistung bietet.
+
+4. Globale Suchfunktion:
+Eine globale Suchoption ist jetzt verfügbar, mit der Sie nach spezifischen Informationen wie ITRs suchen können. Diese Funktion ermöglicht eine schnelle und effiziente Datenabfrage, beispielsweise um festzustellen, ob ein bestimmtes Element verwendet wird oder mit einem bestimmten Host verbunden ist.
+
+Zusammenfassung der neuen Funktionen nach dem Upgrade:
+Eine Übersicht der wichtigsten Verbesserungen, die in den jüngsten Upgrades eingeführt wurden, ist enthalten. Für weitere Details zu zusätzlichen Funktionen und Verbesserungen wird Anita die Diskussion fortsetzen.
+
+(Hinweis: Die Funktion Nummer 3, die sich auf architektonische Änderungen in Version 7.x bezieht, wird separat von Anita behandelt.)
+
+
+
+00:47:27.300 --> 00:51:00.840
+Und Sie fragen sich vielleicht, warum wir in die Entwicklung einer neuen Version investiert haben. Es gibt drei Hauptziele, die wir anstreben:
+
+1. **Effizienzsteigerung:** Dazu gehört die Fähigkeit, Malware zu handhaben, Dateiangriffe eingehend zu untersuchen und den gesamten Datenstrom zu analysieren. Wir wollen die Leistung bestehender Plattformen verbessern und die Lösung effektiver auf den bereits unterstützten Plattformen machen.
+
+2. **Größere Modularität und vereinfachtes Richtlinienmanagement:** Wir streben eine verbesserte Modularität und ein vereinfachtes Management von Richtlinienregeln an, um administrative Prozesse zu optimieren.
+
+3. **Verbesserte Leistung:** Unser Ziel ist es, die Leistung von Snort auf den unterstützten Plattformen zu optimieren, um eine höhere Effizienz und Ressourcennutzung zu erreichen.
+
+## Hauptunterschiede zwischen Snort2 und Snort3
+
+### Architektonische Unterschiede:
+Bei Snort2 ist die Architektur relativ einfach; je nach Plattform stehen mehrere CPU-Kerne zur Verfügung, und jede CPU führt eine separate Snort-Instanz aus. Im Gegensatz dazu verwendet Snort3 einen Multi-Thread-Ansatz, der mehrere Kerne nutzt, jedoch nur eine Snort-Instanz, wodurch weniger Speicher verwendet wird, während mehr Rollen und eine erhöhte Verarbeitungseffizienz ermöglicht werden.
+
+### Paketverarbeitung:
+Bei Snort2 erfolgt die Paketverarbeitung linear und sequentiell. Im Gegensatz dazu verwendet Snort3 ein Publish-Subscribe-Modell, bei dem Daten nur dann an Abonnenten weitergegeben werden, wenn sie benötigt werden, was eine Just-in-Time-Paketverarbeitung ermöglicht.
+
+### Verschlüsseltes Transparenzmodul:
+Das Verschlüsselte Transparenzmodul der Cisco Secure Firewall verwendet APIs und maschinelles Lernen, um verschlüsselte Bedrohungen ohne Entschlüsselung zu blockieren. Nachfolgend sind seine Anwendungsfälle und Funktionen aufgeführt:
+
+1. **Vereinfachte Inspektion verschlüsselter Datenverkehrs:** Das System kann bösartige Verbindungen blockieren, ohne dass komplizierte Inspektions- und Verschlüsselungsmethoden erforderlich sind.
+
+2. **Sicherstellung der internen und externen Datenschutzkonformität:** Datenschutz und Compliance werden gewahrt, indem ursprüngliche end-to-end verschlüsselte Flows erhalten bleiben.
+
+3. **Kompromissanzeigen:** Ab Version 7.3 helfen diese Indikatoren dabei, Bedrohungen ohne Leistungseinbußen zu erkennen.
+
+4. **Leistungserhaltung:** Die Leistung der Firewall wird erhalten, indem der Overhead von Entschlüsselungsprozessen vermieden wird, es sei denn, sie sind absolut notwendig.
+
+Durch die Investition in diese Innovationen wollen wir eine effiziente, leistungsstarke Lösung mit größerer Modularität und einfacherem Management bieten.
+
+
+
+00:51:00.840 --> 00:54:10.560
+Erleuchten Sie den Weg, damit andere mit verbessertem TLS 1.3 und QUIC-Protokoll-Support sehen können.
+
+### Funktion: Elephant Flows
+
+Ein Elephant Flow wird typischerweise als jede Übertragung definiert, die in einem Zeitrahmen von 10 Sekunden 1 Gigabit überschreitet. Obwohl sie nicht häufig vorkommen, können Elephant Flows im Laufe der Zeit beträchtliche Bandbreite verbrauchen und potenziell zu Problemen wie hoher CPU-Auslastung oder Paketverlust führen. Ab Version 7.2.0 des Management Centers, anwendbar auf spezifische Store 3 Geräte, können Sie die Funktionen für Elephant Flows nutzen, um diese Übertragungen zu erkennen und zu beheben und so die Belastung Ihrer Geräte zu reduzieren.
+
+#### Behebungsmaßnahmen für Elephant Flows
+
+1. **Umgehungskonfiguration**: Aktivieren Sie die Umgehung für Elephant Flows, sodass Pakete dieser Übertragungen nicht überprüft werden, was die Systemlast verringert.
+  
+2. **Drosselungskonfiguration**: Legen Sie eine Begrenzung der Übertragungsrate für Elephant Flows fest, während diese weiterhin überprüft werden. Die Übertragungsrate wird dynamisch berechnet und um 10% reduziert, wobei Snort die überarbeitete Übertragungsrate zurück an die Firewall-Engine sendet.
+
+### Upgrade-Programme
+
+#### Cisco Secure Firewall Level Up Programm
+
+Das Level Up Programm ist für Kunden gedacht, die bereits Cisco Secure Firewall im Einsatz haben. Dieses Selbstbedienungsprogramm hilft Ihnen, einen Upgrade-Plan basierend auf Best Practices zu erstellen, die auf Ihre aktuelle Konfiguration zugeschnitten sind.
+
+**So funktioniert es:**
+
+- Um teilzunehmen, füllen Sie das Level Up Formular aus, das am Ende der entsprechenden Folie verlinkt ist.
+- Geben Sie Ihre Geräte-ID im Formular an; dies öffnet automatisch einen Support-Fall.
+- Alle Fragen oder Probleme während des Upgrades können über diesen Support-Fall bearbeitet werden.
+
+
+
+00:54:10.560 --> 00:57:23.220
+Als nächstes erhalten Sie eine E-Mail mit Anweisungen zum Generieren und Hochladen von Daten. Bei den angeforderten Daten handelt es sich um eine Fehlerbehebungsdatei von den Firewalls. Basierend auf diesen Daten wird der Bericht erstellt.
+
+Das "Level Up"-Programm unterstützt Sie bei der Aufrüstung Ihrer Firewalls und hilft uns zu skalieren. Zusätzlich haben wir ein weiteres Programm namens Firewall Security Firewall Software Upgrade Program, das sich an Kunden richtet, die eine sichere Firewall-Version unter 7.x verwenden. Ziel ist es, den Kunden bei der Aktualisierung zu unterstützen und allgemeinen Support bei der Aufrüstung zu bieten.
+
+Unterstützung kann durch Cisco Professional Services, einen Partner oder ein globales Sicherheitsdienstleistungsunternehmen namens SecureView angeboten werden. Die Migration von der ASA oder von Firewalls von Drittanbietern wird von Fall zu Fall geprüft.
+
+Wenn Sie an der Teilnahme am Programm interessiert sind, lassen Sie es uns bitte entweder per E-Mail an die in der Folie angegebene Adresse oder durch direkte Kontaktaufnahme mit Ihrem Cisco-Vertriebsmitarbeiter und Erwähnung Ihres Interesses am Programm wissen.
+
+Die Vorteile des Firewalls-Programms umfassen das Erhalten eines Berichts, der bestehende Bedrohungen und potenzielle Fehler, die Sie in der neuen Version antreffen könnten, detailliert. Sie erhalten auch aktive Unterstützung während Wartungsfenstern von Cisco-Partnern oder SecureView und fünf Tage Hyperpflege nach der Aufrüstung.
+
+Bitte beachten Sie, dass das aktuelle Programm im Juli 2024 endet. Wenn Sie interessiert sind, lassen Sie es uns bitte umgehend wissen, damit wir den Vorbereitungsprozess starten können.
+
+Zusammenfassend erfordert eine erfolgreiche Aufrüstung Planung und Vorbereitung. Die Aufrüstung Ihrer Firewall verbessert die Sicherheit, Leistung und ermöglicht es Ihnen, die neuesten Funktionen zu nutzen. Berücksichtigen Sie zusätzlich die Software-Lebensdauer als Leitfaden für die Wahl der richtigen Version.
+
+
+
+00:57:23.220 --> 00:58:37.560
+## So planen und führen Sie ein Upgrade der Cisco Secure Firewall-Software durch
+
+### 1. Beginnen Sie mit der Planung Ihres Upgrades
+Beginnen Sie damit, Ihren Upgrade-Prozess detailliert zu planen.
+
+### 2. Ängste angehen und motiviert bleiben
+Stellen Sie sicher, dass Ihre Motivation für das Upgrade klar bleibt und lassen Sie sich nicht von Ängsten überwältigen.
+
+### 3. Best Practices übernehmen
+Folgen Sie den empfohlenen Best Practices für ein reibungsloses und effektives Upgrade.
+
+### 4. Nutzen Sie Cisco-Support-Programme
+Machen Sie Gebrauch von Ciscos Upgrading-Programmen für sichere Firewall-Software. Diese Ressourcen stehen Ihnen zur Verfügung und können den Upgrade-Prozess erheblich unterstützen.
+
+### 5. Ressourcen und Links
+Nutzen Sie die in der Präsentation bereitgestellten Ressourcen und Links. Sie bieten wertvolle Unterstützung während Ihres Upgrade-Prozesses.
+
+### 6. Letzte Schritte
+Wir schließen unseren Leitfaden mit einigen letzten Anweisungen ab:
+- Nach der Sitzung erhalten Sie eine Umfrage. Bitte teilen Sie uns Ihr Feedback zur Sitzung mit.
+- Geben Sie Vorschläge für Verbesserungen oder zukünftige Webinar-Themen an, die Sie interessieren.
+
+Vielen Dank für Ihre Teilnahme. Wir hoffen, dass diese Sitzung als nützlicher Ausgangspunkt für die Planung Ihres Upgrades dient.
+
+
+

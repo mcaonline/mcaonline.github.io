@@ -1,0 +1,596 @@
+00:00:04.435 --> 00:04:12.990
+## Guide pour la mise à niveau de votre Cisco Secure Firewall
+
+**Introduction à l'Organisation de Réussite Client de Cisco**
+
+L'Organisation de Réussite Client de Cisco est dédiée à soutenir nos clients tout au long de leur parcours d'adoption des produits Cisco. Notre objectif est de garantir que les clients maximisent les fonctionnalités offertes par leurs appareils Cisco. Mon collègue et moi sommes des Spécialistes de Réussite Client, avec une spécialisation en sécurité. Nous fournissons diverses formes de soutien, y compris des consultations individuelles d'adoption, des accélérateurs (sessions 1:1), des webinaires et des sessions "Ask the Expert" (1: plusieurs sessions). L'une de nos offres les plus populaires pour la sécurité est le bilan de santé, qui évalue les configurations actuelles pour assurer leur alignement avec les meilleures pratiques.
+
+**Logistique de la session**
+
+Lors de la session d'aujourd'hui, vous aurez l'opportunité de poser des questions en utilisant le panneau de questions/réponses situé sur la partie droite de votre écran. Si vous rencontrez des problèmes audio, veuillez utiliser le panneau de chat et l'un de nos membres de l'équipe vous assistera. Les orateurs d'aujourd'hui incluent moi-même, mon collègue, et les panélistes Javier et d'autres Spécialistes de Réussite Client, ainsi que notre invitée spéciale de l'équipe produit, Daniela.
+
+**Aperçu de l'agenda**
+
+1. **Cycle de vie du logiciel Cisco Secure**
+2. **Planification et préparation de la mise à niveau**
+3. **Caractéristiques clés de la version 7.X du Secure Firewall**
+4. **Programmes de mise à niveau continus**
+
+**Comprendre l'importance des mises à niveau**
+
+Dans le monde technologique en constante évolution, mettre à niveau notre logiciel est essentiel pour suivre les changements. Tôt ou tard, nous devons tous cliquer sur ce bouton de mise à niveau qui apparaît sur notre écran. Retarder ces mises à niveau, en particulier pour les pare-feu, n'est pas conseillé. La mise à niveau ne concerne pas seulement l'obtention de nouvelles fonctionnalités intéressantes—il s'agit d'améliorer la sécurité et d'assurer une expérience plus fluide dans l'ensemble.
+
+**Surmonter les préoccupations courantes concernant les mises à niveau**
+
+À travers de nombreuses conversations sur les mises à niveau de pare-feu, nous comprenons qu'il y a des préoccupations courantes telles que la peur de la disruption. Ces préoccupations sont valides, et il est important de les aborder pour faciliter un processus de mise à niveau réussi.
+
+En suivant ce guide, vous serez bien préparé à comprendre et à exécuter une mise à niveau de Cisco Secure Firewall, assurant que votre système reste sécurisé, efficace et équipé des dernières fonctionnalités.
+
+
+
+00:04:12.990 --> 00:07:49.649
+## Guide de mise à niveau de votre pare-feu : Aborder les préoccupations et motivations
+
+### Aborder les préoccupations relatives aux mises à niveau des pare-feux
+
+1. **Temps d'arrêt et perturbations potentiels** :
+   - **Préoccupation** : La peur des temps d'arrêt ou des perturbations pendant le processus de mise à niveau du pare-feu, ce qui pourrait affecter les opérations quotidiennes.
+   - **Raison** : Les expériences négatives antérieures avec les mises à niveau des pare-feux peuvent entraîner des hésitations.
+
+2. **Excès de confiance dans la configuration actuelle** :
+   - **Préoccupation** : "Pourquoi mettre à niveau alors que le pare-feu actuel fonctionne bien ?"
+   - **Raison** : Croyance que le logiciel de pare-feu existant est suffisant, sous-estimant potentiellement la nature évolutive des menaces cybernétiques.
+
+3. **Complexité perçue** :
+   - **Préoccupation** : La mise à niveau d'un pare-feu peut sembler complexe, surtout pour ceux ayant une expertise technique limitée.
+   - **Raison** : Manque de connaissances techniques et peur de gérer un processus de mise à niveau compliqué.
+
+### Motivations pour la mise à niveau des pare-feux
+
+1. **Amélioration des performances** :
+   - **Avantage** : Les mises à jour de pare-feu incluent souvent des optimisations qui améliorent les performances, entraînant des temps de réponse plus rapides et une utilisation plus efficace des ressources du système.
+
+2. **Prendre de l'avance sur les exploits** :
+   - **Avantage** : Maintenir votre pare-feu à jour aide à atténuer les vulnérabilités en prenant de l'avance sur les exploits potentiels, réduisant ainsi le risque d'une attaque réussie.
+   - **Raison** : Les mises à jour incluent des correctifs pour les vulnérabilités de sécurité découvertes dans les versions précédentes.
+
+3. **Accès à de nouvelles fonctionnalités** :
+   - **Avantage** : Les mises à jour peuvent introduire de nouvelles fonctionnalités ou paramètres qui améliorent la sécurité, offrant un contrôle supplémentaire sur le trafic réseau et une meilleure expérience globale.
+
+4. **Support du fournisseur** :
+   - **Avantage** : Utiliser les versions logicielles les plus récentes assure l'éligibilité à l'assistance et au support du fournisseur.
+   - **Exemple** : Pour le logiciel Cisco Secure Firewall, comprendre le cycle de vie du support des versions est essentiel.
+
+### Conclusion
+
+Comprendre à la fois les préoccupations et les motivations liées aux mises à niveau des pare-feux est essentiel. Aborder les peurs et mettre en avant les bénéfices peut aider à surmonter les hésitations et à garantir une sécurité et des performances réseau optimales.
+
+
+
+00:07:49.649 --> 00:10:23.399
+## Comment comprendre Cisco Secure Firewalls : cycle de vie et numérotation des versions
+
+### Étape 1 : Comprendre l'objectif
+Le principal objectif de l'équipe de décision et de réussite client est de s'assurer que vos motivations l'emportent sur les préoccupations que vous pourriez avoir.
+
+### Étape 2 : Introduction au cycle de vie des Cisco Secure Firewalls
+Familiarisez-vous avec le cycle de vie des Cisco Secure Firewalls et la logique derrière l'attribution des numéros à chaque version de firewall. Chaque chiffre représente des modifications spécifiques apportées au logiciel.
+
+### Étape 3 : Interpréter les numéros de version
+Considérez l'exemple suivant : Cisco Secure Firewall version 7.2.5.1.
+
+1. **Premier chiffre : version majeure**
+   - Le premier chiffre représente une version majeure, indiquant des changements significatifs dans le logiciel. Par exemple, la version 7.x a introduit Snort 3 comme un changement architectural majeur.
+
+2. **Deuxième chiffre : version mineure**
+   - Le deuxième chiffre indique une version mineure, où de nouvelles fonctionnalités sont introduites.
+
+3. **Troisième chiffre : version de maintenance**
+   - Le troisième chiffre signale une version de maintenance incluant des corrections de bugs.
+
+4. **Quatrième chiffre : build de correctif**
+   - Le dernier chiffre représente un build de correctif, traitant des problèmes critiques spécifiques.
+
+### Étape 4 : Distinguer entre les versions à long terme et à court terme
+Les versions mineures (deuxième chiffre) sont catégorisées en versions à long terme, très long terme et à court terme.
+
+- **Versions à long terme et très long terme**
+  - Ces versions ont un chiffre pair en deuxième position (par exemple, 2, 4, 6).
+
+- **Versions à court terme**
+  - Ces versions ont un chiffre impair en deuxième position (par exemple, 3, 5, 7).
+
+### Étape 5 : Identifier les versions à long terme
+En utilisant l'exemple de la version 7.2.5.1, vous pouvez l'identifier comme une version à long terme car le deuxième chiffre est 2, indiquant un nombre pair.
+
+
+
+00:10:23.399 --> 00:13:35.459
+### Guide de compréhension des types de versions de logiciels et des durées
+
+#### Distinctions entre les types de versions
+
+1. **Version à long terme (LTR)**
+   - **Équilibre**: Trouve un équilibre entre la durée de support et les nouvelles fonctionnalités.
+   - **Critères de sélection**: Généralement choisi pour obtenir une certification gouvernementale.
+   - **Durée de support**: Offre les durées de support les plus longues.
+
+2. **Version à court terme (STR)**
+   - **Dernières fonctionnalités**: Choix optimal pour les utilisateurs recherchant les dernières fonctionnalités.
+   - **Durée de support**: Offre une période de support plus courte par rapport aux versions à long terme.
+
+#### Différenciation entre les versions à long terme et les versions extra long terme
+
+- Les versions à long terme et les versions extra long terme ont un nombre pair à la deuxième position de leur schéma de versionnage.
+- La différence clé est déterminée par le calendrier de sortie des logiciels.
+
+#### Calendrier de sortie des logiciels
+
+- **Fréquence de sortie**: Une nouvelle version est généralement approuvée environ tous les 6 mois.
+- **Modèle**: Suit un modèle de versionnage spécifique pour distinguer les types de versions.
+
+#### Exemple de versions et de durées de support
+
+1. **Version 7.0**
+   - **Type**: Version extra long terme
+   - **Durée**: 51 mois de maintenance logicielle, suivis de 12 mois de support technique supplémentaire.
+
+2. **Version 6.4** (version extra long terme précédente)
+   - **Sélection**: Choisie pour la certification gouvernementale.
+   - **Durée**: Similaire à la version 7.0 avec un support prolongé.
+
+3. **Version 7.1**
+   - **Type**: Version à court terme
+   - **Durée**: 18 mois de maintenance logicielle, suivis de 12 mois de support technique supplémentaire.
+
+4. **Version 7.2**
+   - **Type**: Version à long terme
+   - **Durée**: 36 mois de maintenance logicielle, suivis de 12 mois de support technique supplémentaire.
+
+5. **Version 7.3**
+   - **Type**: Version à court terme
+   - **Durée**: 18 mois de maintenance logicielle, suivis de 12 mois de support technique supplémentaire.
+
+6. **Version 7.4**
+   - **Type**: Version extra long terme
+   - **Durée**: 51 mois de maintenance logicielle, suivis de 12 mois de support technique supplémentaire.
+
+#### Résumé
+
+- **Distinctions du numérotage des versions**: Comprendre le numérotage peut aider à différencier les versions extra long terme, long terme et court terme.
+- **Durées de support**: Chaque type de version a une durée désignée pour la maintenance logicielle et le support technique supplémentaire.
+
+Ce guide offre une compréhension claire des différents types de versions de logiciels, de leurs durées de support et de la manière de les distinguer en fonction de leur numérotation et de leurs calendriers de sortie.
+
+
+
+00:13:35.459 --> 00:16:49.109
+Lors du choix d'une version logicielle, considérez le principe de sélectionner une version stable et de qualité assurée. Suivre les cycles de vie des fournisseurs peut être difficile, surtout lorsqu'on gère divers appareils de différents fournisseurs. C'est là que le concept de version suggérée devient précieux.
+
+Une version suggérée est sélectionnée en fonction de la qualité et de la stabilité du logiciel, en tenant compte de facteurs tels que le nombre de bogues signalés dans une version particulière et sa durée de vie. Cela garantit qu'une version à long terme soit toujours choisie pour la version suggérée, et que les versions à court terme ne soient pas sélectionnées.
+
+Actuellement, la version 7.5.1 est la version suggérée pour le Cisco Secure Firewall. Passer à la version 7.5 des Secure Firewalls est avantageux car il s'agit d'une version bien équilibrée offrant une meilleure stabilité et des fonctionnalités améliorées. Notre équipe de développement a fait des efforts considérables pour résoudre à la fois les problèmes connus et potentiels, aboutissant à un logiciel de haute qualité.
+
+La mise à niveau vers la version 7.5 améliorera votre expérience produit firewall, améliorera les performances du produit et vous permettra de bénéficier des nouvelles fonctionnalités, dont certaines seront discutées plus tard dans cette présentation. Les points forts de la version 7.4, qui est disponible pour FMC et FTD, seront également abordés dans un prochain webinaire. Restez à l'écoute pour le webinaire une fois que la version sera devenue la version suggérée, moment où nous couvrirons toutes les fonctionnalités ciblées pour la version 7.
+
+Nous avons maintenant un sondage lié à ce sujet. Veuillez vous connecter en utilisant l'URL ou le lien Webex fourni pour nous faire savoir quelles versions de firewall vous utilisez actuellement. Vous pouvez sélectionner plus d'une réponse, alors prenez une minute pour répondre aux questions. Pendant ce temps, je vais passer la présentation pour traiter le reste du contenu. Merci, Eva.
+
+Donneons encore 10 secondes à tout le monde pour scanner le code afin que nous puissions commencer la discussion principale.
+
+
+
+00:16:56.249 --> 00:20:03.089
+Étapes pour une collaboration réussie et un processus de mise à niveau
+
+1. **Préparation :**
+   - **Identifier les informations sur les appareils et le réseau :**
+     - Déterminez le type d'appareils présents sur votre réseau.
+     - Identifiez les systèmes de fichiers en place.
+     - Vérifiez s'il y a des systèmes d'exploitation (par exemple, Waves) fonctionnant dans l'environnement.
+     - Déterminez la version du système existant.
+     - Clarifiez si l'appareil est un appareil autonome ou fait partie d'une configuration à haute disponibilité ou en cluster.
+
+2. **Planifier la mise à niveau :**
+   - Créez un plan de mise à niveau détaillé en tenant compte des informations ci-dessus.
+
+3. **Vérifier la compatibilité :**
+   - Consultez la matrice de compatibilité pour les appareils et l'environnement :
+     - Pour le centre de gestion (FMC).
+     - Pour la défense contre les menaces du pare-feu (FTD).
+
+4. **Examiner la documentation :**
+   - Parcourez les liens et la documentation fournis pour garantir la compatibilité de l'appareil avec la version souhaitée. Cela inclura :
+     - Identifier si le matériel ou les appareils virtuels supportent la nouvelle version.
+     - Examiner la compatibilité du matériel avec la version 7.2 pour ce cas spécifique.
+
+5. **Effectuer la mise à niveau (exemple de démonstration) :**
+   - Mettre à niveau de la version 6.x.x à 7.2.5 (version recommandée) :
+     - Partagez votre écran pour démontrer le processus.
+     - Vérifiez la configuration du partage d'écran.
+     - Commencez la procédure de mise à niveau en vous référant aux vérifications de compatibilité.
+     - Documentez chaque étape et validez la mise à niveau réussie.
+
+6. **Validation post-mise à niveau :**
+   - Confirmez le bon fonctionnement de tous les systèmes.
+   - Assurez-vous que la version mise à niveau fonctionne sans anomalies.
+
+Suivez ces étapes pour collaborer efficacement et effectuer une mise à niveau de vos appareils de pare-feu ou de gestion de réseau.
+
+
+
+00:20:03.089 --> 00:23:34.049
+### Guide de mise à niveau de votre plateforme de virtualisation
+
+#### Étape 1 : Vérifier la compatibilité
+1. **Vérifiez la version de la plateforme** :
+   - Assurez-vous que votre plateforme (par exemple, HyperFlex) est compatible avec la mise à niveau.
+   - Pour cette démonstration, nous utilisons la version 7:7:00 et nous passerons à la version 7.2.
+
+2. **Consultez la documentation** :
+   - Confirmez que votre appareil peut prendre en charge la nouvelle version en consultant la documentation officielle.
+
+#### Étape 2 : Évaluer les capacités matérielles
+1. **Vérification de la compatibilité** :
+   - Déterminez la version la plus ancienne prise en charge par votre appareil. Par exemple, notre appareil prend en charge la version 6.0 au minimum.
+   - Planifiez une voie de mise à niveau appropriée si vous effectuez une mise à niveau depuis une version antérieure à celle prise en charge.
+
+2. **Examen des informations matérielles** :
+   - Consultez le tableau de compatibilité de votre appareil pour voir jusqu'à quelle version il peut être mis à niveau (7.2 ou 7.3).
+
+#### Étape 3 : Évaluer l'environnement
+1. **Compatibilité environnementale** :
+   - Assurez-vous que votre environnement (par exemple, WSS, Assurance, Oracle Cloud Infrastructure) prend en charge la version 7.2.
+   - Vérifiez si votre solution ou appareil sur site est pris en charge.
+
+#### Étape 4 : Planifiez votre mise à niveau
+1. **Élaboration d'un plan** :
+   - Développez un plan de mise à niveau complet pour garantir une transition en douceur.
+   - Lisez toute la documentation pertinente et les notes concernant le processus de mise à niveau.
+
+2. **Lire les notes de version** :
+   - Consultez les notes de version pour comprendre les nouvelles fonctionnalités, les corrections de bogues et tout problème après la mise à niveau.
+
+#### Étape 5 : Exécuter la mise à niveau
+1. **Séquence de mise à niveau** :
+   - Commencez par mettre à niveau le FXOS si applicable.
+   - Poursuivez avec le FTD pour finaliser.
+
+2. **Tâches post-mise à niveau** :
+   - Concentrez-vous sur les tâches spécifiques ou les étapes de dépannage nécessaires après l'achèvement de la mise à niveau.
+
+Pour cette démonstration, nous disposons uniquement des composants nécessaires pour procéder à la mise à niveau.
+
+
+
+00:23:34.049 --> 00:27:22.889
+## Comment mettre à niveau les appareils pour une haute disponibilité 
+
+### Étape 1 : Télécharger l'image
+
+1. **Accéder au logiciel :**
+   - Visitez le site web des logiciels Cisco à l'adresse software.cisco.com.
+
+2. **Sélectionner le produit :**
+   - Localisez votre produit en utilisant la barre de recherche ou l'option de navigation.
+
+3. **Choisir la version de l'image :**
+   - Sélectionnez la version spécifique que vous devez télécharger. Dans ce cas, il s'agit de la version 7.2.
+   - Recherchez les versions marquées d'une étoile dorée, car ce sont les versions suggérées.
+
+4. **Confirmer le package :**
+   - Assurez-vous de choisir le bon package, en distinguant entre les patches et les packages hybrides.
+   - Téléchargez le package approprié.
+
+### Étape 2 : Télécharger l'image
+
+1. **Connexion :**
+   - Connectez-vous à votre FMC (Firepower Management Center).
+
+2. **Naviguer vers les paramètres :**
+   - Allez dans la section des paramètres et sélectionnez l'option de téléchargement appropriée, soit directement, soit via un dépôt.
+
+3. **Télécharger les fichiers :**
+   - Téléchargez deux fichiers : un pour le FMC et un pour le FTD (Firepower Threat Defense).
+   - Vérifiez le chemin et confirmez le téléchargement.
+   - Assurez-vous que les bonnes versions sont téléchargées.
+
+4. **Confirmation :**
+   - Assurez-vous de voir un message de confirmation indiquant que le package a été correctement téléchargé.
+   - Vérifiez les fichiers listés et leurs versions pour vous assurer qu'ils correspondent aux versions que vous souhaitez mettre à niveau.
+
+Ce guide résume les étapes nécessaires pour mettre à niveau vos appareils tout en maintenant une haute disponibilité. Suivre ces instructions assurera un processus de mise à niveau fluide.
+
+
+
+00:27:22.889 --> 00:30:31.619
+### Comment télécharger, uploader et mettre à jour des paquets
+
+#### Étape 1 : Vérifier l'espace disponible
+
+1. **Vérifiez l'espace suffisant :** Avant de procéder au téléchargement et à l'upload des paquets, assurez-vous d'avoir suffisamment d'espace pour effectuer la mise à jour. Cela peut être fait en vérifiant le stockage disponible sur votre FMC (Firepower Management Center).
+
+#### Étape 2 : Sauvegardez vos données
+
+1. **Naviguez vers les paramètres de sauvegarde :** Allez dans le menu des paramètres et sélectionnez l'option de sauvegarde.
+2. **Choisissez les catégories de sauvegarde :** Vous aurez deux options : une pour le FMC et une autre pour l'appareil Mac ou FTD (Firepower Threat Defense).
+3. **Nommez la sauvegarde :** Donnez un nom à votre sauvegarde.
+4. **Sélectionnez les informations à sauvegarder :** Choisissez les données spécifiques que vous souhaitez sauvegarder.
+5. **Lancez la sauvegarde :** Le processus de sauvegarde peut prendre un certain temps, en fonction du volume d'événements dans votre base de données.
+
+#### Étape 3 : Surveillez la progression de la sauvegarde
+
+1. **Suivez les tâches :** Chaque opération générera une tâche. Utilisez le Centre des tâches ou le Centre des messages pour surveiller la progression.
+2. **Vérifiez le temps écoulé :** Soyez conscient du temps écoulé depuis le début du processus et de la durée totale. Cela vous donnera une idée du temps que pourraient prendre des tâches similaires à l'avenir.
+
+#### Étape 4 : Vérification de l'état de préparation
+
+1. **Retournez aux options de mise à jour :** Naviguez de nouveau vers la section de mise à jour et sélectionnez le lien d'installation.
+2. **Sélectionnez l'appareil à mettre à jour :** Choisissez l'appareil qui doit être mis à jour et lancez la vérification de l'état de préparation.
+3. **Analysez les résultats de la vérification :** La vérification de l'état de préparation vous informera sur les scripts et la progression, indiquant si l'appareil est prêt pour une mise à jour.
+
+#### Étape 5 : Effectuez la mise à jour
+
+1. **Exécutez les scripts de pré-vérification :** Assurez-vous que tous les scripts s'exécutent correctement lors de la pré-vérification pour confirmer que l'appareil est prêt pour la mise à jour.
+2. **Procédez à l'installation :** Si la pré-vérification indique un succès, cliquez sur installer pour commencer le processus de mise à jour.
+
+#### Remarque :
+
+- **Redémarrage requis :** Le processus de mise à jour nécessitera un redémarrage du FMC. Cette information peut être trouvée en haut à gauche de l'écran.
+
+En suivant ces étapes détaillées, vous pouvez efficacement gérer le téléchargement, l'upload et la mise à jour des paquets, assurant un processus fluide et efficace.
+
+
+
+00:30:31.619 --> 00:34:07.169
+### Guide de mise à niveau de votre appareil
+
+**Étape 1 : Démarrer le processus**
+1. Commencez le processus de mise à niveau.
+2. Notez que vous recevrez une notification pour que le système commence la tâche de mise à niveau.
+
+**Étape 2 : Mode de maintenance**
+1. L'appareil finira par vous déconnecter de la session.
+2. Cela est normal car l'appareil entre en mode de maintenance.
+3. Connectez-vous à nouveau en utilisant vos identifiants.
+
+**Étape 3 : Suivi de la mise à niveau**
+1. Après vous être reconnecté, vous verrez la progression de la mise à niveau.
+2. Une barre de statut affichera :
+   - La version actuelle et la version cible.
+   - Le temps écoulé depuis le début de la mise à niveau.
+   - Le temps estimé restant.
+   - Les étapes spécifiques effectuées pendant la mise à niveau.
+
+**Étape 4 : Initialisation post-mise à niveau**
+1. Après avoir terminé la mise à niveau, l'appareil redémarrera.
+2. Le processus de redémarrage peut prendre du temps car les services et la base de données doivent se remettre en ligne.
+
+**Étape 5 : Connexion post-redémarrage**
+1. Une fois redémarré, connectez-vous à la page principale.
+2. Acceptez le contrat de licence utilisateur final (CLUF) présenté à l'écran.
+
+**Étape 6 : Vérification du succès de la mise à niveau**
+1. Vérifiez s'il y a des alertes; cela est attendu car l'appareil redémarrait et pourrait ne pas avoir reçu de battement de cœur du FTD à ce moment-là.
+2. Vérifiez que la mise à niveau a réussi et que l'appareil est opérationnel.
+
+### Continuer avec de nouvelles mises à niveau
+
+**Étape 1 : Vérification de santé initiale**
+1. Avant de procéder à d'autres mises à niveau, assurez-vous que l'état actuel de l'appareil est vert, indiquant que tout est en bonne santé.
+
+**Étape 2 : Préparation pour la prochaine mise à niveau**
+1. Allez dans les paramètres.
+2. Confirmez que vous disposez de suffisamment d'espace sur l'appareil. Vérifiez les partitions "slash" et "part".
+
+**Étape 3 : Réalisation de la mise à niveau**
+1. Vérifiez que tous les appareils sont préparés en termes d'espace.
+2. Assurez-vous que les images nécessaires sont téléchargées conformément aux étapes précédentes.
+
+**Note :** Répétez le processus de vérification pour tous les appareils afin d'assurer la cohérence avant de procéder à la mise à niveau.
+
+
+
+00:34:07.169 --> 00:38:27.510
+### Comment télécharger et gérer les images des appareils
+
+1. **Téléchargement des images vers le FMC et envoi vers le FTD :**
+   - Assurez-vous de suivre les étapes suivantes sur chaque appareil lors du téléchargement des images.
+   - Tout d'abord, téléchargez les images vers le Firepower Management Center (FMC).
+   - Accédez à **Paramètres** et sélectionnez **Mises à jour**.
+   - Notez les trois icônes :
+     - **Installer l'image**
+     - **Envoyer l'image à l'appareil**
+     - **Supprimer l'image**
+   - Vérifiez l'image que vous souhaitez mettre à niveau et utilisez l'option appropriée pour la pousser vers les appareils. Ce processus envoie l'image du FMC vers les appareils locaux.
+   - Surveillez la tâche pour assurer l'achèvement du processus d'envoi de l'image.
+
+2. **Effectuer une sauvegarde :**
+   - Il est fortement recommandé de faire une sauvegarde avant de continuer. Même si vous avez déjà une sauvegarde, créez-en une nouvelle.
+   - Sélectionnez les appareils pour lesquels vous souhaitez faire une sauvegarde.
+   - Assurez-vous que les appareils sont appairés pour le processus de sauvegarde. Vous pouvez stocker ces fichiers de sauvegarde dans le centre de gestion ou dans tout référentiel choisi.
+   - Surveillez et complétez le processus de sauvegarde.
+
+3. **Vérification de la préparation :**
+   - Après avoir effectué une sauvegarde, effectuez une vérification de la préparation sur les appareils. Cette fonctionnalité est disponible dans la version 7.1 et suivantes.
+   - Cette vérification garantit que les appareils sont prêts pour la mise à niveau. Surveillez la progression et vérifiez l'état de préparation.
+
+4. **Nouvelles fonctionnalités dans la version 7 :**
+   - La nouvelle mise à jour inclut des fonctionnalités pour :
+      - Annuler automatiquement une mise à niveau en cas d'échec et revenir à la version précédente.
+      - Permettre un retour après une mise à niveau réussie.
+      - Mettre à niveau Snort 3.
+   - Passez en revue et analysez les politiques d'intrusion personnalisées et les règles pour vous assurer qu'elles ne sont pas impactées par la mise à niveau.
+
+5. **Installation de l'image :**
+   - Sélectionnez les appareils et cliquez sur **Installer**. Assurez-vous que l'image est déjà chargée dans les appareils (indiqué par une flèche verte).
+
+6. **Confirmation et initiation du processus :**
+   - Confirmez le processus d'installation pour commencer la mise à niveau.
+
+En suivant ces étapes, vous pouvez gérer efficacement le téléchargement et l'installation des images des appareils, en assurant une perturbation minimale et en maintenant l'intégrité de vos configurations.
+
+
+
+00:38:27.510 --> 00:41:30.180
+Réparé, ce processus commencera toujours par l'unité de réserve, qui dans ce cas est le FTD numéro 2. Une fois la mise à niveau lancée et les vérifications passées, cette unité assumera immédiatement le rôle principal après le début de la mise à niveau de l'unité active.
+
+Maintenant, examinons les journaux ou les informations de statut pendant que nous passons de la version 1 à 72.5. Cette visibilité donne un aperçu de l'état actuel de la mise à niveau. Vous remarquerez que le processus est terminé sur le FTD numéro 2, et peu après, la mise à niveau commencera sur le FTD numéro 1. Cela peut prendre quelques minutes.
+
+Ici, nous pouvons voir que la mise à niveau pour le FTD 2 est complète, et immédiatement après, le processus de mise à niveau commence sur le FTD 1. Pendant cette période, le FTD 2 devient actif tandis que le FTD 1 commence sa mise à niveau. Lorsque le FTD 1 revient, il assumera le rôle de réserve, comme c'était le cas auparavant.
+
+Nous avons apporté quelques modifications pour une meilleure visibilité dans nos opérations. Le processus de mise à niveau, y compris le redémarrage, est maintenant terminé. En naviguant vers la gestion des appareils, je vérifierai le statut.
+
+Dans ce cas, le FTD 2 sera l'unité active, avec le FTD 1 en veille. Les alertes présentes sont dues au processus d'enregistrement, mais après vérification, elles passeront au statut correct. C'est la procédure de mise à niveau standard.
+
+Ensuite, examinons les nouvelles fonctionnalités. Tout d'abord, nous avons des améliorations de mise à niveau. Auparavant, la recommandation était de 550 données, mais maintenant nous n'avons plus cette limitation. Nous pouvons gérer encore plus de données efficacement.
+
+
+
+00:41:30.180 --> 00:44:57.930
+Guide pour la mise à niveau de plusieurs appareils simultanément
+
+1. **Gestion de la bande passante des appareils** :
+   - Si vous prévoyez de mettre à niveau plusieurs appareils simultanément, considérez la bande passante fncc.
+   - Choisissez tous les appareils que vous devez mettre à niveau et lancez le processus en suivant les étapes fournies.
+
+2. **Efficacité dans les mises à niveau parallèles** :
+   - Nous réduisons le temps pour FTD (Firepower Threat Defense) en exécutant des mises à niveau en parallèle, ce qui est avantageux pour gagner du temps.
+
+3. **Vérification de l'état de préparation avant la mise à niveau** :
+   - Pour les appareils FTD ou FDM (Firepower Device Manager), vous avez la possibilité de réaliser une vérification de l'état de préparation avant de commencer une mise à niveau.
+   - Cette vérification vous informera à l'avance si des exigences spécifiques manquent, évitant ainsi les échecs de mise à niveau.
+
+4. **Options post-mise à niveau** :
+   - Après une mise à niveau réussie, vous avez la possibilité d'activer les fonctionnalités mises à niveau.
+   - Si nécessaire, vous pouvez revenir en arrière dans les 30 jours suivant la mise à niveau.
+
+5. **Sélection du déploiement** :
+   - Vous avez l'option de choisir le type de déploiement en fonction de vos changements.
+   - Notez que le déploiement VPN pourrait ne pas être disponible selon les options sélectionnées.
+
+6. **Suivi des modifications** :
+   - Le système offre la fonctionnalité de voir l'historique des modifications de configuration.
+   - Les changements sont codés par couleur pour une identification facile (ajouts, suppressions, etc.).
+
+7. **Comparaison des configurations** :
+   - Vous avez la possibilité de comparer différentes versions de configurations.
+   - Revenez à l'une des 10 dernières déploiements réussis si nécessaire.
+
+En suivant ces lignes directrices, vous pouvez gérer et mettre à niveau plusieurs appareils de manière efficace, en assurant une exploitation fluide et en minimisant les interruptions de service.
+
+
+
+00:44:57.930 --> 00:47:27.300
+### Guide : Nouvelles fonctionnalités de la version 7.1
+
+#### Documentation de restauration
+
+1. **Suivi et documentation des restaurations** :
+   - Cette fonctionnalité vous permet de documenter qui a effectué la restauration.
+   - Les notes de déploiement peuvent fournir des informations détaillées sur la restauration.
+   - L'horodatage et d'autres détails pertinents sont disponibles pour le suivi.
+
+#### Restauration multi-appareils
+
+2. **Sélectionner plusieurs appareils pour la restauration** :
+   - Les utilisateurs ont désormais la possibilité de sélectionner plus d'un appareil pour la restauration.
+   - Les paramètres de configuration pour la restauration automatique sont disponibles.
+
+#### Améliorations du tableau de bord
+
+3. **Expérience utilisateur améliorée** :
+   - Plusieurs tableaux de bord ont été améliorés pour une meilleure expérience utilisateur.
+   - Les tableaux de bord de santé pour les unités actives et en veille de FMC sont plus détaillés et visuellement agréables.
+
+4. **Option de recherche globale** :
+   - Une fonction de recherche globale permet aux utilisateurs de rechercher facilement des éléments spécifiques.
+   - Vous pouvez utiliser cette option pour trouver des ITR spécifiques ou déterminer si quelque chose est utilisé ou appartient à un hôte de réseau spécifique.
+
+La section suivante couvrira les fonctionnalités supplémentaires disponibles dans la nouvelle version. Veuillez continuer avec la présentation.
+
+
+
+00:47:27.300 --> 00:51:00.840
+Vous vous demandez peut-être pourquoi nous avons investi dans le développement d'une nouvelle version. Il y a trois objectifs clés que nous visons à atteindre :
+
+1. **Améliorer l'Efficacité :** Cela implique la capacité de gérer les logiciels malveillants, d'explorer en profondeur les attaques de fichiers et d'analyser les flux de données dans leur ensemble. Nous visons à améliorer les performances des plateformes existantes, en veillant à ce que Snort fonctionne mieux sur les plateformes avec lesquelles il est déjà compatible.
+
+2. **Modularité Accrue et Gestion Simplifiée des Politiques :** Nous visons une modularité accrue, couplée à des règles de politique et une gestion simplifiées.
+
+**Différences entre Snort 2 et Snort 3 :**
+
+1. **Différences Architecturales :** Dans Snort 2, l'architecture est relativement simple. En fonction de la plateforme, il y a un certain nombre de cœurs CPU disponibles, et dans chaque CPU, une instance Snort sera chargée. En revanche, Snort 3 utilise une approche plus multithread, exploitant plusieurs cœurs avec une seule instance Snort. Cette approche utilise moins de mémoire tout en permettant plus de rôles et une plus grande efficacité dans le traitement des données.
+
+2. **Différences dans le Traitement des Paquets :** Dans Snort 2, le traitement des paquets se fait de manière littérale et séquentielle. Dans Snort 3, le processus suit un modèle de publication et d'abonnement, où l'abonné reçoit les données du publieur uniquement lorsqu'elles sont nécessaires, permettant ainsi un traitement juste-à-temps.
+
+**Moteur de Visibilité Chiffrée :**
+
+Le Pare-feu Sécurisé de Cisco et le Moteur de Visibilité Chiffrée utilisent des APIs et l'apprentissage automatique pour bloquer les menaces chiffrées sans déchiffrement. Voici quelques cas d'utilisation :
+
+1. **Simplification des Inspections de Trafic Chiffré :** Bloquer les connexions malveillantes sans inspections et méthodes de chiffrement complexes.
+
+2. **Assurance de la Confidentialité et de la Conformité :** Préserver la confidentialité et la conformité en maintenant les flux chiffrés de bout en bout originaux.
+
+3. **Indicateurs de Compromission :** Utiliser les indicateurs de compromission disponibles depuis la version 7.3.
+
+4. **Maintien des Performances :** Préserver les performances du pare-feu en évitant les processus de déchiffrement lorsque ce n'est pas nécessaire, et en les réalisant uniquement lorsque c'est nécessaire.
+
+
+
+00:51:00.840 --> 00:54:10.560
+Mettez en lumière les autres en utilisant le support des protocoles TLS 1.3 et QUIC hautement sécurisés.
+
+Ensuite, explorons la fonctionnalité concernant les flux éléphants.
+
+Tout flux dépassant 1 gigabit en 10 secondes est classé comme un flux éléphant. Bien que peu fréquents, les flux éléphants peuvent consommer une quantité substantielle de bande passante au fil du temps, pouvant entraîner des problèmes tels qu'une utilisation élevée du CPU ou une perte de paquets.
+
+À partir de la version 7.2 du Management Center, et applicable exclusivement aux appareils Store 3, vous pouvez utiliser la fonctionnalité de flux éléphant pour détecter et remédier aux flux éléphants, réduisant ainsi le stress sur les appareils.
+
+Deux actions de remédiation peuvent être appliquées :
+1. **Configuration de contournement** : Vous pouvez configurer les flux éléphants pour contourner l'inspection de Snort. Lorsqu'elle est activée, Snort ne traitera aucun paquet provenant de ce flux de contournement.
+2. **Throttling** : Cela vous permet d'imposer une limite de débit au flux tout en restant soumis aux inspections. Le débit du flux est calculé dynamiquement et sera réduit de 10%. De plus, Snort fournira un verdict sur le débit curieux, qui est inférieur de 10%, aux moteurs de pare-feu.
+
+Passons maintenant aux programmes de mise à niveau.
+
+**Programme de mise à jour Cisco Secure Firewall** :
+Le programme Level Up cible les clients ayant Cisco Secure Firewall en place. Il s'agit d'un programme en libre-service qui aide à préparer un plan de mise à niveau en fournissant les meilleures pratiques basées sur la configuration du client.
+
+Pour y participer, vous devez remplir le formulaire Level Up (lien fourni en bas de la diapositive). Une fois soumis, un dossier de support sera automatiquement ouvert pour l'ID spécifié. Si vous avez des questions concernant le rapport ou rencontrez des problèmes lors de la mise à niveau, elles peuvent être adressées via ce dossier de support.
+
+
+
+00:54:10.560 --> 00:57:23.220
+Ensuite, vous recevrez un e-mail avec des instructions sur la façon de générer et de télécharger des données. Les données que nous demandons sont un fichier de dépannage des pare-feux. Sur la base de ces données, le rapport sera généré.
+
+Pour résumer, le programme Level Up vous aide à mettre à niveau vos pare-feux et nous aide à étendre notre support. En plus de Level Up, nous avons une autre initiative appelée le Programme de Mise à Niveau de Logiciel de Pare-feu. Ce programme cible les clients utilisant des versions du Pare-feu Sécurisé inférieures à 7.0.
+
+L'objectif de ce programme est d'aider les clients à la mise à niveau et de fournir un support général pendant la mise à niveau. Le support peut être offert par le système de services professionnels de Cisco, un partenaire ou une société mondiale de services de sécurité appelée SecureView.
+
+L'assistance à la mise à niveau comprend la migration à partir de l'ASA ou de pare-feux tiers, considérée au cas par cas. Si vous êtes intéressé à participer au programme, vous pouvez nous en informer par l'e-mail fourni sur la diapositive ou contacter directement votre représentant commercial Cisco en mentionnant votre intérêt pour le programme.
+
+Les avantages de participer au programme incluent la réception d'un rapport détaillant les tâches préalables à la mise à niveau et les problèmes potentiels que vous pourriez rencontrer avec la nouvelle version. Vous recevrez également un support actif pendant les fenêtres de maintenance de la part de Cisco, d'un partenaire, ou de SecureView, ainsi que cinq jours de HyperCare après la mise à niveau.
+
+Veuillez noter que le programme actuel se termine en juillet 2024. Soyez proactif et informez-nous immédiatement si vous êtes intéressé afin que nous puissions lancer le processus.
+
+En résumé, les mises à niveau réussies nécessitent une planification et une préparation. Mettre à niveau votre pare-feu non seulement renforce la sécurité mais améliore également les performances et vous permet de tirer parti des fonctionnalités les plus récentes. Considérez toujours le cycle de vie du logiciel comme un guide pour choisir la version appropriée.
+
+
+
+00:57:23.220 --> 00:58:37.560
+### Guide de Planification de Votre Mise à Niveau
+
+1. **Commencez à Planifier**: Commencez par définir votre stratégie de mise à niveau.
+2. **Surmontez Vos Peurs**: Ne laissez pas les appréhensions éclipser vos véritables motivations pour mettre à niveau.
+3. **Adoptez les Meilleures Pratiques**: Suivez les meilleures pratiques recommandées pour un processus de mise à niveau sans encombre.
+4. **Utilisez les Programmes de Support**: Profitez des programmes de mise à niveau de logiciels de pare-feu sécurisé de Cisco conçus pour votre commodité.
+5. **Tirez Parti de l'Aide Fourni**: Utilisez les liens partagés dans la présentation pour un soutien et des ressources supplémentaires.
+
+### Actions Post-Séance
+
+1. **Sondage de Retour d'Information**: Participez au sondage post-séance pour partager vos impressions.
+2. **Webinaires Futurs**: Donnez votre avis sur la manière dont nous pouvons nous améliorer et suggérez des sujets que vous aimeriez entendre dans les prochains webinaires.
+
+Merci à tous d'avoir participé. Nous espérons que cette session a été informative et qu'elle servira de point de départ pour planifier votre mise à niveau.
+
+
+
