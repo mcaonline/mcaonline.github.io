@@ -113,6 +113,10 @@ def move_files_to_backup(source_dir):
 ### Read the file and create list of blocks based on blocksize
 # 
 
+# Add ffmpeg to PATH
+ffmpeg_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ffmpeg", "bin")
+os.environ["PATH"] = ffmpeg_path + os.pathsep + os.environ.get("PATH", "")
+
 from moviepy.editor import VideoFileClip
 from pydub import AudioSegment
 from pydub.silence import detect_silence
