@@ -29,3 +29,7 @@
 ## Security & Configuration Tips
 - Leave `API_KEY` placeholders empty in source; provision secrets on-device or through environment variables before flashing.
 - Double-check IP assignments before committing to avoid publishing internal network details.
+
+## Nanoleaf Integration (Temporarily Disabled)
+- All Nanoleaf API instantiation and control calls in `kitchenmove50.py` are commented out (see `LightStateCache`, `MainLightController`, and `KitchenLightOrchestrator`) so only the Shelly relay governs room lighting.
+- Cache refresh logs now report Nanoleaf as disabled, preserving the call sites for a future rollback while preventing failed API lookups for missing keys.

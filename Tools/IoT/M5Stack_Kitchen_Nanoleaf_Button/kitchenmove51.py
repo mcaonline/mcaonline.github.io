@@ -873,7 +873,8 @@ class LightStateCache:
     def __init__(self, config, shelly_api, nanoleaf_api, debug_logger):
         self.config = config
         self.shelly_api = shelly_api
-        self.nanoleaf_api = nanoleaf_api
+        # self.nanoleaf_api = nanoleaf_api  # Nanoleaf integration disabled
+        self.nanoleaf_api = None
         self.logger = debug_logger
         self.last_state_update_time = 0
         self.cached_light_state = False
@@ -893,14 +894,15 @@ class LightStateCache:
         
         # Refresh from APIs
         shelly_state = self.shelly_api.lese_status() or False
-        nanoleaf_state = self.nanoleaf_api.lese_status() or False
-        updated_state = shelly_state or nanoleaf_state
+        # nanoleaf_state = self.nanoleaf_api.lese_status() or False  # Nanoleaf integration disabled
+        nanoleaf_state = False
+        updated_state = shelly_state
         
         self.cached_light_state = updated_state
         self.last_state_update_time = now
         
-        self.logger.log("Zust.-akt. OK: Shelly={}, NL={}, Resultat={} - gültig für {} Sek.".format(
-            shelly_state, nanoleaf_state, updated_state, self.config.CACHE_REFRESH_INTERVAL))
+        self.logger.log("Zust.-akt. OK: Shelly={} (Nanoleaf deaktiviert) - gültig für {} Sek.".format(
+            shelly_state, self.config.CACHE_REFRESH_INTERVAL))
         
         return updated_state
 
@@ -1020,15 +1022,17 @@ class MainLightController:
     
     def __init__(self, shelly_api, nanoleaf_api, light_cache, debug_logger):
         self.shelly_api = shelly_api
-        self.nanoleaf_api = nanoleaf_api
+        # self.nanoleaf_api = nanoleaf_api  # Nanoleaf integration disabled
+        self.nanoleaf_api = None
         self.light_cache = light_cache
         self.logger = debug_logger
     
     def turn_on(self):
         """Turn on main lights"""
-        self.logger.log("Raum belegt (auto): Shelly/NL werden eingeschaltet.")
+        self.logger.log("Raum belegt (auto): Shelly wird eingeschaltet. Nanoleaf deaktiviert.")
         self.shelly_api.setze("ein")
-        self.nanoleaf_api.setze(True)
+        # if self.nanoleaf_api:
+        #     self.nanoleaf_api.setze(True)
         self.light_cache.update_cache(True)
     
     def turn_off(self):
@@ -1038,36 +1042,29 @@ class MainLightController:
             self.logger.log("Licht ist bereits aus, Abschaltung wird übersprungen.")
             return
         
-        self.logger.log("Raum unbelegt: Shelly/Nanoleaf werden ausgeschaltet.")
+        self.logger.log("Raum unbelegt: Shelly wird ausgeschaltet. Nanoleaf deaktiviert.")
         self.shelly_api.setze("aus")
-        self.nanoleaf_api.setze(False)
+        # if self.nanoleaf_api:
+        #     self.nanoleaf_api.setze(False)
         self.light_cache.update_cache(False)
     
     def toggle(self):
         """Toggle lights, returns new state"""
         shelly_status = self.shelly_api.lese_status() or False
-        nano_status = self.nanoleaf_api.lese_status() or False
+        # nano_status = self.nanoleaf_api.lese_status() or False  # Nanoleaf integration disabled
         
-        # If out of sync, turn both off
-        if shelly_status != nano_status:
-            self.shelly_api.setze("aus")
-            self.nanoleaf_api.setze(False)
-            self.logger.log("Toggle: out-of-sync -> AUS/AUS - manueller Toggle.")
-            self.light_cache.update_cache(False)
-            return False
-        
-        # If both on, turn off
         if shelly_status:
             self.shelly_api.setze("aus")
-            self.nanoleaf_api.setze(False)
-            self.logger.log("Toggle: beide AN -> AUS/AUS - manueller Toggle.")
+            # if self.nanoleaf_api:
+            #     self.nanoleaf_api.setze(False)
+            self.logger.log("Toggle: Shelly AN -> AUS (Nanoleaf deaktiviert).")
             self.light_cache.update_cache(False)
             return False
         
-        # If both off, turn on
         self.shelly_api.setze("ein")
-        self.nanoleaf_api.setze(True)
-        self.logger.log("Toggle: beide AUS -> EIN/EIN - manueller Toggle.")
+        # if self.nanoleaf_api:
+        #     self.nanoleaf_api.setze(True)
+        self.logger.log("Toggle: Shelly AUS -> EIN (Nanoleaf deaktiviert).")
         self.light_cache.update_cache(True)
         return True
 
@@ -1320,7 +1317,8 @@ class KitchenLightOrchestrator:
         self.pir_sensor = None
         
         # API wrappers
-        self.nanoleaf_api = NanoleafAPI(self.config, self.logger)
+        # self.nanoleaf_api = NanoleafAPI(self.config, self.logger)  # Nanoleaf integration disabled
+        self.nanoleaf_api = None
         self.shelly_api = ShellyAPI(self.config, self.logger)
         self.wled_api = WLEDAPI(self.config, self.logger)
         
@@ -1375,7 +1373,8 @@ class KitchenLightOrchestrator:
         self.led_controller = LEDController(self.config, self.logger, self.led_rgb)
         
         # Set LED controller reference in API wrappers
-        self.nanoleaf_api.led_controller = self.led_controller
+        # if self.nanoleaf_api:
+        #     self.nanoleaf_api.led_controller = self.led_controller
         self.shelly_api.led_controller = self.led_controller
         self.wled_api.led_controller = self.led_controller
         
