@@ -137,23 +137,17 @@ actions:
 mode: restart
 trigger_variables:
   pantry_durations:
-    - "00:03:00"
-    - "00:06:00"
     - "00:15:00"
     - "00:30:00"
     - "01:00:00"
     - "05:00:00"
   noah_durations:
     - "01:00:00"
-    - "01:07:00"
-    - "01:15:00"
     - "02:00:00"
     - "03:00:00"
     - "05:00:00"
   bath_durations:
     - "01:00:00"
-    - "01:07:00"
-    - "01:15:00"
     - "02:00:00"
     - "03:00:00"
     - "05:00:00"
@@ -195,9 +189,9 @@ variables:
         - 11
         - 12
       wk_start: "10:00:00"
-      wk_end: "22:00:00"
+      wk_end: "21:00:00"
       we_start: "11:00:00"
-      we_end: "23:00:00"
+      we_end: "22:00:00"
       message: Noahs Window is open. Please close it.
     bathroom:
       entity: binary_sensor.bthome_bad_oben_window
