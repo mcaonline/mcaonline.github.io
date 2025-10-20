@@ -1,0 +1,227 @@
+alias: Door open voice alert
+triggers:
+  - id: pantry_alarm
+    entity_id: binary_sensor.bthome_sensor_store_room_window
+    to: "on"
+    for: "{{ pantry_durations[0] if pantry_durations|length>0 else '999:00:00' }}"
+    trigger: state
+  - id: pantry_alarm
+    entity_id: binary_sensor.bthome_sensor_store_room_window
+    to: "on"
+    for: "{{ pantry_durations[1] if pantry_durations|length>1 else '999:00:00' }}"
+    trigger: state
+  - id: pantry_alarm
+    entity_id: binary_sensor.bthome_sensor_store_room_window
+    to: "on"
+    for: "{{ pantry_durations[2] if pantry_durations|length>2 else '999:00:00' }}"
+    trigger: state
+  - id: pantry_alarm
+    entity_id: binary_sensor.bthome_sensor_store_room_window
+    to: "on"
+    for: "{{ pantry_durations[3] if pantry_durations|length>3 else '999:00:00' }}"
+    trigger: state
+  - id: pantry_closed
+    entity_id: binary_sensor.bthome_sensor_store_room_window
+    to: "off"
+    trigger: state
+  - id: noah_alarm
+    entity_id: binary_sensor.bthome_sensor_640e_window
+    to: "on"
+    for: "{{ noah_durations[0] if noah_durations|length>0 else '999:00:00' }}"
+    trigger: state
+  - id: noah_alarm
+    entity_id: binary_sensor.bthome_sensor_640e_window
+    to: "on"
+    for: "{{ noah_durations[1] if noah_durations|length>1 else '999:00:00' }}"
+    trigger: state
+  - id: noah_alarm
+    entity_id: binary_sensor.bthome_sensor_640e_window
+    to: "on"
+    for: "{{ noah_durations[2] if noah_durations|length>2 else '999:00:00' }}"
+    trigger: state
+  - id: noah_alarm
+    entity_id: binary_sensor.bthome_sensor_640e_window
+    to: "on"
+    for: "{{ noah_durations[3] if noah_durations|length>3 else '999:00:00' }}"
+    trigger: state
+  - id: noah_closed
+    entity_id: binary_sensor.bthome_sensor_640e_window
+    to: "off"
+    trigger: state
+  - id: bathroom_alarm
+    entity_id: binary_sensor.bthome_bad_oben_window
+    to: "on"
+    for: "{{ bath_durations[0] if bath_durations|length>0 else '999:00:00' }}"
+    trigger: state
+  - id: bathroom_alarm
+    entity_id: binary_sensor.bthome_bad_oben_window
+    to: "on"
+    for: "{{ bath_durations[1] if bath_durations|length>1 else '999:00:00' }}"
+    trigger: state
+  - id: bathroom_alarm
+    entity_id: binary_sensor.bthome_bad_oben_window
+    to: "on"
+    for: "{{ bath_durations[2] if bath_durations|length>2 else '999:00:00' }}"
+    trigger: state
+  - id: bathroom_alarm
+    entity_id: binary_sensor.bthome_bad_oben_window
+    to: "on"
+    for: "{{ bath_durations[3] if bath_durations|length>3 else '999:00:00' }}"
+    trigger: state
+  - id: bathroom_closed
+    entity_id: binary_sensor.bthome_bad_oben_window
+    to: "off"
+    trigger: state
+actions:
+  - choose:
+      - conditions:
+          - condition: template
+            value_template: >-
+              {{ trigger.id in ['pantry_closed','noah_closed','bathroom_closed']
+              }}
+        sequence:
+          - repeat:
+              for_each: "{{ pairs }}"
+              sequence:
+                - action: media_player.media_stop
+                  target:
+                    entity_id: "{{ repeat.item.player }}"
+          - stop: true
+  - variables:
+      key: "{{ trigger.id.split('_')[0] }}"
+      cfg: "{{ sensors[key] }}"
+      message: "{{ cfg.message }}"
+  - condition: template
+    value_template: "{{ now().month in cfg.months }}"
+  - condition: template
+    value_template: >
+      {% set t = now().strftime('%H:%M:%S') %} {% set wd = now().isoweekday() in
+      [1,2,3,4,5] %} {{ (wd and cfg.wk_start <= t <= cfg.wk_end) or ((not wd)
+      and cfg.we_start <= t <= cfg.we_end) }}
+  - condition: template
+    value_template: "{{ is_state(cfg.entity, 'on') }}"
+  - repeat:
+      for_each: "{{ pairs }}"
+      sequence:
+        - variables:
+            sat: "{{ repeat.item.sat }}"
+            player: "{{ repeat.item.player }}"
+            old_vol: "{{ state_attr(player, 'volume_level') | float(0.4) }}"
+        - action: media_player.volume_mute
+          target:
+            entity_id: "{{ player }}"
+          data:
+            is_volume_muted: false
+        - action: media_player.volume_set
+          target:
+            entity_id: "{{ player }}"
+          data:
+            volume_level: "{{ boost_volume }}"
+        - action: assist_satellite.announce
+          target:
+            entity_id: "{{ sat }}"
+          data:
+            message: "{{ message }}"
+            preannounce: true
+        - wait_template: "{{ states(player) == 'playing' }}"
+          timeout: "00:00:03"
+          continue_on_timeout: true
+        - wait_template: "{{ states(player) != 'playing' }}"
+          timeout: "00:00:15"
+          continue_on_timeout: true
+        - action: media_player.volume_set
+          target:
+            entity_id: "{{ player }}"
+          data:
+            volume_level: "{{ old_vol }}"
+mode: restart
+trigger_variables:
+  pantry_durations:
+    - "00:03:00"
+    - "00:06:00"
+    - "00:15:00"
+    - "00:30:00"
+    - "01:00:00"
+    - "05:00:00"
+  noah_durations:
+    - "01:00:00"
+    - "01:07:00"
+    - "01:15:00"
+    - "02:00:00"
+    - "03:00:00"
+    - "05:00:00"
+  bath_durations:
+    - "01:00:00"
+    - "01:07:00"
+    - "01:15:00"
+    - "02:00:00"
+    - "03:00:00"
+    - "05:00:00"
+variables:
+  sensors:
+    pantry:
+      entity: binary_sensor.bthome_sensor_store_room_window
+      months:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+      wk_start: "00:00:00"
+      wk_end: "23:59:59"
+      we_start: "00:00:00"
+      we_end: "23:59:59"
+      message: The pantry door is open, please close it.
+    noah:
+      entity: binary_sensor.bthome_sensor_640e_window
+      months:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+      wk_start: "10:00:00"
+      wk_end: "22:00:00"
+      we_start: "11:00:00"
+      we_end: "23:00:00"
+      message: Noahs Window is open. Please close it.
+    bathroom:
+      entity: binary_sensor.bthome_bad_oben_window
+      months:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+      wk_start: "10:00:00"
+      wk_end: "22:00:00"
+      we_start: "11:00:00"
+      we_end: "23:00:00"
+      message: The bathroom window on the upper level is open. Please close it.
+  pairs:
+    - sat: assist_satellite.home_assistant_voice_09e04b_assist_satellit
+      player: media_player.home_assistant_voice_09e04b_media_player
+    - sat: assist_satellite.home_assistant_voice_09d3e3_assist_satellit
+      player: media_player.home_assistant_voice_09d3e3_media_player
+  boost_volume: 0.7
