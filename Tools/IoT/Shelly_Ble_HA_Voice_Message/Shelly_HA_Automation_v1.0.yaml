@@ -72,6 +72,54 @@ triggers:
     entity_id: binary_sensor.bthome_bad_oben_window
     to: "off"
     trigger: state
+  - id: badoben4_alarm
+    entity_id: binary_sensor.bthome_sensor_4_1bfd_window
+    to: "on"
+    for: "{{ badoben4_durations[0] if badoben4_durations|length>0 else '999:00:00' }}"
+    trigger: state
+  - id: badoben4_alarm
+    entity_id: binary_sensor.bthome_sensor_4_1bfd_window
+    to: "on"
+    for: "{{ badoben4_durations[1] if badoben4_durations|length>1 else '999:00:00' }}"
+    trigger: state
+  - id: badoben4_alarm
+    entity_id: binary_sensor.bthome_sensor_4_1bfd_window
+    to: "on"
+    for: "{{ badoben4_durations[2] if badoben4_durations|length>2 else '999:00:00' }}"
+    trigger: state
+  - id: badoben4_alarm
+    entity_id: binary_sensor.bthome_sensor_4_1bfd_window
+    to: "on"
+    for: "{{ badoben4_durations[3] if badoben4_durations|length>3 else '999:00:00' }}"
+    trigger: state
+  - id: badoben4_closed
+    entity_id: binary_sensor.bthome_sensor_4_1bfd_window
+    to: "off"
+    trigger: state
+  - id: zimmerreserviert_alarm
+    entity_id: binary_sensor.bthome_sensor_5_c794_window
+    to: "on"
+    for: "{{ zimmerreserviert_durations[0] if zimmerreserviert_durations|length>0 else '999:00:00' }}"
+    trigger: state
+  - id: zimmerreserviert_alarm
+    entity_id: binary_sensor.bthome_sensor_5_c794_window
+    to: "on"
+    for: "{{ zimmerreserviert_durations[1] if zimmerreserviert_durations|length>1 else '999:00:00' }}"
+    trigger: state
+  - id: zimmerreserviert_alarm
+    entity_id: binary_sensor.bthome_sensor_5_c794_window
+    to: "on"
+    for: "{{ zimmerreserviert_durations[2] if zimmerreserviert_durations|length>2 else '999:00:00' }}"
+    trigger: state
+  - id: zimmerreserviert_alarm
+    entity_id: binary_sensor.bthome_sensor_5_c794_window
+    to: "on"
+    for: "{{ zimmerreserviert_durations[3] if zimmerreserviert_durations|length>3 else '999:00:00' }}"
+    trigger: state
+  - id: zimmerreserviert_closed
+    entity_id: binary_sensor.bthome_sensor_5_c794_window
+    to: "off"
+    trigger: state
 actions:
   - choose:
       - conditions:
@@ -151,6 +199,16 @@ trigger_variables:
     - "02:00:00"
     - "03:00:00"
     - "05:00:00"
+  badoben4_durations:
+    - "01:00:00"
+    - "02:00:00"
+    - "03:00:00"
+    - "05:00:00"
+  zimmerreserviert_durations:
+    - "01:00:00"
+    - "02:00:00"
+    - "03:00:00"
+    - "05:00:00"
 variables:
   sensors:
     pantry:
@@ -213,6 +271,46 @@ variables:
       we_start: "11:00:00"
       we_end: "23:00:00"
       message: The bathroom window on the upper level is open. Please close it.
+    badoben4:
+      entity: binary_sensor.bthome_sensor_4_1bfd_window
+      months:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+      wk_start: "10:00:00"
+      wk_end: "22:00:00"
+      we_start: "11:00:00"
+      we_end: "23:00:00"
+      message: The bathroom window on the lower level is open. Please close it.
+    zimmerreserviert:
+      entity: binary_sensor.bthome_sensor_5_c794_window
+      months:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+      wk_start: "10:00:00"
+      wk_end: "22:00:00"
+      we_start: "11:00:00"
+      we_end: "23:00:00"
+      message: The reserved room window is open. Please close it.
   pairs:
     - sat: assist_satellite.home_assistant_voice_09e04b_assist_satellit
       player: media_player.home_assistant_voice_09e04b_media_player
