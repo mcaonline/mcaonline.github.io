@@ -1,0 +1,20 @@
+Pfad zu Systemprofielen: %AppData%\BambuStudio\system\BBL\Filament
+Pfad zu Userprofielen:   %AppData%\BambuStudio\user\		Dann \IDNr.\Filament
+
+Add into after first block:
+"activate_air_filtration": [
+        "1"
+    ],
+    "complete_print_exhaust_fan_speed": [
+        "0"
+    ],
+    "during_print_exhaust_fan_speed": [
+        "50"
+    ],
+
+
+Dann Machineprofi: %APPDATA%\BambuStudio\system\BBL\machine
+		   %APPDATA%\BambuStudio\user\		Dann \IDNr.\machine
+
+Ca. anch 7ter Option einfügen:
+"support_air_filtration": "1",
