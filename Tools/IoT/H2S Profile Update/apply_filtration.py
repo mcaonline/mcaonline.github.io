@@ -13,12 +13,23 @@ from collections import OrderedDict
 from pathlib import Path
 from typing import Callable
 
+UPDATE_FILAMENTPROFILE_AIR_EXHAUST50 = True
+UPDATE_MACHINEPROFILE_AIR_FILTRATION_SUPPORT = True
+UPDATE_MACHINEPROFILE_EXHAUST_AFTER_RUN = True
+
 SNIPPET = OrderedDict(
     (
         ("activate_air_filtration", ["1"]),
         ("complete_print_exhaust_fan_speed", ["0"]),
         ("during_print_exhaust_fan_speed", ["50"]),
     )
+)
+
+MACHINE_END_GCODE_SNIPPET = (
+    "; exhaust after-run",
+    "M106 P3 S255",
+    "G4 S300",
+    "M106 P3 S0",
 )
 
 DEFAULT_FILAMENTS = (
@@ -50,6 +61,8 @@ def _load_profile(path: Path) -> OrderedDict:
 
 
 def _ensure_filtration(data: OrderedDict) -> tuple[OrderedDict, bool]:
+    if not UPDATE_FILAMENTPROFILE_AIR_EXHAUST50:
+        return data, False
     changed = False
     updated = OrderedDict()
 
@@ -72,7 +85,9 @@ def _ensure_filtration(data: OrderedDict) -> tuple[OrderedDict, bool]:
     return updated, changed
 
 
-def _ensure_support_flag(data: OrderedDict) -> tuple[OrderedDict, bool]:
+def _ensure_air_filtration_support(data: OrderedDict) -> tuple[OrderedDict, bool]:
+    if not UPDATE_MACHINEPROFILE_AIR_FILTRATION_SUPPORT:
+        return data, False
     changed = False
     updated = OrderedDict()
     support_key = "support_air_filtration"
@@ -94,6 +109,53 @@ def _ensure_support_flag(data: OrderedDict) -> tuple[OrderedDict, bool]:
     return updated, changed
 
 
+def _contains_subsequence(sequence: list[str], candidate: tuple[str, ...]) -> bool:
+    window = len(candidate)
+    if window == 0:
+        return True
+    needle = list(candidate)
+    for idx in range(len(sequence) - window + 1):
+        if sequence[idx : idx + window] == needle:
+            return True
+    return False
+
+
+def _ensure_machine_end_gcode(data: OrderedDict) -> tuple[OrderedDict, bool]:
+    if not UPDATE_MACHINEPROFILE_EXHAUST_AFTER_RUN:
+        return data, False
+    changed = False
+    updated = OrderedDict()
+    gcode_key = "machine_end_gcode"
+
+    for key, value in data.items():
+        if key == gcode_key:
+            if isinstance(value, list):
+                if _contains_subsequence(value, MACHINE_END_GCODE_SNIPPET):
+                    updated[key] = value
+                else:
+                    updated[key] = value + list(MACHINE_END_GCODE_SNIPPET)
+                    changed = True
+            else:
+                updated[key] = list(MACHINE_END_GCODE_SNIPPET)
+                changed = True
+        else:
+            updated[key] = value
+
+    if gcode_key not in updated:
+        updated[gcode_key] = list(MACHINE_END_GCODE_SNIPPET)
+        changed = True
+
+    return updated, changed
+
+
+def _ensure_machine_profile(data: OrderedDict) -> tuple[OrderedDict, bool]:
+    if not (UPDATE_MACHINEPROFILE_AIR_FILTRATION_SUPPORT or UPDATE_MACHINEPROFILE_EXHAUST_AFTER_RUN):
+        return data, False
+    updated_support, support_changed = _ensure_air_filtration_support(data)
+    updated_gcode, gcode_changed = _ensure_machine_end_gcode(updated_support)
+    return updated_gcode, support_changed or gcode_changed
+
+
 def _write_profile(path: Path, data: OrderedDict) -> None:
     with path.open("w", encoding="utf-8") as handle:
         json.dump(data, handle, indent=4, ensure_ascii=False)
@@ -111,7 +173,7 @@ def _create_backup(path: Path) -> Path:
 def _infer_patcher(path: Path, data: OrderedDict) -> PatchFunc:
     name = path.name.lower()
     if "bambu lab h2s" in name and "nozzle" in name:
-        return _ensure_support_flag
+        return _ensure_machine_profile
     return _ensure_filtration
 
 
@@ -169,33 +231,39 @@ def _collect_default_targets(appdata_root: Path) -> tuple[list[tuple[Path, Patch
     targets: list[tuple[Path, PatchFunc]] = []
     errors = False
 
-    system_dir = _build_subpath(appdata_root, SYSTEM_FILAMENT_SUBPATH)
-    if system_dir.is_dir():
-        print(f"[info] Using system directory: {system_dir}")
-        for filename in DEFAULT_FILAMENTS:
-            candidate = system_dir / filename
-            if candidate.exists():
-                targets.append((candidate, _ensure_filtration))
-            else:
-                errors = True
-                print(f"[error] Expected profile not found: {candidate}", file=sys.stderr)
+    if UPDATE_FILAMENTPROFILE_AIR_EXHAUST50:
+        system_dir = _build_subpath(appdata_root, SYSTEM_FILAMENT_SUBPATH)
+        if system_dir.is_dir():
+            print(f"[info] Using system directory: {system_dir}")
+            for filename in DEFAULT_FILAMENTS:
+                candidate = system_dir / filename
+                if candidate.exists():
+                    targets.append((candidate, _ensure_filtration))
+                else:
+                    errors = True
+                    print(f"[error] Expected profile not found: {candidate}", file=sys.stderr)
+        else:
+            print(f"[error] System directory {system_dir} not found", file=sys.stderr)
+            errors = True
     else:
-        print(f"[error] System directory {system_dir} not found", file=sys.stderr)
-        errors = True
+        print("[info] Filament profile update disabled; skipping filament targets.")
 
-    machine_dir = _build_subpath(appdata_root, SYSTEM_MACHINE_SUBPATH)
-    if machine_dir.is_dir():
-        print(f"[info] Using machine directory: {machine_dir}")
-        for filename in DEFAULT_MACHINE_PROFILES:
-            candidate = machine_dir / filename
-            if candidate.exists():
-                targets.append((candidate, _ensure_support_flag))
-            else:
-                errors = True
-                print(f"[error] Expected machine profile not found: {candidate}", file=sys.stderr)
+    if UPDATE_MACHINEPROFILE_AIR_FILTRATION_SUPPORT or UPDATE_MACHINEPROFILE_EXHAUST_AFTER_RUN:
+        machine_dir = _build_subpath(appdata_root, SYSTEM_MACHINE_SUBPATH)
+        if machine_dir.is_dir():
+            print(f"[info] Using machine directory: {machine_dir}")
+            for filename in DEFAULT_MACHINE_PROFILES:
+                candidate = machine_dir / filename
+                if candidate.exists():
+                    targets.append((candidate, _ensure_machine_profile))
+                else:
+                    errors = True
+                    print(f"[error] Expected machine profile not found: {candidate}", file=sys.stderr)
+        else:
+            print(f"[error] Machine directory {machine_dir} not found", file=sys.stderr)
+            errors = True
     else:
-        print(f"[error] Machine directory {machine_dir} not found", file=sys.stderr)
-        errors = True
+        print("[info] Machine profile updates disabled; skipping machine targets.")
 
     return targets, errors
 
