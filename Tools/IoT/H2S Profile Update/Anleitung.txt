@@ -14,7 +14,10 @@ Add into after first block:
 
 
 Dann Machineprofi: %APPDATA%\BambuStudio\system\BBL\machine
-		   %APPDATA%\BambuStudio\user\		Dann \IDNr.\machine
+		   (For check a Setting when save your own %APPDATA%\BambuStudio\user\		Dann \IDNr.\machine)
 
-Ca. anch 7ter Option einfügen:
+Ca. nach 7ter Option einfügen:
 "support_air_filtration": "1",
+
+
+

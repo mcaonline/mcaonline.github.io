@@ -1,10 +1,13 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-The repository stores time-stamped snapshot folders (for example `20251031_130820`), each containing paired `Original` and `Modifiziert` profiles for Bambu H2S materials. Treat `Original` as the pristine reference and restrict edits to `Modifiziert`. Legacy baselines live under `older/`, grouped by Bambu Studio release. `Anleitung.txt` documents manual override paths, and `script_add_arifilterto_pla.cmd` automates profile export and patching.
+Snapshots appear beside this document as timestamped folders such as `20251031_130820`. Each snapshot contains `Original` (reference) and `Modifiziert` (editable) profiles for Bambu H2S materials. Never alter `Original`; stage all adjustments inside `Modifiziert`. Legacy baselines sit under `older/`, grouped by Bambu Studio release. `Anleitung.txt` records manual override targets, and `script_add_arifilterto_pla.cmd` is the sole automation entry point.
 
 ## Build, Test, and Development Commands
-Execute the automation. It creates a timestamped folder beside the script, scaffolds `Original` and `Modifiziert`, so the snapshot uses the same permissions as manually created directories. It copies the three system filament profiles from `%AppData%\BambuStudio\system\BBL\Filament\`, halts with a message if any file is missing, and injects the `activate_air_filtration`, `complete_print_exhaust_fan_speed`, and `during_print_exhaust_fan_speed` entries into each file in `Modifiziert`. Ensure the snippet lands as clean JSON, for example:
+Run only the provided `.cmd` helper. From a Windows Command Prompt, call `script_add_arifilterto_pla.cmd`. The script creates the next timestamped folder, scaffolds `Original`/`Modifiziert`, copies the three system profiles from `%AppData%\BambuStudio\system\BBL\Filament\`, and injects the filtration snippet. It halts if any source file is missing so you can reinstall or export the profile. Rerun the command after fixes; it always refreshes the latest snapshot.
+
+## Coding Style & Naming Conventions
+Keep JSON indented with four spaces, preserve existing key ordering, and append new entries immediately before the closing block they relate to. Filtration keys must render exactly as:
 ```json
     "activate_air_filtration": [
         "1"
@@ -16,13 +19,13 @@ Execute the automation. It creates a timestamped folder beside the script, scaff
         "50"
     ],
 ```
-Reindent the helper's two-space block to four before committing.
-
-## Coding Style & Naming Conventions
-Keep four-space indentation in JSON and preserve the existing key order to minimise noisy diffs. New filenames should follow `Bambu <Material> <Variant> @BBL H2S.json`. 
+Name new profiles following `Bambu <Material> <Variant> @BBL H2S.json`, for example `Bambu PLA-CF Natural @BBL H2S.json`.
 
 ## Testing Guidelines
-Before publishing, load the modified profiles into Bambu Studio via `%AppData%\BambuStudio\user\<ID>\Filament` and confirm the H2S filtration settings surface in the filament UI. When printer configs change, mirror them under the machine paths listed in `Anleitung.txt`. Capture screenshots or export profiles to show that `activate_air_filtration`, `complete_print_exhaust_fan_speed`, and `during_print_exhaust_fan_speed` resolve as intended.
+Load patched profiles into Bambu Studio via `%AppData%\BambuStudio\user\<ID>\Filament`. Confirm the UI exposes the three filtration settings for every updated material. When machine presets shift, mirror the same changes under the hardware paths listed in `Anleitung.txt`. Capture validation screenshots or re-exported profiles to document successful propagation.
 
 ## Commit & Pull Request Guidelines
-Git history is not yet tracked, so adopt Conventional Commit prefixes (`feat:`, `fix:`, `docs:`) to keep future logs searchable. Keep commits scoped to a single profile family or script change. Pull requests should summarise the scenario, state the Bambu Studio version and snapshot base, link the comparison directory, and attach the validation diff or command output. Update `Anleitung.txt` whenever process changes affect deployment paths or machine support flags.
+Adopt Conventional Commit prefixes (`feat:`, `fix:`, `docs:`) and keep each commit focused on one snapshot or script tweak. Reference the active Bambu Studio build, the timestamped folder touched, and any supporting artifacts. Pull requests should include a short scenario recap, a link to the comparison directory, and the verification evidence. Update `Anleitung.txt` whenever deployment paths or machine flags evolve.
+
+## Security & Configuration Tips
+Run the automation from an account that can read `%AppData%` and write beside this repository so permissions mirror manual exports. Avoid manual edits to `Original` to retain a clean rollback point, and keep local antivirus from quarantining the generated `.json` files or the helper script.
