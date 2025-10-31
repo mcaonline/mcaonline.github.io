@@ -16,6 +16,9 @@ from typing import Callable
 UPDATE_FILAMENTPROFILE_AIR_EXHAUST50 = True
 UPDATE_MACHINEPROFILE_AIR_FILTRATION_SUPPORT = True
 UPDATE_MACHINEPROFILE_EXHAUST_AFTER_RUN = True
+EXHAUST_AFTER_RUN_SECONDS = 300
+
+
 
 SNIPPET = OrderedDict(
     (
@@ -25,10 +28,13 @@ SNIPPET = OrderedDict(
     )
 )
 
+if EXHAUST_AFTER_RUN_SECONDS <= 0:
+    raise ValueError("EXHAUST_AFTER_RUN_SECONDS must be positive.")
+
 MACHINE_END_GCODE_SNIPPET = (
     "; exhaust after-run",
     "M106 P3 S255",
-    "G4 S300",
+    f"G4 S{EXHAUST_AFTER_RUN_SECONDS}",
     "M106 P3 S0",
 )
 
