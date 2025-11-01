@@ -50,7 +50,23 @@ DEFAULT_MACHINE_PROFILES = ("Bambu Lab H2S 0.4 nozzle.json",)
 SYSTEM_FILAMENT_SUBPATH = ("BambuStudio", "system", "BBL", "Filament")
 SYSTEM_MACHINE_SUBPATH = ("BambuStudio", "system", "BBL", "machine")
 
-PatchFunc = Callable[[OrderedDict], tuple[OrderedDict, bool]]
+PatchFunc = Callable[[OrderedDict], tuple[OrderedDict, list[str]]]
+
+
+def _ensure_directory_backup(source: Path, backup: Path) -> bool:
+    if not source.exists():
+        print(f"[error] Source directory {source} not found", file=sys.stderr)
+        return False
+    if backup.exists():
+        print(f"[info] Backup directory already present: {backup}")
+        return True
+    try:
+        shutil.copytree(source, backup)
+    except OSError as exc:  # pragma: no cover - critical failure, surface to user
+        print(f"[error] Failed to create backup {backup} ({exc})", file=sys.stderr)
+        return False
+    print(f"[info] Created backup directory: {backup}")
+    return True
 
 
 def _build_subpath(root: Path, segments: tuple[str, ...]) -> Path:
@@ -62,18 +78,24 @@ def _load_profile(path: Path) -> OrderedDict:
         return json.load(handle, object_pairs_hook=OrderedDict)
 
 
-def _ensure_filtration(data: OrderedDict) -> tuple[OrderedDict, bool]:
+def _format_value_for_report(value: object) -> str:
+    return json.dumps(value, ensure_ascii=False)
+
+
+def _ensure_filtration(data: OrderedDict) -> tuple[OrderedDict, list[str]]:
     if not UPDATE_FILAMENTPROFILE_AIR_EXHAUST50:
-        return data, False
-    changed = False
+        return data, []
     updated = OrderedDict()
+    changes: list[str] = []
 
     for key, value in data.items():
         if key in SNIPPET:
             target = SNIPPET[key]
             if value != target:
                 updated[key] = target
-                changed = True
+                changes.append(
+                    f"{key}: set to {_format_value_for_report(target)} (was {_format_value_for_report(value)})"
+                )
             else:
                 updated[key] = value
         else:
@@ -82,18 +104,18 @@ def _ensure_filtration(data: OrderedDict) -> tuple[OrderedDict, bool]:
     for key, target in SNIPPET.items():
         if key not in updated:
             updated[key] = target
-            changed = True
+            changes.append(f"{key}: added {_format_value_for_report(target)}")
 
-    return updated, changed
+    return updated, changes
 
 
 def _ensure_air_filtration_support(
     data: OrderedDict, *, source_path: Path | None = None
-) -> tuple[OrderedDict, bool]:
+) -> tuple[OrderedDict, list[str]]:
     if not UPDATE_MACHINEPROFILE_AIR_FILTRATION_SUPPORT:
-        return data, False
-    changed = False
+        return data, []
     updated = OrderedDict()
+    changes: list[str] = []
     support_key = "support_air_filtration"
     inherits_value = data.get("inherits")
     inherits_local = (
@@ -109,7 +131,9 @@ def _ensure_air_filtration_support(
         if key == support_key:
             if value != "1":
                 updated[key] = "1"
-                changed = True
+                changes.append(
+                    f"{support_key}: set to \"1\" (was {_format_value_for_report(value)})"
+                )
             else:
                 updated[key] = value
         else:
@@ -117,11 +141,11 @@ def _ensure_air_filtration_support(
 
     if support_key not in updated:
         if inherits_local and inherited_support == "1":
-            return updated, changed
+            return updated, changes
         updated[support_key] = "1"
-        changed = True
+        changes.append(f"{support_key}: added \"1\"")
 
-    return updated, changed
+    return updated, changes
 
 
 def _contains_subsequence(sequence: list[str], candidate: tuple[str, ...]) -> bool:
@@ -248,11 +272,11 @@ def _inherit_machine_value_from_parent(
 
 def _ensure_machine_end_gcode(
     data: OrderedDict, *, source_path: Path | None = None
-) -> tuple[OrderedDict, bool]:
+) -> tuple[OrderedDict, list[str]]:
     if not UPDATE_MACHINEPROFILE_EXHAUST_AFTER_RUN:
-        return data, False
-    changed = False
+        return data, []
     updated = OrderedDict()
+    changes: list[str] = []
     gcode_key = "machine_end_gcode"
     gcode_present = False
 
@@ -262,7 +286,9 @@ def _ensure_machine_end_gcode(
             updated_value, value_changed = _append_machine_end_gcode(value)
             updated[key] = updated_value
             if value_changed:
-                changed = True
+                changes.append(
+                    f"{gcode_key}: appended {json.dumps(MACHINE_END_GCODE_SNIPPET_LIST, ensure_ascii=False)}"
+                )
         else:
             updated[key] = value
 
@@ -274,25 +300,29 @@ def _ensure_machine_end_gcode(
                     f"[warn] {source_path.name}: machine_end_gcode not found and parent could not be resolved; skipping append",
                     file=sys.stderr,
                 )
-            return updated, changed
+            return updated, changes
         appended_value, appended_changed = _append_machine_end_gcode(inherited_value)
         if appended_changed:
             updated[gcode_key] = appended_value
-            changed = True
+            changes.append(
+                f"{gcode_key}: appended {json.dumps(MACHINE_END_GCODE_SNIPPET_LIST, ensure_ascii=False)}"
+            )
 
-    return updated, changed
+    return updated, changes
 
 
 def _ensure_machine_profile(
     data: OrderedDict, *, source_path: Path | None = None
-) -> tuple[OrderedDict, bool]:
+) -> tuple[OrderedDict, list[str]]:
     if not (UPDATE_MACHINEPROFILE_AIR_FILTRATION_SUPPORT or UPDATE_MACHINEPROFILE_EXHAUST_AFTER_RUN):
-        return data, False
-    updated_support, support_changed = _ensure_air_filtration_support(
+        return data, []
+    updated_support, support_changes = _ensure_air_filtration_support(
         data, source_path=source_path
     )
-    updated_gcode, gcode_changed = _ensure_machine_end_gcode(updated_support, source_path=source_path)
-    return updated_gcode, support_changed or gcode_changed
+    updated_gcode, gcode_changes = _ensure_machine_end_gcode(
+        updated_support, source_path=source_path
+    )
+    return updated_gcode, support_changes + gcode_changes
 
 
 def _write_profile(path: Path, data: OrderedDict) -> None:
@@ -307,6 +337,19 @@ def _create_backup(path: Path) -> Path:
     backup_path = path.with_name(backup_name)
     shutil.copy2(path, backup_path)
     return backup_path
+
+
+def _ensure_default_backups(appdata_root: Path) -> bool:
+    success = True
+    if UPDATE_FILAMENTPROFILE_AIR_EXHAUST50:
+        filament_dir = _build_subpath(appdata_root, SYSTEM_FILAMENT_SUBPATH)
+        filament_backup = filament_dir.parent / f"{filament_dir.name.lower()}_backup"
+        success = _ensure_directory_backup(filament_dir, filament_backup) and success
+    if UPDATE_MACHINEPROFILE_AIR_FILTRATION_SUPPORT or UPDATE_MACHINEPROFILE_EXHAUST_AFTER_RUN:
+        machine_dir = _build_subpath(appdata_root, SYSTEM_MACHINE_SUBPATH)
+        machine_backup = machine_dir.parent / f"{machine_dir.name.lower()}_backup"
+        success = _ensure_directory_backup(machine_dir, machine_backup) and success
+    return success
 
 
 def _infer_patcher(path: Path, data: OrderedDict) -> PatchFunc:
@@ -327,8 +370,8 @@ def process_file(path: Path, dry_run: bool = False, patcher: PatchFunc | None = 
         print(f"[error] {path}: invalid JSON ({exc})", file=sys.stderr)
         return 1
     selected_patcher = patcher or _infer_patcher(path, profile)
-    patched, changed = selected_patcher(profile)
-    if not changed:
+    patched, change_details = selected_patcher(profile)
+    if not change_details:
         print(f"[skip] {path.name} already up to date")
         return 0
 
@@ -337,11 +380,15 @@ def process_file(path: Path, dry_run: bool = False, patcher: PatchFunc | None = 
             f"{path.stem}.{_dt.datetime.now().strftime('%Y%m%d_%H%M%S')}_backup{path.suffix}"
         )
         print(f"[dry-run] Would create {backup_path.name} and update {path.name}")
+        for detail in change_details:
+            print(f"         - {detail}")
         return 0
 
     backup_path = _create_backup(path)
     _write_profile(path, patched)
     print(f"[updated] {path.name} (backup: {backup_path.name})")
+    for detail in change_details:
+        print(f"         - {detail}")
     return 0
 
 
@@ -427,6 +474,8 @@ def main(argv: list[str] | None = None) -> int:
             print("[error] APPDATA environment variable not set", file=sys.stderr)
             return 1
         appdata_root = Path(appdata)
+        if not _ensure_default_backups(appdata_root):
+            return 1
         default_targets, has_errors = _collect_default_targets(appdata_root)
         if has_errors:
             return 1
