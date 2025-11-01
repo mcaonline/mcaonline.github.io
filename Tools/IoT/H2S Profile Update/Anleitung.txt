@@ -16,8 +16,16 @@ Add into after first block:
 Dann Machineprofi: %APPDATA%\BambuStudio\system\BBL\machine
 		   (For check a Setting when save your own %APPDATA%\BambuStudio\user\		Dann \IDNr.\machine)
 
-Ca. nach 7ter Option einfügen:
+apply_filtration.py patched nur die drei `@base` Profile aus DEFAULT_FILAMENTS (`Bambu PLA Basic @base.json`, `Bambu PLA Silk @base.json`, `Bambu PLA Silk+ @base.json`). Die abgeleiteten `@BBL H2S`‑Varianten erben die Filtrationswerte daraus und brauchen keine gesonderten Änderungen. Bei den Maschinenprofilen bleibt es beim Patch von `Bambu Lab H2S 0.4 nozzle.json`, weil die 0.2/0.6/0.8 Varianten `support_air_filtration` und den End‑GCode übernehmen.
+
+Ca. nach 7ter Option einfügen, 04er nozzle edit reicht da die anderen einen inherit haben:
+Dann noch einen 10 Minuten Nachlauf in end Gcode einfügen:
+
 "support_air_filtration": "1",
 
+"; exhaust after-run",
+    "M106 P3 S255",
+    f"G4 S600",
+    "M106 P3 S0",
 
 

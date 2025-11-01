@@ -1,10 +1,11 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-Snapshots appear beside this document as timestamped folders such as `20251031_130820`. Each snapshot contains `Original` (reference) and `Modifiziert` (editable) profiles for Bambu H2S materials. Never alter `Original`; stage all adjustments inside `Modifiziert`. Legacy baselines sit under `older/`, grouped by Bambu Studio release. `Anleitung.txt` records manual override targets, and `script_add_arifilterto_pla.cmd` is the sole automation entry point.
+Snapshots appear beside this document as timestamped folders such as `20251031_130820`. Each snapshot contains `Original` (reference) and `Modifiziert` (editable) profiles for Bambu H2S materials. Never alter `Original`; stage all adjustments inside `Modifiziert`. Legacy baselines sit under `older/`, grouped by Bambu Studio release. `Anleitung.txt` records manual override targets, is the sole automation entry point.
 
 ## Build, Test, and Development Commands
-Run only the provided `.cmd` helper. From a Windows Command Prompt, call `script_add_arifilterto_pla.cmd`. The script creates the next timestamped folder, scaffolds `Original`/`Modifiziert`, copies the three system profiles from `%AppData%\BambuStudio\system\BBL\Filament\`, and injects the filtration snippet. It halts if any source file is missing so you can reinstall or export the profile. Rerun the command after fixes; it always refreshes the latest snapshot.
+The script creates the next timestamped folder, scaffolds `Original`/`Modifiziert`, copies the three system profiles from `%AppData%\BambuStudio\system\BBL\Filament\`, and injects the filtration snippet. It halts if any source file is missing so you can reinstall or export the profile. Rerun the command after fixes; it always refreshes the latest snapshot.  
+`apply_filtration.py` now limits filament updates to the three `@base` exports listed in `DEFAULT_FILAMENTS` (`Bambu PLA Basic @base.json`, `Bambu PLA Silk @base.json`, `Bambu PLA Silk+ @base.json`). Derived `@BBL H2S` variants inherit the filtration keys from those bases, so they no longer need direct edits. Machine updates remain limited to `Bambu Lab H2S 0.4 nozzle.json`, because the other nozzle definitions inherit `support_air_filtration` and the end‑gcode tail.
 
 ## Coding Style & Naming Conventions
 Keep JSON indented with four spaces, preserve existing key ordering, and append new entries immediately before the closing block they relate to. Filtration keys must render exactly as:
@@ -20,6 +21,7 @@ Keep JSON indented with four spaces, preserve existing key ordering, and append 
     ],
 ```
 Name new profiles following `Bambu <Material> <Variant> @BBL H2S.json`, for example `Bambu PLA-CF Natural @BBL H2S.json`.
+Only the 0.4 mm nozzle base profile receives explicit `support_air_filtration`; the 0.2 / 0.6 / 0.8 variants inherit that flag and stay untouched unless their parent is missing it.
 
 ## Testing Guidelines
 Load patched profiles into Bambu Studio via `%AppData%\BambuStudio\user\<ID>\Filament`. Confirm the UI exposes the three filtration settings for every updated material. When machine presets shift, mirror the same changes under the hardware paths listed in `Anleitung.txt`. Capture validation screenshots or re-exported profiles to document successful propagation.

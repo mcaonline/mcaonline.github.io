@@ -37,19 +37,15 @@ MACHINE_END_GCODE_SNIPPET = (
     f"G4 S{EXHAUST_AFTER_RUN_SECONDS}",
     "M106 P3 S0",
 )
+MACHINE_END_GCODE_SNIPPET_LIST = list(MACHINE_END_GCODE_SNIPPET)
 
 DEFAULT_FILAMENTS = (
-    "Bambu PLA Basic @BBL H2S.json",
-    "Bambu PLA Silk @BBL H2S.json",
-    "Bambu PLA Silk+ @BBL H2S.json",
+    "Bambu PLA Basic @base.json",
+    "Bambu PLA Silk @base.json",
+    "Bambu PLA Silk+ @base.json",
 )
 
-DEFAULT_MACHINE_PROFILES = (
-    "Bambu Lab H2S 0.2 nozzle.json",
-    "Bambu Lab H2S 0.4 nozzle.json",
-    "Bambu Lab H2S 0.6 nozzle.json",
-    "Bambu Lab H2S 0.8 nozzle.json",
-)
+DEFAULT_MACHINE_PROFILES = ("Bambu Lab H2S 0.4 nozzle.json",)
 
 SYSTEM_FILAMENT_SUBPATH = ("BambuStudio", "system", "BBL", "Filament")
 SYSTEM_MACHINE_SUBPATH = ("BambuStudio", "system", "BBL", "machine")
@@ -91,12 +87,23 @@ def _ensure_filtration(data: OrderedDict) -> tuple[OrderedDict, bool]:
     return updated, changed
 
 
-def _ensure_air_filtration_support(data: OrderedDict) -> tuple[OrderedDict, bool]:
+def _ensure_air_filtration_support(
+    data: OrderedDict, *, source_path: Path | None = None
+) -> tuple[OrderedDict, bool]:
     if not UPDATE_MACHINEPROFILE_AIR_FILTRATION_SUPPORT:
         return data, False
     changed = False
     updated = OrderedDict()
     support_key = "support_air_filtration"
+    inherits_value = data.get("inherits")
+    inherits_local = (
+        isinstance(inherits_value, str)
+        and "bambu lab h2s" in inherits_value.lower()
+        and "nozzle" in inherits_value.lower()
+    )
+    inherited_support = None
+    if support_key not in data:
+        inherited_support = _inherit_machine_value_from_parent(support_key, data, source_path)
 
     for key, value in data.items():
         if key == support_key:
@@ -109,6 +116,8 @@ def _ensure_air_filtration_support(data: OrderedDict) -> tuple[OrderedDict, bool
             updated[key] = value
 
     if support_key not in updated:
+        if inherits_local and inherited_support == "1":
+            return updated, changed
         updated[support_key] = "1"
         changed = True
 
@@ -126,39 +135,163 @@ def _contains_subsequence(sequence: list[str], candidate: tuple[str, ...]) -> bo
     return False
 
 
-def _ensure_machine_end_gcode(data: OrderedDict) -> tuple[OrderedDict, bool]:
+def _append_snippet_to_string(text: str) -> tuple[str, bool]:
+    lines = text.splitlines()
+    newline = "\r\n" if "\r\n" in text else "\n"
+    had_trailing_newline = text.endswith(("\n", "\r"))
+    if _contains_subsequence(lines, MACHINE_END_GCODE_SNIPPET):
+        return text, False
+
+    updated_lines = list(lines)
+    updated_lines.extend(MACHINE_END_GCODE_SNIPPET)
+    new_text = newline.join(updated_lines)
+    if had_trailing_newline:
+        new_text += newline
+    return new_text, True
+
+
+def _append_machine_end_gcode(value: object) -> tuple[object, bool]:
+    if isinstance(value, list):
+        if _contains_subsequence(value, MACHINE_END_GCODE_SNIPPET):
+            return value, False
+        return value + MACHINE_END_GCODE_SNIPPET_LIST, True
+    if isinstance(value, str):
+        return _append_snippet_to_string(value)
+    if value is None:
+        return _append_snippet_to_string("")
+    return _append_snippet_to_string(str(value))
+
+
+def _collect_parent_hints(data: OrderedDict) -> list[str]:
+    hints: list[str] = []
+    markers = ("parent", "inherit")
+
+    def _walk(node: object, key_path: str = "") -> None:
+        if isinstance(node, dict):
+            for key, value in node.items():
+                path = f"{key_path}.{key}" if key_path else key
+                _walk(value, path)
+        elif isinstance(node, list):
+            for item in node:
+                _walk(item, key_path)
+        elif isinstance(node, str):
+            if not key_path:
+                return
+            lowered = key_path.lower()
+            if any(marker in lowered for marker in markers):
+                hints.append(node)
+
+    _walk(data)
+    return hints
+
+
+def _resolve_parent_paths(hints: list[str], source_path: Path | None) -> list[Path]:
+    if source_path is None:
+        return []
+    parent_dir = source_path.parent
+    resolved: list[Path] = []
+    seen: set[Path] = set()
+
+    for hint in hints:
+        candidates = [hint]
+        if not hint.lower().endswith(".json"):
+            candidates.append(f"{hint}.json")
+        for candidate in candidates:
+            candidate_path = Path(candidate)
+            if not candidate_path.is_absolute():
+                candidate_path = (parent_dir / candidate_path).resolve()
+            else:
+                candidate_path = candidate_path.resolve()
+            if (
+                candidate_path.exists()
+                and candidate_path not in seen
+                and candidate_path != source_path.resolve()
+            ):
+                resolved.append(candidate_path)
+                seen.add(candidate_path)
+
+    return resolved
+
+
+def _inherit_machine_value_from_parent(
+    key: str, data: OrderedDict, source_path: Path | None, visited: set[Path] | None = None
+) -> object | None:
+    if source_path is None:
+        return None
+    if visited is None:
+        visited = set()
+    try:
+        current_path = source_path.resolve()
+    except FileNotFoundError:
+        current_path = source_path
+    if current_path in visited:
+        return None
+    visited.add(current_path)
+
+    hints = _collect_parent_hints(data)
+    for candidate in _resolve_parent_paths(hints, source_path):
+        resolved_candidate = candidate.resolve()
+        if resolved_candidate in visited:
+            continue
+        try:
+            parent_data = _load_profile(candidate)
+        except (FileNotFoundError, json.JSONDecodeError):
+            continue
+        parent_value = parent_data.get(key)
+        if parent_value is not None:
+            return parent_value
+        inherited = _inherit_machine_value_from_parent(key, parent_data, candidate, visited)
+        if inherited is not None:
+            return inherited
+    return None
+
+
+def _ensure_machine_end_gcode(
+    data: OrderedDict, *, source_path: Path | None = None
+) -> tuple[OrderedDict, bool]:
     if not UPDATE_MACHINEPROFILE_EXHAUST_AFTER_RUN:
         return data, False
     changed = False
     updated = OrderedDict()
     gcode_key = "machine_end_gcode"
+    gcode_present = False
 
     for key, value in data.items():
         if key == gcode_key:
-            if isinstance(value, list):
-                if _contains_subsequence(value, MACHINE_END_GCODE_SNIPPET):
-                    updated[key] = value
-                else:
-                    updated[key] = value + list(MACHINE_END_GCODE_SNIPPET)
-                    changed = True
-            else:
-                updated[key] = list(MACHINE_END_GCODE_SNIPPET)
+            gcode_present = True
+            updated_value, value_changed = _append_machine_end_gcode(value)
+            updated[key] = updated_value
+            if value_changed:
                 changed = True
         else:
             updated[key] = value
 
-    if gcode_key not in updated:
-        updated[gcode_key] = list(MACHINE_END_GCODE_SNIPPET)
-        changed = True
+    if not gcode_present:
+        inherited_value = _inherit_machine_value_from_parent(gcode_key, data, source_path)
+        if inherited_value is None:
+            if source_path:
+                print(
+                    f"[warn] {source_path.name}: machine_end_gcode not found and parent could not be resolved; skipping append",
+                    file=sys.stderr,
+                )
+            return updated, changed
+        appended_value, appended_changed = _append_machine_end_gcode(inherited_value)
+        if appended_changed:
+            updated[gcode_key] = appended_value
+            changed = True
 
     return updated, changed
 
 
-def _ensure_machine_profile(data: OrderedDict) -> tuple[OrderedDict, bool]:
+def _ensure_machine_profile(
+    data: OrderedDict, *, source_path: Path | None = None
+) -> tuple[OrderedDict, bool]:
     if not (UPDATE_MACHINEPROFILE_AIR_FILTRATION_SUPPORT or UPDATE_MACHINEPROFILE_EXHAUST_AFTER_RUN):
         return data, False
-    updated_support, support_changed = _ensure_air_filtration_support(data)
-    updated_gcode, gcode_changed = _ensure_machine_end_gcode(updated_support)
+    updated_support, support_changed = _ensure_air_filtration_support(
+        data, source_path=source_path
+    )
+    updated_gcode, gcode_changed = _ensure_machine_end_gcode(updated_support, source_path=source_path)
     return updated_gcode, support_changed or gcode_changed
 
 
@@ -177,9 +310,10 @@ def _create_backup(path: Path) -> Path:
 
 
 def _infer_patcher(path: Path, data: OrderedDict) -> PatchFunc:
-    name = path.name.lower()
-    if "bambu lab h2s" in name and "nozzle" in name:
-        return _ensure_machine_profile
+    lower_name = path.name.lower()
+    machine_indicators = ("machine_end_gcode", "support_air_filtration")
+    if any(key in data for key in machine_indicators) or "nozzle" in lower_name or path.parent.name.lower() == "machine":
+        return lambda payload, target_path=path: _ensure_machine_profile(payload, source_path=target_path)
     return _ensure_filtration
 
 
@@ -261,7 +395,14 @@ def _collect_default_targets(appdata_root: Path) -> tuple[list[tuple[Path, Patch
             for filename in DEFAULT_MACHINE_PROFILES:
                 candidate = machine_dir / filename
                 if candidate.exists():
-                    targets.append((candidate, _ensure_machine_profile))
+                    targets.append(
+                        (
+                            candidate,
+                            lambda payload, target_path=candidate: _ensure_machine_profile(
+                                payload, source_path=target_path
+                            ),
+                        )
+                    )
                 else:
                     errors = True
                     print(f"[error] Expected machine profile not found: {candidate}", file=sys.stderr)
