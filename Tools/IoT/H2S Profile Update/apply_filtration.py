@@ -24,7 +24,7 @@ SNIPPET = OrderedDict(
     (
         ("activate_air_filtration", ["1"]),
         ("complete_print_exhaust_fan_speed", ["0"]),
-        ("during_print_exhaust_fan_speed", ["50"]),
+        ("during_print_exhaust_fan_speed", ["80"]),
     )
 )
 
