@@ -2,6 +2,12 @@ import M5
 from M5 import BtnA
 import usocket as socket
 import ujson, time, ntptime, gc, network
+import machine
+import sys
+try:
+    import esp32
+except ImportError:  # MicroPython variant without esp32 module
+    esp32 = None
 from hardware import RGB
 from unit import PIRUnit
 from machine import WDT
@@ -145,18 +151,45 @@ class TimeUtils:
             return (day < ls) or (day == ls and hour < 3)
     
     @staticmethod
+    def _days_from_civil(year, month, day):
+        """Convert civil date to days since 1970-01-01"""
+        if month <= 2:
+            year -= 1
+            month += 12
+        era = year // 400
+        yoe = year - era * 400
+        doy = (153 * (month - 3) + 2) // 5 + day - 1
+        doe = yoe * 365 + yoe // 4 - yoe // 100 + doy
+        return era * 146097 + doe - 719468
+    
+    @staticmethod
+    def _seconds_since_epoch(year, month, day, hour=0, minute=0, second=0):
+        """Convert date/time to seconds since Unix epoch"""
+        days = TimeUtils._days_from_civil(year, month, day)
+        return days * 86400 + hour * 3600 + minute * 60 + second
+    
+    @staticmethod
     def get_germany_offset():
         """Get timezone offset for Germany"""
-        winter_offset = 7200
-        summer_offset = 10800
-        tentative = time.localtime(time.time() + winter_offset)
-        return summer_offset if TimeUtils.is_dst_germany(tentative) else winter_offset
+        winter_offset = 3600
+        summer_offset = 7200
+        utc_now = time.gmtime()
+        year = utc_now[0]
+        # DST starts last Sunday of March at 01:00 UTC, ends last Sunday of October at 01:00 UTC
+        start_day = TimeUtils.last_sunday(year, 3)
+        end_day = TimeUtils.last_sunday(year, 10)
+        dst_start = TimeUtils._seconds_since_epoch(year, 3, start_day, 1)
+        dst_end = TimeUtils._seconds_since_epoch(year, 10, end_day, 1)
+        now_seconds = TimeUtils._seconds_since_epoch(year, utc_now[1], utc_now[2], utc_now[3], utc_now[4], utc_now[5])
+        if dst_start <= now_seconds < dst_end:
+            return summer_offset
+        return winter_offset
     
     @staticmethod
     def local_time():
         """Get local German time"""
         offset = TimeUtils.get_germany_offset()
-        return time.localtime(time.time() + offset)
+        return time.gmtime(time.time() + offset)
 
 # ==============================================================================
 # COLOR UTILITIES
@@ -1350,6 +1383,64 @@ class KitchenLightOrchestrator:
         """Initialize all components"""
         # Initialize M5Stack
         M5.begin()
+        reset_reason = machine.reset_cause()
+        reset_map = {}
+        for attr, label in (
+            ("PWRON_RESET", "PWRON"),
+            ("HARD_RESET", "HARD"),
+            ("WDT_RESET", "WDT"),
+            ("DEEPSLEEP_RESET", "DEEPSLEEP"),
+            ("SOFT_RESET", "SOFT"),
+            ("BROWN_OUT_RESET", "BROWNOUT"),
+        ):
+            value = getattr(machine, attr, None)
+            if value is not None:
+                reset_map[value] = label
+        reset_label = reset_map.get(reset_reason, str(reset_reason))
+        self.logger.log("Reset cause: {} ({})".format(reset_label, reset_reason))
+        
+        # Boot diagnostics
+        version = getattr(sys, "version", "unknown")
+        platform = getattr(sys, "platform", "unknown")
+        freq = machine.freq()
+        if isinstance(freq, tuple) and freq:
+            freq = freq[0]
+        freq_mhz = freq // 1_000_000 if isinstance(freq, int) and freq > 0 else freq
+        self.logger.log("Firmware: {} on {} @ {} MHz".format(
+            version.split(" ")[0] if isinstance(version, str) else version,
+            platform,
+            freq_mhz))
+        
+        try:
+            german_offset = TimeUtils.get_germany_offset()
+            self.logger.log("Time offset (Germany): {}s".format(german_offset))
+        except Exception as offset_error:
+            self.logger.log("Time offset check fehlgeschlagen: {}".format(offset_error))
+        
+        watchdog_status = "ON ({}s)".format(self.config.WATCHDOG_TIMEOUT // 1000) \
+            if self.config.WATCHDOG_ENABLED else "OFF"
+        self.logger.log(
+            "Config: test_mode={}, debug={}, watchdog={}".format(
+                self.config.TESTMODE, self.config.DEBUG, watchdog_status))
+        self.logger.log(
+            "Timers: inactivity={}s, manual_override={}s, PIR threshold={} events/{}s window".format(
+                self.config.INAKT_TIMEOUT,
+                self.config.MANUAL_OVERRIDE_TIME,
+                self.config.EVENT_THRESHOLD,
+                self.config.PIR_WINDOW))
+        if esp32:
+            try:
+                rtc_memory = esp32.RTC().memory()
+                if rtc_memory:
+                    self.logger.log("RTC memory: {}".format(rtc_memory))
+                else:
+                    self.logger.log("RTC memory leer.")
+            except Exception as rtc_error:
+                self.logger.log("RTC memory nicht verfügbar: {}".format(rtc_error))
+        else:
+            self.logger.log("RTC memory: esp32-Modul nicht verfügbar.")
+        self.logger.log("Memory pre-GC: {} KB frei, {} KB belegt".format(
+            gc.mem_free() // 1024, gc.mem_alloc() // 1024))
         
         # Initialize hardware watchdog if enabled
         if self.config.WATCHDOG_ENABLED:
