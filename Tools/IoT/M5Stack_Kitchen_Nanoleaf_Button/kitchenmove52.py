@@ -27,12 +27,16 @@ class Config:
             self.PIR_WINDOW = 60             # Test: 60 sec sliding window
             self.MANUAL_OVERRIDE_TIME = 60   # Test: 60 sec override
             self.AUTO_ON_NICHT_NACH = 1500   # Test: Always "dark enough"
+            self.PIR_ACTIVE_INTERVAL = 5     # Test: count sustained motion every 5 seconds
         else:
             self.INAKT_TIMEOUT = 300         # Prod: 300 sec (5 min)
             self.EVENT_THRESHOLD = 12        # Prod: 12 PIR events
             self.PIR_WINDOW = 300            # Prod: 300 sec (5 min) sliding window
             self.MANUAL_OVERRIDE_TIME = 900  # Prod: 900 sec (15 min)
             self.AUTO_ON_NICHT_NACH = 22 * 60  # Prod: 22:00 (10 PM)
+            self.PIR_ACTIVE_INTERVAL = 20    # Prod: count sustained motion every 20 seconds
+
+        self.STATE_REFRESH_INTERVAL = 1200  # Periodic Shelly state poll (seconds)
         
         # Network addresses
         self.SHELLY_IP = "10.80.23.51"
@@ -1267,6 +1271,7 @@ class PIRHandler:
         self.logger = debug_logger
         self.last_motion_time = 0
         self.debounce_time = 0.1  # 100ms debounce
+        self.last_active_event_time = 0
     
     def on_motion_detected(self, pir):
         """Called when motion is detected"""
@@ -1294,12 +1299,14 @@ class PIRHandler:
             self.logger.log("Licht bereits an – aktualisiere Inaktivitäts-Timer (nächste Prüfung in {} Sek.).".format(remaining))
             self.timer_mgr.set_last_event(now)
             self.pir_mgr.active = True
+            self.last_active_event_time = now
             return
         
         # Add event and check threshold
         self.logger.log("Bewegung erkannt (PIR) um {}.".format(int(now)))
         count = self.pir_mgr.add_event(now)
         self.timer_mgr.set_last_event(now)
+        self.last_active_event_time = now
         
         if count < self.config.EVENT_THRESHOLD:
             # Show progress LED
@@ -1324,9 +1331,50 @@ class PIRHandler:
             remaining = self.timer_mgr.get_remaining_inactive_time()
             self.logger.log("PIR meldet keine Aktivität.")
             if remaining is not None:
-                self.logger.log("Schalte Licht ab in {:.0f} Sekunden.".format(remaining))
+                self.logger.log("Schalte Licht ab in {:.0f} Sekunden, sofern an.".format(remaining))
         
         self.pir_mgr.active = False
+        self.last_active_event_time = 0
+
+    def on_active_motion_tick(self, now=None):
+        """Count events while PIR stays active (no new IRQ edges)."""
+        if not self.pir_mgr.active:
+            return
+
+        if now is None:
+            now = time.time()
+
+        if self.last_active_event_time and (now - self.last_active_event_time) < self.config.PIR_ACTIVE_INTERVAL:
+            return
+        self.last_active_event_time = now
+
+        if not self.darkness_checker.ist_dunkel_genug():
+            return
+
+        if self.timer_mgr.is_manual_override_active():
+            return
+
+        count = self.pir_mgr.add_event(now)
+        self.timer_mgr.set_last_event(now)
+
+        if self.light_cache.get_light_state():
+            self.logger.log("PIR aktiv (dauerhaft): Event {} von {} (Licht an).".format(
+                count, self.config.EVENT_THRESHOLD))
+            self.pir_mgr.active = True
+            return
+
+        if count < self.config.EVENT_THRESHOLD:
+            color = ColorUtils.step_to_rgb(count, self.config.EVENT_THRESHOLD)
+            self.logger.log("PIR aktiv (dauerhaft) {} von {}: LED-Farbe #{:06X}".format(
+                count, self.config.EVENT_THRESHOLD, color))
+            self.led_ctrl.display(color, 2)
+        else:
+            self.logger.log("PIR-Schwellenwert erreicht (dauerhaft): Starte automatisches Licht-Einschalten.")
+            self.main_light_ctrl.turn_on()
+            self.timer_mgr.set_last_event(now)
+            self.pir_mgr.clear_events()
+
+        self.pir_mgr.active = True
 
 # ==============================================================================
 # MAIN ORCHESTRATOR
@@ -1336,7 +1384,7 @@ class KitchenLightOrchestrator:
     
     def __init__(self):
         # Configuration
-        self.config = Config(test_mode=False, debug=True)
+        self.config = Config(test_mode=True, debug=True)
         
         # Debug logger
         self.logger = DebugLogger(self.config)
@@ -1375,9 +1423,22 @@ class KitchenLightOrchestrator:
         self.last_loop_time = 0
         self.watchdog_counter = 0
         self.last_gc_time = 0
+        self.last_state_refresh = 0
         
         # Hardware watchdog
         self.wdt = None
+
+    def refresh_light_state(self, now=None, force_refresh=False, reason="periodisch"):
+        """Refresh Shelly state and seed inactivity timer if needed"""
+        if now is None:
+            now = time.time()
+        state = self.light_cache.get_light_state(force_refresh=force_refresh)
+        if state and self.timer_manager.last_event is None:
+            self.timer_manager.set_last_event(now)
+            self.logger.log(
+                "Shelly ist AN ({}-Check) -> Inaktivitaets-Timer gestartet.".format(reason))
+        self.last_state_refresh = now
+        return state
     
     def setup(self):
         """Initialize all components"""
@@ -1423,11 +1484,12 @@ class KitchenLightOrchestrator:
             "Config: test_mode={}, debug={}, watchdog={}".format(
                 self.config.TESTMODE, self.config.DEBUG, watchdog_status))
         self.logger.log(
-            "Timers: inactivity={}s, manual_override={}s, PIR threshold={} events/{}s window".format(
+            "Timers: inactivity={}s, manual_override={}s, PIR threshold={} events/{}s window, PIR active interval={}s".format(
                 self.config.INAKT_TIMEOUT,
                 self.config.MANUAL_OVERRIDE_TIME,
                 self.config.EVENT_THRESHOLD,
-                self.config.PIR_WINDOW))
+                self.config.PIR_WINDOW,
+                self.config.PIR_ACTIVE_INTERVAL))
         if esp32:
             try:
                 rtc_memory = esp32.RTC().memory()
@@ -1488,6 +1550,9 @@ class KitchenLightOrchestrator:
         self.pir_sensor.set_callback(self.pir_handler.on_motion_detected, self.pir_sensor.IRQ_ACTIVE)
         self.pir_sensor.set_callback(self.pir_handler.on_motion_stopped, self.pir_sensor.IRQ_NEGATIVE)
         self.pir_sensor.enable_irq()
+
+        # Boot state refresh: track current Shelly state for inactivity handling
+        self.refresh_light_state(force_refresh=True, reason="boot")
         
         # Boot confirmation: 3x green blink
         for i in range(3):
@@ -1531,9 +1596,16 @@ class KitchenLightOrchestrator:
             else:
                 self.watchdog_counter = 0  # Reset counter on normal operation
         self.last_loop_time = now
+
+        # Periodic light state refresh for manual changes
+        if now - self.last_state_refresh >= self.config.STATE_REFRESH_INTERVAL:
+            self.refresh_light_state(now=now, force_refresh=True, reason="periodisch")
         
         # Periodic PIR event cleanup
-        self.pir_manager.cleanup_old_events(time.time())
+        self.pir_manager.cleanup_old_events(now)
+
+        # Sustained PIR activity: add periodic events
+        self.pir_handler.on_active_motion_tick(now)
         
         # Periodic garbage collection (every 30 seconds)
         if now - self.last_gc_time > 30:
