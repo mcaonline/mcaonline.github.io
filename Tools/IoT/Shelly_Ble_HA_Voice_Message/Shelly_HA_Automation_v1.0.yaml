@@ -1,4 +1,5 @@
 alias: Door open voice alert
+description: ""
 triggers:
   - id: pantry_alarm
     entity_id: binary_sensor.bthome_sensor_store_room_window
@@ -24,6 +25,19 @@ triggers:
     entity_id: binary_sensor.bthome_sensor_store_room_window
     to: "off"
     trigger: state
+  - id: pantry_window_reset
+    trigger: template
+    value_template: >-
+      {% set start = today_at('00:00:00') %}
+      {% set now_time = now().replace(second=0, microsecond=0) %}
+      {% set offsets = ['00:00:00'] + pantry_durations %}
+      {% set ns = namespace(hit=false) %}
+      {% for d in offsets %}
+        {% if now_time == (start + as_timedelta(d)) %}
+          {% set ns.hit = true %}
+        {% endif %}
+      {% endfor %}
+      {{ ns.hit }}
   - id: noah_alarm
     entity_id: binary_sensor.bthome_sensor_640e_window
     to: "on"
@@ -48,85 +62,161 @@ triggers:
     entity_id: binary_sensor.bthome_sensor_640e_window
     to: "off"
     trigger: state
-  - id: bathroom_alarm
+  - id: noah_window_reset
+    trigger: template
+    value_template: >-
+      {% set wd = now().isoweekday() in [1,2,3,4,5] %}
+      {% set start = today_at('10:00:00') if wd else today_at('11:00:00') %}
+      {% set now_time = now().replace(second=0, microsecond=0) %}
+      {% set offsets = ['00:00:00'] + noah_durations %}
+      {% set ns = namespace(hit=false) %}
+      {% for d in offsets %}
+        {% if now_time == (start + as_timedelta(d)) %}
+          {% set ns.hit = true %}
+        {% endif %}
+      {% endfor %}
+      {{ ns.hit }}
+  - id: bad_oben_alarm
     entity_id: binary_sensor.bthome_bad_oben_window
     to: "on"
     for: "{{ bath_durations[0] if bath_durations|length>0 else '999:00:00' }}"
     trigger: state
-  - id: bathroom_alarm
+  - id: bad_oben_alarm
     entity_id: binary_sensor.bthome_bad_oben_window
     to: "on"
     for: "{{ bath_durations[1] if bath_durations|length>1 else '999:00:00' }}"
     trigger: state
-  - id: bathroom_alarm
+  - id: bad_oben_alarm
     entity_id: binary_sensor.bthome_bad_oben_window
     to: "on"
     for: "{{ bath_durations[2] if bath_durations|length>2 else '999:00:00' }}"
     trigger: state
-  - id: bathroom_alarm
+  - id: bad_oben_alarm
     entity_id: binary_sensor.bthome_bad_oben_window
     to: "on"
     for: "{{ bath_durations[3] if bath_durations|length>3 else '999:00:00' }}"
     trigger: state
-  - id: bathroom_closed
+  - id: bad_oben_closed
     entity_id: binary_sensor.bthome_bad_oben_window
     to: "off"
     trigger: state
-  - id: badoben4_alarm
+  - id: bad_oben_window_reset
+    trigger: template
+    value_template: >-
+      {% set wd = now().isoweekday() in [1,2,3,4,5] %}
+      {% set start = today_at('10:00:00') if wd else today_at('11:00:00') %}
+      {% set now_time = now().replace(second=0, microsecond=0) %}
+      {% set offsets = ['00:00:00'] + bath_durations %}
+      {% set ns = namespace(hit=false) %}
+      {% for d in offsets %}
+        {% if now_time == (start + as_timedelta(d)) %}
+          {% set ns.hit = true %}
+        {% endif %}
+      {% endfor %}
+      {{ ns.hit }}
+  - id: bad_unten_alarm
     entity_id: binary_sensor.bthome_sensor_4_1bfd_window
     to: "on"
-    for: "{{ badoben4_durations[0] if badoben4_durations|length>0 else '999:00:00' }}"
+    for: >-
+      {{ bad_unten_durations[0] if bad_unten_durations|length>0 else '999:00:00'
+      }}
     trigger: state
-  - id: badoben4_alarm
+  - id: bad_unten_alarm
     entity_id: binary_sensor.bthome_sensor_4_1bfd_window
     to: "on"
-    for: "{{ badoben4_durations[1] if badoben4_durations|length>1 else '999:00:00' }}"
+    for: >-
+      {{ bad_unten_durations[1] if bad_unten_durations|length>1 else '999:00:00'
+      }}
     trigger: state
-  - id: badoben4_alarm
+  - id: bad_unten_alarm
     entity_id: binary_sensor.bthome_sensor_4_1bfd_window
     to: "on"
-    for: "{{ badoben4_durations[2] if badoben4_durations|length>2 else '999:00:00' }}"
+    for: >-
+      {{ bad_unten_durations[2] if bad_unten_durations|length>2 else '999:00:00'
+      }}
     trigger: state
-  - id: badoben4_alarm
+  - id: bad_unten_alarm
     entity_id: binary_sensor.bthome_sensor_4_1bfd_window
     to: "on"
-    for: "{{ badoben4_durations[3] if badoben4_durations|length>3 else '999:00:00' }}"
+    for: >-
+      {{ bad_unten_durations[3] if bad_unten_durations|length>3 else '999:00:00'
+      }}
     trigger: state
-  - id: badoben4_closed
+  - id: bad_unten_closed
     entity_id: binary_sensor.bthome_sensor_4_1bfd_window
     to: "off"
     trigger: state
+  - id: bad_unten_window_reset
+    trigger: template
+    value_template: >-
+      {% set wd = now().isoweekday() in [1,2,3,4,5] %}
+      {% set start = today_at('10:00:00') if wd else today_at('11:00:00') %}
+      {% set now_time = now().replace(second=0, microsecond=0) %}
+      {% set offsets = ['00:00:00'] + bad_unten_durations %}
+      {% set ns = namespace(hit=false) %}
+      {% for d in offsets %}
+        {% if now_time == (start + as_timedelta(d)) %}
+          {% set ns.hit = true %}
+        {% endif %}
+      {% endfor %}
+      {{ ns.hit }}
   - id: zimmerreserviert_alarm
     entity_id: binary_sensor.bthome_sensor_5_c794_window
     to: "on"
-    for: "{{ zimmerreserviert_durations[0] if zimmerreserviert_durations|length>0 else '999:00:00' }}"
+    for: >-
+      {{ zimmerreserviert_durations[0] if zimmerreserviert_durations|length>0
+      else '999:00:00' }}
     trigger: state
   - id: zimmerreserviert_alarm
     entity_id: binary_sensor.bthome_sensor_5_c794_window
     to: "on"
-    for: "{{ zimmerreserviert_durations[1] if zimmerreserviert_durations|length>1 else '999:00:00' }}"
+    for: >-
+      {{ zimmerreserviert_durations[1] if zimmerreserviert_durations|length>1
+      else '999:00:00' }}
     trigger: state
   - id: zimmerreserviert_alarm
     entity_id: binary_sensor.bthome_sensor_5_c794_window
     to: "on"
-    for: "{{ zimmerreserviert_durations[2] if zimmerreserviert_durations|length>2 else '999:00:00' }}"
+    for: >-
+      {{ zimmerreserviert_durations[2] if zimmerreserviert_durations|length>2
+      else '999:00:00' }}
     trigger: state
   - id: zimmerreserviert_alarm
     entity_id: binary_sensor.bthome_sensor_5_c794_window
     to: "on"
-    for: "{{ zimmerreserviert_durations[3] if zimmerreserviert_durations|length>3 else '999:00:00' }}"
+    for: >-
+      {{ zimmerreserviert_durations[3] if zimmerreserviert_durations|length>3
+      else '999:00:00' }}
     trigger: state
   - id: zimmerreserviert_closed
     entity_id: binary_sensor.bthome_sensor_5_c794_window
     to: "off"
+    trigger: state
+  - id: zimmerreserviert_window_reset
+    trigger: template
+    value_template: >-
+      {% set wd = now().isoweekday() in [1,2,3,4,5] %}
+      {% set start = today_at('10:00:00') if wd else today_at('11:00:00') %}
+      {% set now_time = now().replace(second=0, microsecond=0) %}
+      {% set offsets = ['00:00:00'] + zimmerreserviert_durations %}
+      {% set ns = namespace(hit=false) %}
+      {% for d in offsets %}
+        {% if now_time == (start + as_timedelta(d)) %}
+          {% set ns.hit = true %}
+        {% endif %}
+      {% endfor %}
+      {{ ns.hit }}
+  - id: alerts_pause_on
+    entity_id: input_boolean.alarm_pause
+    to: "on"
     trigger: state
 actions:
   - choose:
       - conditions:
           - condition: template
             value_template: >-
-              {{ trigger.id in ['pantry_closed','noah_closed','bathroom_closed']
-              }}
+              {{ trigger.id in ['pantry_closed','noah_closed','bad_oben_closed',
+              'bad_unten_closed','zimmerreserviert_closed'] }}
         sequence:
           - repeat:
               for_each: "{{ pairs }}"
@@ -135,10 +225,25 @@ actions:
                   target:
                     entity_id: "{{ repeat.item.player }}"
           - stop: true
+  - condition: state
+    entity_id: input_boolean.alarm_pause
+    state: "off"
   - variables:
-      key: "{{ trigger.id.split('_')[0] }}"
+      key: >-
+        {{ trigger.id
+          | replace('_window_reset', '')
+          | replace('_alarm', '')
+          | replace('_closed', '') }}
       cfg: "{{ sensors[key] }}"
       message: "{{ cfg.message }}"
+      is_window_reset: "{{ '_window_reset' in trigger.id }}"
+      opened_before_window: >-
+        {% set wd = now().isoweekday() in [1,2,3,4,5] %}
+        {% set start = today_at(cfg.wk_start if wd else cfg.we_start) %}
+        {% set st = states[cfg.entity] %}
+        {{ st is not none and as_local(st.last_changed) < start }}
+  - condition: template
+    value_template: "{{ is_window_reset == opened_before_window }}"
   - condition: template
     value_template: "{{ now().month in cfg.months }}"
   - condition: template
@@ -148,58 +253,86 @@ actions:
       and cfg.we_start <= t <= cfg.we_end) }}
   - condition: template
     value_template: "{{ is_state(cfg.entity, 'on') }}"
-  - repeat:
-      for_each: "{{ pairs }}"
-      sequence:
-        - variables:
-            sat: "{{ repeat.item.sat }}"
-            player: "{{ repeat.item.player }}"
-            old_vol: "{{ state_attr(player, 'volume_level') | float(0.4) }}"
-        - action: media_player.volume_mute
-          target:
-            entity_id: "{{ player }}"
-          data:
-            is_volume_muted: false
-        - action: media_player.volume_set
-          target:
-            entity_id: "{{ player }}"
-          data:
-            volume_level: "{{ boost_volume }}"
-        - action: assist_satellite.announce
-          target:
-            entity_id: "{{ sat }}"
-          data:
-            message: "{{ message }}"
-            preannounce: true
-        - wait_template: "{{ states(player) == 'playing' }}"
-          timeout: "00:00:03"
-          continue_on_timeout: true
-        - wait_template: "{{ states(player) != 'playing' }}"
-          timeout: "00:00:15"
-          continue_on_timeout: true
-        - action: media_player.volume_set
-          target:
-            entity_id: "{{ player }}"
-          data:
-            volume_level: "{{ old_vol }}"
+  - parallel:
+      - sequence:
+          - variables:
+              sat: "{{ pairs[0].sat }}"
+              player: "{{ pairs[0].player }}"
+              old_vol: "{{ state_attr(player, 'volume_level') | float(0.4) }}"
+          - action: media_player.volume_mute
+            target:
+              entity_id: "{{ player }}"
+            data:
+              is_volume_muted: false
+          - action: media_player.volume_set
+            target:
+              entity_id: "{{ player }}"
+            data:
+              volume_level: "{{ boost_volume }}"
+          - action: assist_satellite.announce
+            target:
+              entity_id: "{{ sat }}"
+            data:
+              message: "{{ message }}"
+              preannounce: true
+          - wait_template: "{{ states(player) == 'playing' }}"
+            timeout: "00:00:03"
+            continue_on_timeout: true
+          - wait_template: "{{ states(player) != 'playing' }}"
+            timeout: "00:00:15"
+            continue_on_timeout: true
+          - action: media_player.volume_set
+            target:
+              entity_id: "{{ player }}"
+            data:
+              volume_level: "{{ old_vol }}"
+      - sequence:
+          - variables:
+              sat: "{{ pairs[1].sat }}"
+              player: "{{ pairs[1].player }}"
+              old_vol: "{{ state_attr(player, 'volume_level') | float(0.4) }}"
+          - action: media_player.volume_mute
+            target:
+              entity_id: "{{ player }}"
+            data:
+              is_volume_muted: false
+          - action: media_player.volume_set
+            target:
+              entity_id: "{{ player }}"
+            data:
+              volume_level: "{{ boost_volume }}"
+          - action: assist_satellite.announce
+            target:
+              entity_id: "{{ sat }}"
+            data:
+              message: "{{ message }}"
+              preannounce: true
+          - wait_template: "{{ states(player) == 'playing' }}"
+            timeout: "00:00:03"
+            continue_on_timeout: true
+          - wait_template: "{{ states(player) != 'playing' }}"
+            timeout: "00:00:15"
+            continue_on_timeout: true
+          - action: media_player.volume_set
+            target:
+              entity_id: "{{ player }}"
+            data:
+              volume_level: "{{ old_vol }}"
 mode: restart
 trigger_variables:
   pantry_durations:
-    - "00:15:00"
-    - "00:30:00"
     - "01:00:00"
-    - "05:00:00"
-  noah_durations:
-    - "01:00:00"
-    - "02:00:00"
     - "03:00:00"
     - "05:00:00"
+  noah_durations:
+    - "02:00:00"
+    - "04:00:00"
   bath_durations:
     - "01:00:00"
     - "02:00:00"
     - "03:00:00"
     - "05:00:00"
-  badoben4_durations:
+  bad_unten_durations:
     - "01:00:00"
     - "02:00:00"
     - "03:00:00"
@@ -218,11 +351,6 @@ variables:
         - 2
         - 3
         - 4
-        - 5
-        - 6
-        - 7
-        - 8
-        - 9
         - 10
         - 11
         - 12
@@ -238,11 +366,6 @@ variables:
         - 2
         - 3
         - 4
-        - 5
-        - 6
-        - 7
-        - 8
-        - 9
         - 10
         - 11
         - 12
@@ -251,18 +374,13 @@ variables:
       we_start: "11:00:00"
       we_end: "22:00:00"
       message: Noahs Window is open. Please close it.
-    bathroom:
+    bad_oben:
       entity: binary_sensor.bthome_bad_oben_window
       months:
         - 1
         - 2
         - 3
         - 4
-        - 5
-        - 6
-        - 7
-        - 8
-        - 9
         - 10
         - 11
         - 12
@@ -271,18 +389,13 @@ variables:
       we_start: "11:00:00"
       we_end: "23:00:00"
       message: The bathroom window on the upper level is open. Please close it.
-    badoben4:
+    bad_unten:
       entity: binary_sensor.bthome_sensor_4_1bfd_window
       months:
         - 1
         - 2
         - 3
         - 4
-        - 5
-        - 6
-        - 7
-        - 8
-        - 9
         - 10
         - 11
         - 12
@@ -298,11 +411,6 @@ variables:
         - 2
         - 3
         - 4
-        - 5
-        - 6
-        - 7
-        - 8
-        - 9
         - 10
         - 11
         - 12

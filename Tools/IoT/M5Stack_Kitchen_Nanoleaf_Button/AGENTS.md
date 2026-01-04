@@ -15,6 +15,7 @@
 - Inactivity-based auto-off timer (`INAKT_TIMEOUT`).
 - Button handling: long-press toggles main lights, short press toggles WLED, double-click toggles test-mode override.
 - WLED control with auto-off timer and status LED feedback.
+- WLED auto-off and LED feedback durations are configurable (`WLED_AUTO_OFF_SECONDS`, `WLED_LED_ON_SECONDS`, `WLED_LED_OFF_SECONDS`).
 - Shelly relay control for main lights with status LED feedback.
 - Status LED controller with display duration, overrides, and blinking during network calls.
 - Hardware watchdog feed loop with boot diagnostics, memory logging, and periodic GC.
@@ -50,7 +51,9 @@
 
 ## Runtime Behavior Notes
 - Auto-on is gated by `DarknessChecker` (sunset table + `AUTO_ON_NICHT_NACH` cutoff), but auto-off uses the inactivity timer only (`TimerManager.INAKT_TIMEOUT`).
-- After a reboot, the cached light state starts as off and the inactivity timer is unset until a PIR event arrives; keep this in mind when diagnosing auto-off behavior.
+- After a reboot, the cached light state starts as off but a boot-time Shelly refresh runs; if Shelly reports ON, the inactivity timer is seeded, otherwise it stays unset until a PIR event arrives or the next refresh.
+- Light state refresh runs at boot and every `STATE_REFRESH_INTERVAL`; cache TTL is aligned via `CACHE_REFRESH_INTERVAL = STATE_REFRESH_INTERVAL`. Other callers read cached state unless a refresh is forced. If Shelly status read fails, the cache stays unchanged and logs report status as `unbekannt`.
+- Log output includes `Status-Refresh (boot/periodisch) durchgeführt status is an/aus/unbekannt.` after each refresh.
 - Sliding window PIR logic: each motion event prunes any older than `PIR_WINDOW`, appends the new event, and checks `EVENT_THRESHOLD`; reaching the threshold turns on lights and clears the event list.
 - Example A (test mode: `EVENT_THRESHOLD=5`, `PIR_WINDOW=60s`): motion at t=0, 10, 20, 30, 40 -> count reaches 5 within 60s, lights turn on, events cleared.
 - Example B (test mode): motion at t=0, 25, 50, 70 -> at t=70 the t=0 event drops (older than 60s), count stays at 3; motion at t=90 drops t=25, count stays at 3, no auto-on.

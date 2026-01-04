@@ -1,7 +1,7 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-The repository currently centres on `Shelly_HA_Automation_v1.0.txt`, which holds the Home Assistant YAML automation powering Shelly BLE voice notifications. Treat this file as the authoritative source; place new or alternative automations beside it using the pattern `Shelly_HA_Automation_v<major>.<minor>.yaml` so versioned variants stay readable. Add supporting documentation or assets under a matching directory (e.g. `docs/` for diagrams, `audio/` for prompts) and reference them from the automation comments.
+The repository currently centres on `Shelly_HA_Automation_v1.0.yaml`, which holds the Home Assistant YAML automation powering Shelly BLE voice notifications. Treat this file as the authoritative source; place new or alternative automations beside it using the pattern `Shelly_HA_Automation_v<major>.<minor>.yaml` so versioned variants stay readable. Add supporting documentation or assets under a matching directory (e.g. `docs/` for diagrams, `audio/` for prompts) and reference them from the automation comments.
 
 ## Build, Test, and Development Commands
 Use Home Assistant’s config validator before proposing changes. Common options:

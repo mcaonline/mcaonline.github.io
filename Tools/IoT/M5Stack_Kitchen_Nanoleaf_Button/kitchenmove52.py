@@ -37,6 +37,9 @@ class Config:
             self.PIR_ACTIVE_INTERVAL = 20    # Prod: count sustained motion every 20 seconds
 
         self.STATE_REFRESH_INTERVAL = 1200  # Periodic Shelly state poll (seconds)
+        self.WLED_AUTO_OFF_SECONDS = 60
+        self.WLED_LED_ON_SECONDS = 60
+        self.WLED_LED_OFF_SECONDS = 30
         
         # Network addresses
         self.SHELLY_IP = "10.80.23.51"
@@ -101,7 +104,7 @@ class Config:
         }
         
         # Cache settings
-        self.CACHE_REFRESH_INTERVAL = 1800  # 30 minutes
+        self.CACHE_REFRESH_INTERVAL = self.STATE_REFRESH_INTERVAL
 
 # ==============================================================================
 # TIME UTILITIES
@@ -888,7 +891,11 @@ class DarknessChecker:
         # After 22:00 (or configured time) - no auto-on
         if aktuelle_min >= self.config.AUTO_ON_NICHT_NACH:
             secs = (24*60 - aktuelle_min) * 60
-            self.logger.log("Nach 22:00: Auto-Off ({} Sek. bis Tagesw.)".format(secs))
+            cutoff_hours = self.config.AUTO_ON_NICHT_NACH // 60
+            cutoff_minutes = self.config.AUTO_ON_NICHT_NACH % 60
+            cutoff_time = "{:02d}:{:02d}".format(cutoff_hours, cutoff_minutes)
+            self.logger.log("Nach {}: Auto-Off ({} Sek. bis Tagesw.)".format(
+                cutoff_time, secs))
             return False
         
         # Check against sunset time
@@ -915,32 +922,43 @@ class LightStateCache:
         self.logger = debug_logger
         self.last_state_update_time = 0
         self.cached_light_state = False
+        self.last_state_known = False
     
     def update_cache(self, new_state):
         """Update cached state"""
         self.cached_light_state = new_state
         self.last_state_update_time = time.time()
+        self.last_state_known = True
     
     def get_light_state(self, force_refresh=False):
         """Get current light state (cached or fresh)"""
         now = time.time()
         
-        # Use cache if still valid
-        if not force_refresh and now - self.last_state_update_time < self.config.CACHE_REFRESH_INTERVAL:
+        # Use cache unless a forced refresh is requested
+        if not force_refresh:
             return self.cached_light_state
         
         # Refresh from APIs
-        shelly_state = self.shelly_api.lese_status() or False
+        shelly_state = self.shelly_api.lese_status()
         # nanoleaf_state = self.nanoleaf_api.lese_status() or False  # Nanoleaf integration disabled
         nanoleaf_state = False
-        updated_state = shelly_state
-        
+        if shelly_state is None:
+            self.last_state_known = False
+            self.last_state_update_time = now
+            cache_text = "an" if self.cached_light_state else "aus"
+            self.logger.log(
+                "Zust.-akt. FEHLER: Shelly-Status unbekannt (Nanoleaf deaktiviert) - Cache bleibt {}.".format(
+                    cache_text))
+            return self.cached_light_state
+
+        updated_state = bool(shelly_state)
         self.cached_light_state = updated_state
         self.last_state_update_time = now
-        
+        self.last_state_known = True
+
         self.logger.log("Zust.-akt. OK: Shelly={} (Nanoleaf deaktiviert) - gültig für {} Sek.".format(
             shelly_state, self.config.CACHE_REFRESH_INTERVAL))
-        
+
         return updated_state
 
 # ==============================================================================
@@ -1037,8 +1055,10 @@ class TimerManager:
             return 0
         return int(self.manual_override_until - time.time())
     
-    def set_wled_auto_off(self, duration=60):
+    def set_wled_auto_off(self, duration=None):
         """Set WLED auto-off timer"""
+        if duration is None:
+            duration = self.config.WLED_AUTO_OFF_SECONDS
         self.wled_auto_off_timer = time.time() + duration
     
     def clear_wled_auto_off(self):
@@ -1128,8 +1148,9 @@ class WLEDController:
         new_status = self.wled_api.setze(self.config.WLED_JSON_EIN)
         if new_status is not None:
             self.status = True
-            self.timer_manager.set_wled_auto_off(60)
-            self.led_controller.display("GRUEN", 60, force_override=True)
+            self.timer_manager.set_wled_auto_off()
+            self.led_controller.display(
+                "GRUEN", self.config.WLED_LED_ON_SECONDS, force_override=True)
     
     def turn_off(self):
         """Turn off WLED"""
@@ -1137,7 +1158,8 @@ class WLEDController:
         if new_status is not None:
             self.status = False
             self.timer_manager.clear_wled_auto_off()
-            self.led_controller.display("ROT", 30, force_override=True)
+            self.led_controller.display(
+                "ROT", self.config.WLED_LED_OFF_SECONDS, force_override=True)
     
     def toggle(self):
         """Toggle WLED state, returns new state"""
@@ -1295,8 +1317,12 @@ class PIRHandler:
         
         # If lights already on, just reset timer
         if self.light_cache.get_light_state():
-            remaining = int(1800 - (now - self.light_cache.last_state_update_time)) if now - self.light_cache.last_state_update_time < 1800 else 0
-            self.logger.log("Licht bereits an – aktualisiere Inaktivitäts-Timer (nächste Prüfung in {} Sek.).".format(remaining))
+            remaining = 0
+            if now - self.light_cache.last_state_update_time < self.config.CACHE_REFRESH_INTERVAL:
+                remaining = int(self.config.CACHE_REFRESH_INTERVAL - (now - self.light_cache.last_state_update_time))
+            self.logger.log(
+                "Licht bereits an – aktualisiere Inaktivitäts-Timer (nächste Prüfung in {} Sek.).".format(
+                    remaining))
             self.timer_mgr.set_last_event(now)
             self.pir_mgr.active = True
             self.last_active_event_time = now
@@ -1384,7 +1410,7 @@ class KitchenLightOrchestrator:
     
     def __init__(self):
         # Configuration
-        self.config = Config(test_mode=True, debug=True)
+        self.config = Config(test_mode=False, debug=True)
         
         # Debug logger
         self.logger = DebugLogger(self.config)
@@ -1433,6 +1459,10 @@ class KitchenLightOrchestrator:
         if now is None:
             now = time.time()
         state = self.light_cache.get_light_state(force_refresh=force_refresh)
+        status_text = "unbekannt"
+        if self.light_cache.last_state_known:
+            status_text = "an" if state else "aus"
+        self.logger.log("Status-Refresh ({}) durchgeführt status is {}.".format(reason, status_text))
         if state and self.timer_manager.last_event is None:
             self.timer_manager.set_last_event(now)
             self.logger.log(
