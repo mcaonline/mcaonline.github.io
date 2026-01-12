@@ -131,7 +131,7 @@
 
       #circuit {
         width: 100%;
-        height: 280px;
+        height: 440px;
         border-radius: 16px;
         background: linear-gradient(120deg, #fff8ea, #f2f7f4);
         border: 1px solid rgba(29, 43, 43, 0.12);
@@ -252,6 +252,249 @@
         margin-bottom: 4px;
       }
 
+      .rank-panel {
+        position: relative;
+        background: #f7f0e1;
+        border-radius: 16px;
+        padding: 14px;
+        border: 1px solid rgba(29, 43, 43, 0.1);
+        margin-bottom: 16px;
+      }
+
+      .rank-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      }
+
+      .rank-label {
+        font-size: 12px;
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .rank-name {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--accent);
+      }
+
+      .rank-count {
+        text-align: right;
+        font-weight: 700;
+        color: var(--accent-2);
+      }
+
+      .rank-count span {
+        display: block;
+      }
+
+      .rank-progress {
+        margin-top: 10px;
+      }
+
+      .rank-bar {
+        height: 8px;
+        background: #e7dec9;
+        border-radius: 999px;
+        overflow: hidden;
+      }
+
+      .rank-fill {
+        height: 100%;
+        width: 0%;
+        background: var(--accent);
+        transition: width 0.3s ease;
+      }
+
+      .rank-next {
+        font-size: 12px;
+        margin-top: 6px;
+        color: var(--muted);
+      }
+
+      .rank-select {
+        margin-top: 10px;
+      }
+
+      .rank-select label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+
+      .rank-select-row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .rank-select-row select {
+        flex: 1;
+      }
+
+      .rank-message {
+        margin-top: 8px;
+        font-weight: 600;
+        color: var(--accent-2);
+      }
+
+      .rank-celebrate {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        overflow: hidden;
+      }
+
+      .rank-star {
+        position: absolute;
+        font-size: 18px;
+        color: var(--accent-2);
+        opacity: 0;
+        animation: rank-pop 1.1s ease forwards;
+      }
+
+      @keyframes rank-pop {
+        0% {
+          transform: translateY(0) scale(0.2);
+          opacity: 0;
+        }
+        30% {
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(-60px) scale(1);
+          opacity: 0;
+        }
+      }
+
+      .calc {
+        margin-top: 16px;
+        background: #f6f2e7;
+        border-radius: 16px;
+        padding: 16px;
+        border: 1px solid rgba(29, 43, 43, 0.1);
+      }
+
+      .calc h3 {
+        margin: 0 0 6px;
+        font-size: 18px;
+      }
+
+      .calc-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .calc-toggle {
+        display: inline-flex;
+        background: #fff7e8;
+        border-radius: 999px;
+        border: 1px solid rgba(199, 106, 45, 0.35);
+        overflow: hidden;
+      }
+
+      .calc-toggle button {
+        background: transparent;
+        border: none;
+        padding: 6px 12px;
+        font-weight: 700;
+        color: var(--accent-2);
+        box-shadow: none;
+      }
+
+      .calc-toggle button.is-active {
+        background: var(--accent-2);
+        color: #fffaf2;
+      }
+
+      .calc-help {
+        margin: 0 0 12px;
+        font-size: 14px;
+        color: var(--muted);
+      }
+
+      .calc-variant {
+        margin-top: 12px;
+      }
+
+      .calc-controls {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        align-items: end;
+      }
+
+      .calc-field label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+
+      .calc-actions {
+        margin-top: 12px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .calc-display {
+        margin-top: 12px;
+        background: #fffdf7;
+        border-radius: 12px;
+        padding: 10px 12px;
+        border: 1px dashed rgba(29, 43, 43, 0.25);
+      }
+
+      .calc-current,
+      .calc-line {
+        font-family: "Courier New", "Lucida Console", monospace;
+        font-size: 14px;
+      }
+
+      .calc-lines {
+        margin-top: 6px;
+      }
+
+      .calc-preview {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        font-family: "Courier New", "Lucida Console", monospace;
+        font-size: 14px;
+        color: var(--muted);
+      }
+
+      .calc-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .calc-row button {
+        border-radius: 999px;
+        padding: 6px 10px;
+        font-size: 12px;
+      }
+
+      .calc-message {
+        margin-top: 8px;
+        font-size: 13px;
+        color: #b8452c;
+      }
+
+      .is-hidden {
+        display: none;
+      }
+
       .tips {
         margin-top: 22px;
         display: grid;
@@ -318,11 +561,38 @@
 
       <section class="panel">
         <div class="card circuit-wrap">
-          <svg id="circuit" viewBox="0 0 640 280" aria-label="Schaltplan"></svg>
+          <svg id="circuit" viewBox="0 0 640 440" aria-label="Schaltplan"></svg>
           <div class="legend" id="circuitLegend"></div>
         </div>
 
         <div class="card">
+          <div class="rank-panel" id="rankPanel">
+            <div class="rank-header">
+              <div>
+                <div class="rank-label">Dein Rang</div>
+                <div class="rank-name" id="rankName">0-Strich Newbie</div>
+              </div>
+              <div class="rank-count">
+                <span id="rankCount">0</span>
+                <span>Richtig</span>
+              </div>
+            </div>
+            <div class="rank-progress">
+              <div class="rank-bar">
+                <div class="rank-fill" id="rankFill"></div>
+              </div>
+              <div class="rank-next" id="rankNext"></div>
+            </div>
+            <div class="rank-select">
+              <label for="rankSelect">Letzten Rang setzen</label>
+              <div class="rank-select-row">
+                <select id="rankSelect"></select>
+                <button type="button" class="secondary" id="rankApplyBtn">Uebernehmen</button>
+              </div>
+            </div>
+            <div class="rank-message" id="rankMessage"></div>
+            <div class="rank-celebrate" id="rankCelebrate"></div>
+          </div>
           <h2 class="task-title">Aufgabe</h2>
           <div class="task-text" id="taskText"></div>
           <div class="given" id="givenText"></div>
@@ -336,13 +606,90 @@
               </div>
             </div>
             <div>
-              <button id="checkBtn">Pruefen</button>
-              <button class="secondary" id="newBtn">Neue Aufgabe</button>
+              <button type="button" id="checkBtn">Pruefen</button>
+              <button type="button" class="secondary" id="newBtn">Neue Aufgabe</button>
             </div>
           </div>
 
           <div class="feedback" id="feedback"></div>
           <div class="solution" id="solution"></div>
+          <div class="calc" id="calc">
+            <div class="calc-header">
+              <h3>Rechenweg im Browser</h3>
+              <div class="calc-toggle" role="group" aria-label="Rechenweg Variante">
+                <button type="button" class="is-active" data-variant="0">0</button>
+                <button type="button" data-variant="1">1</button>
+                <button type="button" data-variant="2">2</button>
+              </div>
+            </div>
+
+            <div class="calc-variant" id="calcVariant1">
+              <p class="calc-help">
+                Schreibe eine ganze Zeile, z.B. "1/50 + 1/60" (auch "1-50" wird als 1/50 gelesen).
+                Druecke "Ausrechnen", um die Zeile ins Log zu uebernehmen.
+              </p>
+              <div class="calc-controls">
+                <div class="calc-field">
+                  <label for="simpleExpr">Rechenzeile</label>
+                  <input id="simpleExpr" type="text" placeholder="z.B. 1/50 + 1/60">
+                </div>
+              </div>
+              <div class="calc-actions">
+                <button type="button" class="secondary" id="simpleCalcBtn">Ausrechnen</button>
+              </div>
+              <div class="calc-display">
+                <div class="calc-preview" id="simpleCalcPreview">Vorschau: (leer)</div>
+                <div class="calc-lines" id="simpleCalcLines"></div>
+              </div>
+              <div class="calc-message" id="simpleCalcMessage"></div>
+            </div>
+
+            <div class="calc-variant is-hidden" id="calcVariant2">
+              <p class="calc-help">
+                Baue eine Rechnung Schritt fuer Schritt. Der Operator danach bestimmt, wie es weitergeht; "=" beendet
+                eine Zeile. Danach "Berechnen" druecken.
+              </p>
+              <div class="calc-controls">
+                <div class="calc-field">
+                  <label for="termType">Wertauswahl</label>
+                  <select id="termType">
+                    <option value="number">Zahl</option>
+                    <option value="reciprocal">1 / Zahl</option>
+                    <option value="known">Bekannter Wert</option>
+                    <option value="reciprocalKnown">1 / bekannter Wert</option>
+                    <option value="last">Letztes Ergebnis</option>
+                    <option value="reciprocalLast">1 / letztes Ergebnis</option>
+                  </select>
+                </div>
+                <div class="calc-field" id="termValueField">
+                  <label for="termValue">Zahl</label>
+                  <input id="termValue" type="text" placeholder="z.B. 50">
+                </div>
+                <div class="calc-field is-hidden" id="knownValueField">
+                  <label for="knownValue">Bekannter Wert</label>
+                  <select id="knownValue"></select>
+                </div>
+                <div class="calc-field">
+                  <label for="operatorSelect">Operator danach</label>
+                  <select id="operatorSelect">
+                    <option value="+">+</option>
+                    <option value="-">-</option>
+                    <option value="*">*</option>
+                    <option value="/">/</option>
+                    <option value="=">=</option>
+                  </select>
+                </div>
+              </div>
+              <div class="calc-actions">
+                <button type="button" class="secondary" id="calcAddBtn">Berechnen</button>
+              </div>
+              <div class="calc-display">
+                <div class="calc-current" id="calcCurrent">Aktuelle Zeile: (leer)</div>
+                <div class="calc-lines" id="calcLines"></div>
+              </div>
+              <div class="calc-message" id="calcMessage"></div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -364,6 +711,18 @@
       const LAMP_RESISTANCE = 60;
       const VOLTAGES = [3, 4.5, 6, 9, 12, 18, 24];
       const CURRENTS = [0.1, 0.2, 0.25, 0.5, 0.75, 1.0];
+      const RANKS = [
+        { threshold: 0, name: "0-Strich Newbie" },
+        { threshold: 5, name: "1-Strich Ohm-Rookie" },
+        { threshold: 10, name: "2-Strich Unruh" },
+        { threshold: 20, name: "3-Strich Voltage Pro" },
+        { threshold: 30, name: "4-Strich Circuit Master" },
+        { threshold: 40, name: "5-Strich Resistance Ranger" },
+        { threshold: 50, name: "6-Strich Power Driver" },
+        { threshold: 75, name: "7-Strich Ohm-Legend" },
+        { threshold: 100, name: "8-Strich Ultra-Physics-Calculation-Man" },
+      ];
+      const STORAGE_KEY = "physicsTrainerCorrectCount";
 
       const modeSelect = document.getElementById("modeSelect");
       const taskText = document.getElementById("taskText");
@@ -374,8 +733,49 @@
       const solution = document.getElementById("solution");
       const circuitSvg = document.getElementById("circuit");
       const circuitLegend = document.getElementById("circuitLegend");
+      const rankName = document.getElementById("rankName");
+      const rankCount = document.getElementById("rankCount");
+      const rankFill = document.getElementById("rankFill");
+      const rankNext = document.getElementById("rankNext");
+      const rankSelect = document.getElementById("rankSelect");
+      const rankApplyBtn = document.getElementById("rankApplyBtn");
+      const rankMessage = document.getElementById("rankMessage");
+      const rankCelebrate = document.getElementById("rankCelebrate");
+      const calcToggleButtons = Array.from(document.querySelectorAll(".calc-toggle button"));
+      const calcVariant1 = document.getElementById("calcVariant1");
+      const calcVariant2 = document.getElementById("calcVariant2");
+      const simpleExpr = document.getElementById("simpleExpr");
+      const simpleCalcBtn = document.getElementById("simpleCalcBtn");
+      const simpleCalcLines = document.getElementById("simpleCalcLines");
+      const simpleCalcMessage = document.getElementById("simpleCalcMessage");
+      const simpleCalcPreview = document.getElementById("simpleCalcPreview");
+      const termType = document.getElementById("termType");
+      const termValue = document.getElementById("termValue");
+      const termValueField = document.getElementById("termValueField");
+      const knownValueField = document.getElementById("knownValueField");
+      const knownValueSelect = document.getElementById("knownValue");
+      const operatorSelect = document.getElementById("operatorSelect");
+      const calcAddBtn = document.getElementById("calcAddBtn");
+      const calcCurrent = document.getElementById("calcCurrent");
+      const calcLines = document.getElementById("calcLines");
+      const calcMessage = document.getElementById("calcMessage");
 
       let currentTask = null;
+      let taskInitialized = false;
+      let taskSolved = false;
+      let correctCount = 0;
+      let currentRankIndex = 0;
+      let knownValues = [];
+      let activeCalcVariant = "0";
+      const simpleCalcState = {
+        lines: [],
+        lastResult: null,
+      };
+      const calcState = {
+        lines: [],
+        currentTokens: [],
+        lastResult: null,
+      };
 
       function randomInt(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -394,6 +794,442 @@
       function parseInput(value) {
         if (!value) return NaN;
         return Number(value.replace(",", "."));
+      }
+
+      function readStoredCount() {
+        try {
+          const stored = localStorage.getItem(STORAGE_KEY);
+          const value = Number(stored);
+          return Number.isFinite(value) ? value : 0;
+        } catch (error) {
+          return 0;
+        }
+      }
+
+      function writeStoredCount(count) {
+        try {
+          localStorage.setItem(STORAGE_KEY, String(count));
+        } catch (error) {
+          // Ignore storage errors in restricted environments.
+        }
+      }
+
+      function getRankIndex(count) {
+        let index = 0;
+        RANKS.forEach((rank, i) => {
+          if (count >= rank.threshold) {
+            index = i;
+          }
+        });
+        return index;
+      }
+
+      function populateRankSelect() {
+        rankSelect.innerHTML = RANKS.map(
+          (rank, index) => `<option value="${index}">${rank.name}</option>`
+        ).join("");
+      }
+
+      function updateRankUi(celebrate) {
+        const previousRank = currentRankIndex;
+        currentRankIndex = getRankIndex(correctCount);
+        const currentRank = RANKS[currentRankIndex];
+        const nextRank = RANKS[currentRankIndex + 1] || null;
+        const progress = nextRank
+          ? (correctCount - currentRank.threshold) / (nextRank.threshold - currentRank.threshold)
+          : 1;
+
+        rankName.textContent = currentRank.name;
+        rankCount.textContent = String(correctCount);
+        rankFill.style.width = `${Math.min(Math.max(progress, 0), 1) * 100}%`;
+        rankSelect.value = String(currentRankIndex);
+        if (nextRank) {
+          const remaining = Math.max(0, nextRank.threshold - correctCount);
+          rankNext.textContent = `Naechster Rang: ${nextRank.name} in ${remaining} Aufgaben`;
+        } else {
+          rankNext.textContent = "Maximaler Rang erreicht.";
+        }
+
+        if (celebrate && currentRankIndex > previousRank) {
+          rankMessage.textContent = `Neuer Rang freigeschaltet: ${currentRank.name}`;
+          triggerRankCelebration();
+        } else if (!celebrate) {
+          rankMessage.textContent = "";
+        }
+      }
+
+      function triggerRankCelebration() {
+        rankCelebrate.innerHTML = "";
+        for (let i = 0; i < 14; i += 1) {
+          const star = document.createElement("div");
+          star.className = "rank-star";
+          star.textContent = "*";
+          const left = randomInt(10, 90);
+          const top = randomInt(40, 90);
+          const size = randomInt(12, 22);
+          const delay = Math.random() * 0.2;
+          star.style.left = `${left}%`;
+          star.style.top = `${top}%`;
+          star.style.fontSize = `${size}px`;
+          star.style.animationDelay = `${delay}s`;
+          rankCelebrate.appendChild(star);
+        }
+      }
+
+      function applyRankSelection() {
+        const index = Number(rankSelect.value);
+        if (!Number.isFinite(index) || !RANKS[index]) {
+          return;
+        }
+        correctCount = RANKS[index].threshold;
+        writeStoredCount(correctCount);
+        updateRankUi(false);
+        rankMessage.textContent = "Rang gesetzt.";
+      }
+
+      function registerCorrectAnswer() {
+        if (taskSolved) return;
+        taskSolved = true;
+        correctCount += 1;
+        writeStoredCount(correctCount);
+        updateRankUi(true);
+      }
+
+      function setCalcVariant(variant) {
+        activeCalcVariant = variant;
+        calcToggleButtons.forEach((button) => {
+          button.classList.toggle("is-active", button.dataset.variant === variant);
+        });
+        calcVariant1.classList.toggle("is-hidden", variant !== "1");
+        calcVariant2.classList.toggle("is-hidden", variant !== "2");
+      }
+
+      function sanitizeExpression(raw) {
+        let text = raw.toLowerCase();
+        text = text.replace(/,/g, ".");
+        text = text.replace(/\bplus\b/g, "+");
+        text = text.replace(/\bminus\b/g, "-");
+        text = text.replace(/\bmal\b/g, "*");
+        text = text.replace(/\bgeteilt\b/g, "/");
+        text = text.replace(/\bdurch\b/g, "/");
+        text = text.replace(/\b1-(\d+(?:\.\d+)?)\b/g, "1/$1");
+        text = text.replace(/x/g, "*");
+        text = text.replace(/:/g, "/");
+        return text.replace(/[^0-9+\-*/().\s]/g, "").trim();
+      }
+
+      function evaluateSimpleExpression(raw) {
+        const sanitized = sanitizeExpression(raw);
+        if (!sanitized) {
+          return { error: "Bitte eine Rechnung eingeben." };
+        }
+        if (!/^[0-9+\-*/().\s]+$/.test(sanitized)) {
+          return { error: "Ungueltige Zeichen in der Rechnung." };
+        }
+        let result = null;
+        try {
+          result = Function(`"use strict"; return (${sanitized});`)();
+        } catch (error) {
+          return { error: "Die Rechnung ist so nicht gueltig." };
+        }
+        if (!Number.isFinite(result)) {
+          return { error: "Die Rechnung ist so nicht gueltig." };
+        }
+        return { result, expression: sanitized };
+      }
+
+      function updateSimpleDisplay() {
+        if (simpleCalcState.lines.length === 0) {
+          simpleCalcLines.innerHTML = "<div class=\"calc-line\">Noch keine Rechnung.</div>";
+          return;
+        }
+        simpleCalcLines.innerHTML = simpleCalcState.lines
+          .map(
+            (line, index) =>
+              `<div class="calc-row">
+                <span class="calc-line">${index + 1}) ${line.expression} = ${formatNumber(line.result, 4)}</span>
+                <button type="button" class="secondary" data-result="${line.result}">Ergebnis einfuegen</button>
+              </div>`
+          )
+          .join("");
+      }
+
+      function updateSimplePreview() {
+        const raw = simpleExpr.value.trim();
+        if (!raw) {
+          simpleCalcPreview.textContent = "Vorschau: (leer)";
+          return;
+        }
+        const evaluation = evaluateSimpleExpression(raw);
+        if (evaluation.error) {
+          simpleCalcPreview.textContent = "Vorschau: (ungueltig)";
+          return;
+        }
+        simpleCalcPreview.textContent = `Vorschau: ${evaluation.expression} = ${formatNumber(evaluation.result, 4)}`;
+      }
+
+      function insertAtCursor(input, text) {
+        const start = input.selectionStart ?? input.value.length;
+        const end = input.selectionEnd ?? input.value.length;
+        const before = input.value.slice(0, start);
+        const after = input.value.slice(end);
+        input.value = `${before}${text}${after}`;
+        const nextPos = start + text.length;
+        input.setSelectionRange(nextPos, nextPos);
+        input.focus();
+      }
+
+      function addSimpleLine() {
+        const raw = simpleExpr.value.trim();
+        const evaluation = evaluateSimpleExpression(raw);
+        if (evaluation.error) {
+          simpleCalcMessage.textContent = evaluation.error;
+          return;
+        }
+        simpleCalcState.lines.push({
+          expression: evaluation.expression,
+          result: evaluation.result,
+        });
+        simpleCalcState.lastResult = evaluation.result;
+        simpleExpr.value = "";
+        simpleCalcMessage.textContent = "";
+        updateSimpleDisplay();
+        updateSimplePreview();
+      }
+
+      function resetSimpleCalculator() {
+        simpleCalcState.lines = [];
+        simpleCalcState.lastResult = null;
+        simpleExpr.value = "";
+        simpleCalcMessage.textContent = "";
+        updateSimpleDisplay();
+        updateSimplePreview();
+      }
+
+      function updateTermInputs() {
+        const type = termType.value;
+        const usesKnown = type === "known" || type === "reciprocalKnown";
+        const usesLast = type === "last" || type === "reciprocalLast";
+        termValueField.classList.toggle("is-hidden", usesKnown || usesLast);
+        knownValueField.classList.toggle("is-hidden", !usesKnown);
+      }
+
+      function updateKnownValues(task) {
+        const items = [];
+
+        if (task.given.U !== undefined) {
+          items.push({
+            key: "U",
+            value: task.given.U,
+            unit: "V",
+            label: `U (${formatNumber(task.given.U)} V)`,
+            exprLabel: "U",
+          });
+        }
+        if (task.given.I !== undefined) {
+          items.push({
+            key: "I",
+            value: task.given.I,
+            unit: "A",
+            label: `I (${formatNumber(task.given.I)} A)`,
+            exprLabel: "I",
+          });
+        }
+
+        items.push({
+          key: "Rges",
+          value: task.rTotal,
+          unit: "Ohm",
+          label: `Rges (${formatNumber(task.rTotal)} Ohm)`,
+          exprLabel: "Rges",
+        });
+
+        collectComponents(task.circuit).forEach((item) => {
+          const unit = "Ohm";
+          const shortLabel = item.id;
+          const name = item.type === "lamp" ? "Lampe" : "Widerstand";
+          items.push({
+            key: item.id,
+            value: item.value,
+            unit,
+            label: `${shortLabel} (${name} ${formatNumber(item.value)} Ohm)`,
+            exprLabel: shortLabel,
+          });
+        });
+
+        knownValues = items;
+        knownValueSelect.innerHTML = items
+          .map((item, index) => `<option value="${index}">${item.label}</option>`)
+          .join("");
+        knownValueSelect.value = "0";
+      }
+
+      function buildTermFromUi() {
+        const type = termType.value;
+        const isReciprocal =
+          type === "reciprocal" || type === "reciprocalKnown" || type === "reciprocalLast";
+        let baseValue = null;
+        let display = "";
+
+        if (type === "number" || type === "reciprocal") {
+          baseValue = parseInput(termValue.value.trim());
+          if (Number.isNaN(baseValue)) {
+            return { error: "Bitte eine gueltige Zahl eingeben." };
+          }
+          display = formatNumber(baseValue);
+        } else if (type === "known" || type === "reciprocalKnown") {
+          const item = knownValues[Number(knownValueSelect.value)];
+          if (!item) {
+            return { error: "Bitte einen bekannten Wert auswaehlen." };
+          }
+          baseValue = item.value;
+          display = item.exprLabel;
+        } else {
+          if (calcState.lastResult === null) {
+            return { error: "Noch kein Ergebnis vorhanden." };
+          }
+          baseValue = calcState.lastResult;
+          display = "Ans";
+        }
+
+        if (isReciprocal) {
+          if (baseValue === 0) {
+            return { error: "Durch 0 teilen ist nicht erlaubt." };
+          }
+          return { value: 1 / baseValue, display: `1/${display}` };
+        }
+
+        return { value: baseValue, display };
+      }
+
+      function tokensToExpression(tokens) {
+        if (tokens.length === 0) {
+          return "(leer)";
+        }
+        let text = "";
+        tokens.forEach((token, index) => {
+          if (index > 0) {
+            const op = tokens[index - 1].nextOperator;
+            if (op && op !== "=") {
+              text += ` ${op} `;
+            }
+          }
+          text += token.display;
+        });
+        return text;
+      }
+
+      function evaluateTokens(tokens) {
+        if (tokens.length === 0) {
+          return null;
+        }
+        const values = tokens.map((token) => token.value);
+        const ops = [];
+        for (let i = 0; i < tokens.length - 1; i += 1) {
+          const op = tokens[i].nextOperator;
+          if (op === "=") {
+            break;
+          }
+          ops.push(op);
+        }
+
+        let workingValues = [values[0]];
+        let workingOps = [];
+
+        for (let i = 0; i < ops.length; i += 1) {
+          const op = ops[i];
+          const nextValue = values[i + 1];
+          if (op === "*" || op === "/") {
+            const previous = workingValues.pop();
+            if (op === "/" && nextValue === 0) {
+              return NaN;
+            }
+            const result = op === "*" ? previous * nextValue : previous / nextValue;
+            workingValues.push(result);
+          } else {
+            workingValues.push(nextValue);
+            workingOps.push(op);
+          }
+        }
+
+        let result = workingValues[0];
+        for (let i = 0; i < workingOps.length; i += 1) {
+          result = workingOps[i] === "+" ? result + workingValues[i + 1] : result - workingValues[i + 1];
+        }
+        return result;
+      }
+
+      function updateCalcDisplay() {
+        const expression = tokensToExpression(calcState.currentTokens);
+        calcCurrent.textContent = `Aktuelle Zeile: ${expression}`;
+        calcLines.innerHTML = calcState.lines
+          .map(
+            (line, index) =>
+              `<div class="calc-row">
+                <span class="calc-line">${index + 1}) ${line.expression} = ${formatNumber(line.result, 4)}</span>
+                <button type="button" class="secondary" data-result="${line.result}">Ergebnis einfuegen</button>
+              </div>`
+          )
+          .join("");
+      }
+
+      function finalizeCurrentLine() {
+        if (calcState.currentTokens.length === 0) {
+          calcMessage.textContent = "Bitte erst einen Term hinzufuegen.";
+          return;
+        }
+        const result = evaluateTokens(calcState.currentTokens);
+        if (!Number.isFinite(result)) {
+          calcMessage.textContent = "Die Rechnung ist so nicht gueltig.";
+          return;
+        }
+        const expression = tokensToExpression(calcState.currentTokens);
+        calcState.lines.push({ expression, result });
+        calcState.lastResult = result;
+        calcState.currentTokens = [];
+        calcMessage.textContent = "";
+        operatorSelect.value = "=";
+        updateCalcDisplay();
+      }
+
+      function addTermFromUi() {
+        const term = buildTermFromUi();
+        if (term.error) {
+          calcMessage.textContent = term.error;
+          return;
+        }
+        const nextOperator = operatorSelect.value;
+        calcState.currentTokens.push({
+          value: term.value,
+          display: term.display,
+          nextOperator,
+        });
+        calcMessage.textContent = "";
+        if (nextOperator === "=") {
+          finalizeCurrentLine();
+        } else {
+          updateCalcDisplay();
+        }
+      }
+
+      function insertIntoVariant2(value) {
+        termType.value = "number";
+        termValue.value = formatNumber(value, 4);
+        updateTermInputs();
+        termValue.focus();
+      }
+
+      function resetCalculator(task) {
+        calcState.lines = [];
+        calcState.currentTokens = [];
+        calcState.lastResult = null;
+        updateKnownValues(task);
+        termType.value = "number";
+        termValue.value = "";
+        operatorSelect.value = "+";
+        calcMessage.textContent = "";
+        updateTermInputs();
+        updateCalcDisplay();
       }
 
       function makeComponent(index) {
@@ -573,7 +1409,10 @@
         return { candidate, result: computeFn(candidate) };
       }
 
-      function buildTask() {
+      function buildTask(force = false) {
+        if (taskInitialized && !force) {
+          return;
+        }
         const circuit = buildCircuit();
         const rTotal = circuitResistance(circuit);
         const mode = modeSelect.value === "random" ? pick(["U", "I", "R"]) : modeSelect.value;
@@ -632,6 +1471,9 @@
           unit,
           rTotal,
         };
+        taskInitialized = true;
+        resetSimpleCalculator();
+        resetCalculator(currentTask);
       }
 
       function drawCircuit(circuit) {
@@ -644,44 +1486,65 @@
           );
         }
 
-        function resistor(x, y, label) {
+        function resistor(x, y) {
           shapes.push(`<rect x="${x - 30}" y="${y - 12}" width="60" height="24" rx="4" ry="4"
             fill="#f8efe0" stroke="${wireColor}" stroke-width="2" />`);
-          shapes.push(`<text x="${x}" y="${y + 36}" text-anchor="middle" font-size="12" fill="${wireColor}">${label}</text>`);
         }
 
-        function lamp(x, y, label) {
+        function lamp(x, y) {
           shapes.push(`<circle cx="${x}" cy="${y}" r="14" fill="#fff6d6" stroke="${wireColor}" stroke-width="2" />`);
           shapes.push(`<line x1="${x - 8}" y1="${y - 8}" x2="${x + 8}" y2="${y + 8}" stroke="${wireColor}" stroke-width="2" />`);
           shapes.push(`<line x1="${x - 8}" y1="${y + 8}" x2="${x + 8}" y2="${y - 8}" stroke="${wireColor}" stroke-width="2" />`);
-          shapes.push(`<text x="${x}" y="${y + 36}" text-anchor="middle" font-size="12" fill="${wireColor}">${label}</text>`);
         }
 
-        function drawComponent(comp, x, y) {
+        function drawComponent(comp, x, y, labelOffsetY = 36) {
           const label = `${comp.id} ${comp.value} Ohm`;
           if (comp.type === "lamp") {
-            lamp(x, y, label);
+            lamp(x, y);
           } else {
-            resistor(x, y, label);
+            resistor(x, y);
           }
+          shapes.push(
+            `<text x="${x}" y="${y + labelOffsetY}" text-anchor="middle" font-size="12" fill="${wireColor}">${label}</text>`
+          );
         }
 
+        const centerY = 220;
+        const leftX = 40;
+        const rightX = 600;
+        const loopBottom = 400;
+
+        function battery(x, y) {
+          shapes.push(
+            `<line x1="${x}" y1="${y - 24}" x2="${x}" y2="${y + 24}" stroke="${wireColor}" stroke-width="3" />`
+          );
+          shapes.push(
+            `<line x1="${x + 12}" y1="${y - 14}" x2="${x + 12}" y2="${y + 14}" stroke="${wireColor}" stroke-width="3" />`
+          );
+          shapes.push(`<text x="${x - 10}" y="${y - 30}" font-size="12" fill="${wireColor}">+</text>`);
+          shapes.push(`<text x="${x - 10}" y="${y + 44}" font-size="12" fill="${wireColor}">-</text>`);
+        }
+
+        wire(leftX, centerY, leftX, loopBottom);
+        wire(leftX, loopBottom, rightX, loopBottom);
+        wire(rightX, loopBottom, rightX, centerY);
+        battery(leftX + 26, centerY);
         if (circuit.type === "series") {
-          const y = 140;
+          const y = centerY;
           const items = circuit.series;
-          wire(40, y, 600, y);
-          const span = 520 / (items.length + 1);
+          wire(leftX, y, rightX, y);
+          const span = (rightX - leftX - 80) / (items.length + 1);
           items.forEach((item, index) => {
-            const x = 40 + span * (index + 1);
+            const x = leftX + 40 + span * (index + 1);
             drawComponent(item, x, y);
           });
         } else if (circuit.type === "parallel") {
-          const top = 60;
-          const bottom = 220;
+          const top = 40;
+          const bottom = 400;
           const left = 160;
           const right = 480;
-          wire(40, 140, left, 140);
-          wire(right, 140, 600, 140);
+          wire(leftX, centerY, left, centerY);
+          wire(right, centerY, rightX, centerY);
           wire(left, top, left, bottom);
           wire(right, top, right, bottom);
           const items = circuit.parallel;
@@ -689,16 +1552,18 @@
           items.forEach((item, index) => {
             const y = top + step * (index + 1);
             wire(left, y, right, y);
-            drawComponent(item, (left + right) / 2, y);
+            drawComponent(item, (left + right) / 2, y, 42);
           });
         } else {
-          const y = 140;
+          const y = centerY;
           const leftRail = 260;
           const rightRail = 420;
-          wire(40, y, leftRail, y);
-          wire(rightRail, y, 600, y);
-          wire(leftRail, 80, leftRail, 200);
-          wire(rightRail, 80, rightRail, 200);
+          wire(leftX, y, leftRail, y);
+          wire(rightRail, y, rightX, y);
+          const railTop = 80;
+          const railBottom = 360;
+          wire(leftRail, railTop, leftRail, railBottom);
+          wire(rightRail, railTop, rightRail, railBottom);
 
           const before = circuit.seriesBefore;
           const after = circuit.seriesAfter;
@@ -716,11 +1581,11 @@
           }
 
           const branches = circuit.parallel;
-          const step = 120 / (branches.length + 1);
+          const step = (railBottom - railTop) / (branches.length + 1);
           branches.forEach((item, index) => {
-            const yBranch = 80 + step * (index + 1);
+            const yBranch = railTop + step * (index + 1);
             wire(leftRail, yBranch, rightRail, yBranch);
-            drawComponent(item, (leftRail + rightRail) / 2, yBranch);
+            drawComponent(item, (leftRail + rightRail) / 2, yBranch, 42);
           });
         }
 
@@ -790,14 +1655,50 @@
       }
 
       document.getElementById("checkBtn").addEventListener("click", checkAnswer);
-      document.getElementById("newBtn").addEventListener("click", buildTask);
-      modeSelect.addEventListener("change", buildTask);
+      document.getElementById("newBtn").addEventListener("click", () => buildTask(true));
+      calcToggleButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          setCalcVariant(button.dataset.variant);
+        });
+      });
+      simpleCalcBtn.addEventListener("click", addSimpleLine);
+      termType.addEventListener("change", updateTermInputs);
+      calcAddBtn.addEventListener("click", addTermFromUi);
       answerInput.addEventListener("keydown", (event) => {
         if (event.key === "Enter") {
           checkAnswer();
         }
       });
 
+      simpleExpr.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          addSimpleLine();
+        }
+      });
+
+      simpleExpr.addEventListener("input", () => {
+        updateSimplePreview();
+        simpleCalcMessage.textContent = "";
+      });
+
+      simpleCalcLines.addEventListener("click", (event) => {
+        const button = event.target.closest("button[data-result]");
+        if (!button) return;
+        const value = Number(button.dataset.result);
+        if (!Number.isFinite(value)) return;
+        insertAtCursor(simpleExpr, formatNumber(value, 4));
+        updateSimplePreview();
+      });
+
+      calcLines.addEventListener("click", (event) => {
+        const button = event.target.closest("button[data-result]");
+        if (!button) return;
+        const value = Number(button.dataset.result);
+        if (!Number.isFinite(value)) return;
+        insertIntoVariant2(value);
+      });
+
+      setCalcVariant(activeCalcVariant);
       buildTask();
     </script>
   </body>
