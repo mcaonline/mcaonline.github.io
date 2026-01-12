@@ -654,7 +654,7 @@
             <div class="calc-variant is-hidden" id="calcVariant2">
               <p class="calc-help">
                 Baue eine Rechnung Schritt fuer Schritt. Der Operator danach bestimmt, wie es weitergeht; "=" beendet
-                eine Zeile. Die Vorschau aktualisiert sofort, "Neue Zeile" speichert die Zeile.
+                eine Zeile. Die Vorschau aktualisiert sofort, "Rechnungszeile beenden" speichert die Zeile.
               </p>
               <div class="calc-controls">
                 <div class="calc-field">
@@ -961,7 +961,10 @@
             (line, index) =>
               `<div class="calc-row">
                 <span class="calc-line">${index + 1}) ${line.expression} = ${formatNumber(line.result, 4)}</span>
-                <button type="button" class="secondary" data-result="${line.result}">Ergebnis einfuegen</button>
+                <div class="calc-row-actions">
+                  <button type="button" class="secondary" data-result="${line.result}">Ergebnis einfuegen</button>
+                  <button type="button" class="secondary" data-delete="${index}">Loeschen</button>
+                </div>
               </div>`
           )
           .join("");
@@ -990,6 +993,17 @@
         const nextPos = start + text.length;
         input.setSelectionRange(nextPos, nextPos);
         input.focus();
+      }
+
+      function removeSimpleLine(index) {
+        if (!Number.isFinite(index) || index < 0 || index >= simpleCalcState.lines.length) {
+          return;
+        }
+        simpleCalcState.lines.splice(index, 1);
+        const lastLine = simpleCalcState.lines[simpleCalcState.lines.length - 1];
+        simpleCalcState.lastResult = lastLine ? lastLine.result : null;
+        updateSimpleDisplay();
+        updateSimplePreview();
       }
 
       function addSimpleLine() {
@@ -1832,7 +1846,7 @@
       termValue.addEventListener("keydown", (event) => {
         if (event.key === "Enter") {
           if (operatorSelect.value === "=") {
-            commitLineFromUi();
+            calcMessage.textContent = "Operator darf nicht '=' sein.";
           } else {
             commitTermFromUi(operatorSelect.value);
           }
@@ -1842,7 +1856,7 @@
       operatorSelect.addEventListener("keydown", (event) => {
         if (event.key === "Enter") {
           if (operatorSelect.value === "=") {
-            commitLineFromUi();
+            calcMessage.textContent = "Operator darf nicht '=' sein.";
           } else {
             commitTermFromUi(operatorSelect.value);
           }
@@ -1850,12 +1864,18 @@
       });
 
       simpleCalcLines.addEventListener("click", (event) => {
-        const button = event.target.closest("button[data-result]");
-        if (!button) return;
-        const value = Number(button.dataset.result);
-        if (!Number.isFinite(value)) return;
-        insertAtCursor(simpleExpr, formatNumber(value, 4));
-        updateSimplePreview();
+        const resultButton = event.target.closest("button[data-result]");
+        if (resultButton) {
+          const value = Number(resultButton.dataset.result);
+          if (!Number.isFinite(value)) return;
+          insertAtCursor(simpleExpr, formatNumber(value, 4));
+          updateSimplePreview();
+          return;
+        }
+        const deleteButton = event.target.closest("button[data-delete]");
+        if (!deleteButton) return;
+        const index = Number(deleteButton.dataset.delete);
+        removeSimpleLine(index);
       });
 
       calcLines.addEventListener("click", (event) => {
