@@ -131,7 +131,7 @@
 
       #circuit {
         width: 100%;
-        height: 440px;
+        height: 480px;
         border-radius: 16px;
         background: linear-gradient(120deg, #fff8ea, #f2f7f4);
         border: 1px solid rgba(29, 43, 43, 0.12);
@@ -327,13 +327,14 @@
       }
 
       .rank-select-row {
-        display: flex;
+        display: grid;
         gap: 8px;
         align-items: center;
+        grid-template-columns: minmax(0, 1fr) auto;
       }
 
       .rank-select-row select {
-        flex: 1;
+        min-width: 0;
       }
 
       .rank-message {
@@ -479,6 +480,12 @@
         gap: 12px;
       }
 
+      .calc-row-actions {
+        display: inline-flex;
+        gap: 8px;
+        align-items: center;
+      }
+
       .calc-row button {
         border-radius: 999px;
         padding: 6px 10px;
@@ -561,7 +568,7 @@
 
       <section class="panel">
         <div class="card circuit-wrap">
-          <svg id="circuit" viewBox="0 0 640 440" aria-label="Schaltplan"></svg>
+          <svg id="circuit" viewBox="0 0 640 480" aria-label="Schaltplan"></svg>
           <div class="legend" id="circuitLegend"></div>
         </div>
 
@@ -570,7 +577,7 @@
             <div class="rank-header">
               <div>
                 <div class="rank-label">Dein Rang</div>
-                <div class="rank-name" id="rankName">0-Strich Newbie</div>
+                <div class="rank-name" id="rankName">0-Newbie</div>
               </div>
               <div class="rank-count">
                 <span id="rankCount">0</span>
@@ -647,7 +654,7 @@
             <div class="calc-variant is-hidden" id="calcVariant2">
               <p class="calc-help">
                 Baue eine Rechnung Schritt fuer Schritt. Der Operator danach bestimmt, wie es weitergeht; "=" beendet
-                eine Zeile. Danach "Berechnen" druecken.
+                eine Zeile. Die Vorschau aktualisiert sofort, "Neue Zeile" speichert die Zeile.
               </p>
               <div class="calc-controls">
                 <div class="calc-field">
@@ -681,9 +688,12 @@
                 </div>
               </div>
               <div class="calc-actions">
-                <button type="button" class="secondary" id="calcAddBtn">Berechnen</button>
+                <button type="button" class="secondary" id="calcAddTermBtn">Wert hinzufuegen</button>
+                <button type="button" class="secondary" id="calcFinishBtn">Rechnungszeile beenden</button>
+                <button type="button" class="secondary" id="calcUndoBtn">Rueckgaengig</button>
               </div>
               <div class="calc-display">
+                <div class="calc-preview" id="calcPreview2">Vorschau: (leer)</div>
                 <div class="calc-current" id="calcCurrent">Aktuelle Zeile: (leer)</div>
                 <div class="calc-lines" id="calcLines"></div>
               </div>
@@ -712,15 +722,15 @@
       const VOLTAGES = [3, 4.5, 6, 9, 12, 18, 24];
       const CURRENTS = [0.1, 0.2, 0.25, 0.5, 0.75, 1.0];
       const RANKS = [
-        { threshold: 0, name: "0-Strich Newbie" },
-        { threshold: 5, name: "1-Strich Ohm-Rookie" },
-        { threshold: 10, name: "2-Strich Unruh" },
-        { threshold: 20, name: "3-Strich Voltage Pro" },
-        { threshold: 30, name: "4-Strich Circuit Master" },
-        { threshold: 40, name: "5-Strich Resistance Ranger" },
-        { threshold: 50, name: "6-Strich Power Driver" },
-        { threshold: 75, name: "7-Strich Ohm-Legend" },
-        { threshold: 100, name: "8-Strich Ultra-Physics-Calculation-Man" },
+        { threshold: 0, name: "0-Newbie" },
+        { threshold: 5, name: "1-Ohm-Rookie" },
+        { threshold: 10, name: "2-Unruh" },
+        { threshold: 20, name: "3-Voltage Pro" },
+        { threshold: 30, name: "4-Circuit Master" },
+        { threshold: 40, name: "5-Resistance Ranger" },
+        { threshold: 50, name: "6-Power Driver" },
+        { threshold: 75, name: "7-Ohm-Legend" },
+        { threshold: 100, name: "8-Ultra-Physics-Calculation-Man" },
       ];
       const STORAGE_KEY = "physicsTrainerCorrectCount";
 
@@ -755,10 +765,13 @@
       const knownValueField = document.getElementById("knownValueField");
       const knownValueSelect = document.getElementById("knownValue");
       const operatorSelect = document.getElementById("operatorSelect");
-      const calcAddBtn = document.getElementById("calcAddBtn");
+      const calcAddTermBtn = document.getElementById("calcAddTermBtn");
+      const calcFinishBtn = document.getElementById("calcFinishBtn");
+      const calcUndoBtn = document.getElementById("calcUndoBtn");
       const calcCurrent = document.getElementById("calcCurrent");
       const calcLines = document.getElementById("calcLines");
       const calcMessage = document.getElementById("calcMessage");
+      const calcPreview2 = document.getElementById("calcPreview2");
 
       let currentTask = null;
       let taskInitialized = false;
@@ -853,7 +866,7 @@
         if (celebrate && currentRankIndex > previousRank) {
           rankMessage.textContent = `Neuer Rang freigeschaltet: ${currentRank.name}`;
           triggerRankCelebration();
-        } else if (!celebrate) {
+        } else {
           rankMessage.textContent = "";
         }
       }
@@ -1012,6 +1025,7 @@
         const usesLast = type === "last" || type === "reciprocalLast";
         termValueField.classList.toggle("is-hidden", usesKnown || usesLast);
         knownValueField.classList.toggle("is-hidden", !usesKnown);
+        updateCalcPreview();
       }
 
       function updateKnownValues(task) {
@@ -1102,6 +1116,14 @@
         return { value: baseValue, display };
       }
 
+      function getPendingTerm() {
+        const type = termType.value;
+        if ((type === "number" || type === "reciprocal") && termValue.value.trim() === "") {
+          return null;
+        }
+        return buildTermFromUi();
+      }
+
       function tokensToExpression(tokens) {
         if (tokens.length === 0) {
           return "(leer)";
@@ -1162,15 +1184,53 @@
       function updateCalcDisplay() {
         const expression = tokensToExpression(calcState.currentTokens);
         calcCurrent.textContent = `Aktuelle Zeile: ${expression}`;
+        if (calcState.lines.length === 0) {
+          calcLines.innerHTML = "<div class=\"calc-line\">Noch keine Rechnung.</div>";
+          return;
+        }
         calcLines.innerHTML = calcState.lines
           .map(
             (line, index) =>
               `<div class="calc-row">
                 <span class="calc-line">${index + 1}) ${line.expression} = ${formatNumber(line.result, 4)}</span>
-                <button type="button" class="secondary" data-result="${line.result}">Ergebnis einfuegen</button>
+                <div class="calc-row-actions">
+                  <button type="button" class="secondary" data-result="${line.result}">Ergebnis einfuegen</button>
+                  <button type="button" class="secondary" data-delete="${index}">Loeschen</button>
+                </div>
               </div>`
           )
           .join("");
+      }
+
+      function updateCalcPreview() {
+        const previewTokens = [...calcState.currentTokens];
+        const pending = getPendingTerm();
+        if (pending && pending.error) {
+          calcPreview2.textContent = "Vorschau: (ungueltig)";
+          return;
+        }
+        if (pending && !pending.error) {
+          previewTokens.push({ value: pending.value, display: pending.display, nextOperator: "=" });
+        }
+        if (previewTokens.length === 0) {
+          calcPreview2.textContent = "Vorschau: (leer)";
+          return;
+        }
+        const expression = tokensToExpression(previewTokens);
+        const result = evaluateTokens(previewTokens);
+        if (!Number.isFinite(result)) {
+          calcPreview2.textContent = `Vorschau: ${expression} = (ungueltig)`;
+          return;
+        }
+        calcPreview2.textContent = `Vorschau: ${expression} = ${formatNumber(result, 4)}`;
+      }
+
+      let suppressOperatorCommit = false;
+
+      function setOperatorValue(value) {
+        suppressOperatorCommit = true;
+        operatorSelect.value = value;
+        suppressOperatorCommit = false;
       }
 
       function finalizeCurrentLine() {
@@ -1188,28 +1248,53 @@
         calcState.lastResult = result;
         calcState.currentTokens = [];
         calcMessage.textContent = "";
-        operatorSelect.value = "=";
+        setOperatorValue("+");
         updateCalcDisplay();
+        updateCalcPreview();
       }
 
-      function addTermFromUi() {
-        const term = buildTermFromUi();
+      function commitTermFromUi(nextOperatorOverride) {
+        const term = getPendingTerm();
+        if (!term) {
+          calcMessage.textContent = "Bitte zuerst einen Term eingeben.";
+          return false;
+        }
         if (term.error) {
           calcMessage.textContent = term.error;
-          return;
+          return false;
         }
-        const nextOperator = operatorSelect.value;
+        const nextOperator = nextOperatorOverride || operatorSelect.value;
         calcState.currentTokens.push({
           value: term.value,
           display: term.display,
           nextOperator,
         });
-        calcMessage.textContent = "";
-        if (nextOperator === "=") {
-          finalizeCurrentLine();
-        } else {
-          updateCalcDisplay();
+        if (termType.value === "number" || termType.value === "reciprocal") {
+          termValue.value = "";
         }
+        calcMessage.textContent = "";
+        updateCalcDisplay();
+        updateCalcPreview();
+        return true;
+      }
+
+      function commitLineFromUi() {
+        const pending = getPendingTerm();
+        if (pending && pending.error) {
+          calcMessage.textContent = pending.error;
+          return;
+        }
+        if (pending && !pending.error) {
+          calcState.currentTokens.push({
+            value: pending.value,
+            display: pending.display,
+            nextOperator: "=",
+          });
+          if (termType.value === "number" || termType.value === "reciprocal") {
+            termValue.value = "";
+          }
+        }
+        finalizeCurrentLine();
       }
 
       function insertIntoVariant2(value) {
@@ -1219,6 +1304,27 @@
         termValue.focus();
       }
 
+      function removeCalcLine(index) {
+        if (!Number.isFinite(index) || index < 0 || index >= calcState.lines.length) {
+          return;
+        }
+        calcState.lines.splice(index, 1);
+        const lastLine = calcState.lines[calcState.lines.length - 1];
+        calcState.lastResult = lastLine ? lastLine.result : null;
+        updateCalcDisplay();
+      }
+
+      function undoLastTerm() {
+        if (calcState.currentTokens.length === 0) {
+          calcMessage.textContent = "Keine Terme zum Entfernen.";
+          return;
+        }
+        calcState.currentTokens.pop();
+        calcMessage.textContent = "";
+        updateCalcDisplay();
+        updateCalcPreview();
+      }
+
       function resetCalculator(task) {
         calcState.lines = [];
         calcState.currentTokens = [];
@@ -1226,10 +1332,11 @@
         updateKnownValues(task);
         termType.value = "number";
         termValue.value = "";
-        operatorSelect.value = "+";
+        setOperatorValue("+");
         calcMessage.textContent = "";
         updateTermInputs();
         updateCalcDisplay();
+        updateCalcPreview();
       }
 
       function makeComponent(index) {
@@ -1511,10 +1618,10 @@
           );
         }
 
-        const centerY = 220;
+        const centerY = 240;
         const leftX = 40;
         const rightX = 600;
-        const loopBottom = 400;
+        const loopBottom = 440;
 
         function battery(x, y) {
           shapes.push(
@@ -1525,6 +1632,15 @@
           );
           shapes.push(`<text x="${x - 10}" y="${y - 30}" font-size="12" fill="${wireColor}">+</text>`);
           shapes.push(`<text x="${x - 10}" y="${y + 44}" font-size="12" fill="${wireColor}">-</text>`);
+        }
+
+        function branchPositions(count, center, spacing) {
+          if (count <= 1) {
+            return [center];
+          }
+          const totalSpan = spacing * (count - 1);
+          const start = center - totalSpan / 2;
+          return Array.from({ length: count }, (_, index) => start + spacing * index);
         }
 
         wire(leftX, centerY, leftX, loopBottom);
@@ -1541,53 +1657,61 @@
             drawComponent(item, x, y);
           });
         } else if (circuit.type === "parallel") {
-          const top = 40;
-          const bottom = 400;
           const left = 160;
           const right = 480;
           wire(leftX, centerY, left, centerY);
           wire(right, centerY, rightX, centerY);
-          wire(left, top, left, bottom);
-          wire(right, top, right, bottom);
           const items = circuit.parallel;
-          const step = (bottom - top) / (items.length + 1);
+          const spacing = 78;
+          const positions = branchPositions(items.length, centerY, spacing);
+          const railTop = items.length === 1 ? positions[0] - 40 : positions[0];
+          const railBottom = items.length === 1 ? positions[0] + 40 : positions[positions.length - 1];
+          wire(left, railTop, left, railBottom);
+          wire(right, railTop, right, railBottom);
           items.forEach((item, index) => {
-            const y = top + step * (index + 1);
+            const y = positions[index];
             wire(left, y, right, y);
-            drawComponent(item, (left + right) / 2, y, 42);
+            drawComponent(item, (left + right) / 2, y, 36);
           });
         } else {
           const y = centerY;
-          const leftRail = 260;
-          const rightRail = 420;
-          wire(leftX, y, leftRail, y);
-          wire(rightRail, y, rightX, y);
-          const railTop = 80;
-          const railBottom = 360;
-          wire(leftRail, railTop, leftRail, railBottom);
-          wire(rightRail, railTop, rightRail, railBottom);
-
           const before = circuit.seriesBefore;
           const after = circuit.seriesAfter;
+          const minSpacingX = 90;
+          const leftMargin = 60;
+          const rightMargin = 40;
+          let leftRail = Math.max(260, leftMargin + minSpacingX * (before.length + 1));
+          let rightRail = Math.min(420, rightX - rightMargin - minSpacingX * (after.length + 1));
+          if (rightRail - leftRail < 120) {
+            rightRail = leftRail + 120;
+          }
+          wire(leftX, y, leftRail, y);
+          wire(rightRail, y, rightX, y);
+
           if (before.length > 0) {
-            const span = (leftRail - 60) / (before.length + 1);
+            const span = (leftRail - leftMargin) / (before.length + 1);
             before.forEach((item, index) => {
-              drawComponent(item, 60 + span * (index + 1), y);
+              drawComponent(item, leftMargin + span * (index + 1), y);
             });
           }
           if (after.length > 0) {
-            const span = (600 - rightRail - 40) / (after.length + 1);
+            const span = (rightX - rightRail - rightMargin) / (after.length + 1);
             after.forEach((item, index) => {
-              drawComponent(item, rightRail + 40 + span * (index + 1), y);
+              drawComponent(item, rightRail + rightMargin + span * (index + 1), y);
             });
           }
 
           const branches = circuit.parallel;
-          const step = (railBottom - railTop) / (branches.length + 1);
+          const spacing = 78;
+          const positions = branchPositions(branches.length, y, spacing);
+          const railTop = positions[0];
+          const railBottom = positions[positions.length - 1];
+          wire(leftRail, railTop, leftRail, railBottom);
+          wire(rightRail, railTop, rightRail, railBottom);
           branches.forEach((item, index) => {
-            const yBranch = railTop + step * (index + 1);
+            const yBranch = positions[index];
             wire(leftRail, yBranch, rightRail, yBranch);
-            drawComponent(item, (leftRail + rightRail) / 2, yBranch, 42);
+            drawComponent(item, (leftRail + rightRail) / 2, yBranch, 36);
           });
         }
 
@@ -1648,6 +1772,7 @@
         if (delta <= tolerance) {
           feedback.textContent = "Richtig! Gut gerechnet.";
           feedback.className = "feedback good";
+          registerCorrectAnswer();
         } else {
           feedback.textContent = `Leider falsch. Richtiger Wert: ${formatNumber(expected)} ${currentTask.unit}.`;
           feedback.className = "feedback bad";
@@ -1664,8 +1789,24 @@
         });
       });
       simpleCalcBtn.addEventListener("click", addSimpleLine);
+      rankApplyBtn.addEventListener("click", applyRankSelection);
       termType.addEventListener("change", updateTermInputs);
-      calcAddBtn.addEventListener("click", addTermFromUi);
+      calcAddTermBtn.addEventListener("click", () => {
+        if (operatorSelect.value === "=") {
+          calcMessage.textContent = "Operator darf nicht '=' sein.";
+          return;
+        }
+        commitTermFromUi(operatorSelect.value);
+      });
+      calcFinishBtn.addEventListener("click", commitLineFromUi);
+      calcUndoBtn.addEventListener("click", undoLastTerm);
+      operatorSelect.addEventListener("change", () => {
+        if (suppressOperatorCommit) {
+          return;
+        }
+        updateCalcPreview();
+      });
+      knownValueSelect.addEventListener("change", updateCalcPreview);
       answerInput.addEventListener("keydown", (event) => {
         if (event.key === "Enter") {
           checkAnswer();
@@ -1683,6 +1824,31 @@
         simpleCalcMessage.textContent = "";
       });
 
+      termValue.addEventListener("input", () => {
+        updateCalcPreview();
+        calcMessage.textContent = "";
+      });
+
+      termValue.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          if (operatorSelect.value === "=") {
+            commitLineFromUi();
+          } else {
+            commitTermFromUi(operatorSelect.value);
+          }
+        }
+      });
+
+      operatorSelect.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          if (operatorSelect.value === "=") {
+            commitLineFromUi();
+          } else {
+            commitTermFromUi(operatorSelect.value);
+          }
+        }
+      });
+
       simpleCalcLines.addEventListener("click", (event) => {
         const button = event.target.closest("button[data-result]");
         if (!button) return;
@@ -1693,13 +1859,22 @@
       });
 
       calcLines.addEventListener("click", (event) => {
-        const button = event.target.closest("button[data-result]");
-        if (!button) return;
-        const value = Number(button.dataset.result);
-        if (!Number.isFinite(value)) return;
-        insertIntoVariant2(value);
+        const resultButton = event.target.closest("button[data-result]");
+        if (resultButton) {
+          const value = Number(resultButton.dataset.result);
+          if (!Number.isFinite(value)) return;
+          insertIntoVariant2(value);
+          return;
+        }
+        const deleteButton = event.target.closest("button[data-delete]");
+        if (!deleteButton) return;
+        const index = Number(deleteButton.dataset.delete);
+        removeCalcLine(index);
       });
 
+      populateRankSelect();
+      correctCount = Math.max(0, readStoredCount());
+      updateRankUi(false);
       setCalcVariant(activeCalcVariant);
       buildTask();
     </script>

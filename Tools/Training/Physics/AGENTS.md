@@ -4,6 +4,7 @@
 - `Tools/Training/Physics/index.html` is a single-file, offline physics trainer (HTML/CSS/JS in one file).
 - The in-page calculator has three variants (0 = aus, 1 = freie Eingabezeile mit Live-Vorschau, 2 = Schritt-fuer-Schritt mit Ergebnis-einfuegen pro Zeile); keep those inputs in sync with task data and component lists.
 - There is no `src/` or `assets/` folder for this module yet; place new local assets next to `index.html` and use relative paths.
+- Rank progress is stored in `localStorage` under `physicsTrainerCorrectCount`; manual rank selection sets the counter to the selected threshold.
 - The circuit SVG draws a closed loop with a simple battery symbol; keep layout changes consistent across series, parallel, and combo circuits.
 
 ## Build, Test, and Development Commands
@@ -21,7 +22,8 @@
 - Manual checks only: refresh multiple times to verify random task generation, circuit drawing, and answer checking.
 - Confirm no new task is generated except on first load or when clicking "Neue Aufgabe".
 - Verify mobile layout and that circuit labels do not overlap.
-- Calculator checks: variant 1 live preview + "Ergebnis einfuegen"; variant 2 step-by-step with `=` line end and per-line "Ergebnis einfuegen" into the term input.
+- Calculator checks: variant 1 live preview + "Ergebnis einfuegen"; variant 2 live preview, `=` to end a line, and "Neue Zeile" to save it with per-line "Ergebnis einfuegen".
+- Rank checks: answer correctly to advance at 5/10/20/30/40/50/75/100, confirm the badge updates and the star animation triggers.
 
 ## Commit & Pull Request Guidelines
 - Commit history favors short messages (e.g., `upd`, `change`); add a brief hint when possible.
