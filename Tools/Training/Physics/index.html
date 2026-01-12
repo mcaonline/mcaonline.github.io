@@ -1,0 +1,804 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ohmsches Gesetz Trainer</title>
+    <style>
+      :root {
+        color-scheme: only light;
+        --ink: #1d2b2b;
+        --muted: #526266;
+        --panel: #f9f6ef;
+        --accent: #0f6b65;
+        --accent-2: #c76a2d;
+        --wire: #39474a;
+        --card: #ffffff;
+        --shadow: 0 24px 60px rgba(20, 35, 35, 0.15);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Trebuchet MS", "Gill Sans", "Segoe UI", sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at top, rgba(199, 106, 45, 0.18), transparent 55%),
+          radial-gradient(circle at 10% 20%, rgba(15, 107, 101, 0.16), transparent 48%),
+          linear-gradient(135deg, #f4efe2 0%, #e8efe9 100%);
+        min-height: 100vh;
+      }
+
+      .page {
+        max-width: 1100px;
+        margin: 32px auto 40px;
+        padding: 0 20px 40px;
+        animation: fade-in 0.8s ease;
+      }
+
+      header {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 24px;
+        align-items: center;
+        justify-content: space-between;
+        padding: 28px 28px 20px;
+        background: var(--card);
+        border-radius: 22px;
+        box-shadow: var(--shadow);
+        position: relative;
+        overflow: hidden;
+      }
+
+      header::after {
+        content: "";
+        position: absolute;
+        right: -120px;
+        top: -120px;
+        width: 260px;
+        height: 260px;
+        background: radial-gradient(circle, rgba(15, 107, 101, 0.2), transparent 70%);
+        border-radius: 50%;
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-family: "Georgia", "Times New Roman", serif;
+        font-size: clamp(28px, 3vw, 36px);
+        letter-spacing: 0.4px;
+      }
+
+      header p {
+        margin: 0;
+        color: var(--muted);
+        max-width: 520px;
+      }
+
+      .formula-badge {
+        background: #f0ede4;
+        border: 2px solid rgba(15, 107, 101, 0.2);
+        padding: 14px 18px;
+        border-radius: 16px;
+        font-family: "Georgia", "Times New Roman", serif;
+        font-size: 22px;
+        color: var(--accent);
+        box-shadow: inset 0 0 0 1px rgba(199, 106, 45, 0.2);
+      }
+
+      .controls {
+        margin-top: 14px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .controls label {
+        font-weight: 600;
+      }
+
+      select,
+      input {
+        font: inherit;
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid rgba(29, 43, 43, 0.25);
+        background: #fffdf7;
+      }
+
+      .panel {
+        margin-top: 24px;
+        display: grid;
+        grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+        gap: 22px;
+      }
+
+      .card {
+        background: var(--card);
+        border-radius: 20px;
+        box-shadow: var(--shadow);
+        padding: 22px;
+      }
+
+      .circuit-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      #circuit {
+        width: 100%;
+        height: 280px;
+        border-radius: 16px;
+        background: linear-gradient(120deg, #fff8ea, #f2f7f4);
+        border: 1px solid rgba(29, 43, 43, 0.12);
+      }
+
+      .legend {
+        font-size: 14px;
+        color: var(--muted);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 16px;
+      }
+
+      .legend span {
+        padding: 4px 8px;
+        border-radius: 8px;
+        background: rgba(15, 107, 101, 0.08);
+      }
+
+      .task-title {
+        font-size: 20px;
+        margin: 0 0 10px;
+      }
+
+      .task-text {
+        font-size: 16px;
+        margin-bottom: 12px;
+      }
+
+      .given {
+        background: var(--panel);
+        border-radius: 14px;
+        padding: 12px 14px;
+        margin-bottom: 16px;
+        color: var(--muted);
+      }
+
+      .given ul {
+        margin: 0;
+        padding-left: 18px;
+      }
+
+      .input-row {
+        display: grid;
+        gap: 12px;
+        align-items: end;
+        grid-template-columns: 1.1fr auto;
+      }
+
+      .input-row label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 600;
+      }
+
+      .input-wrap {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .input-wrap span {
+        font-weight: 600;
+        color: var(--accent);
+      }
+
+      button {
+        font: inherit;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 16px;
+        cursor: pointer;
+        background: var(--accent);
+        color: white;
+        font-weight: 600;
+        box-shadow: 0 12px 24px rgba(15, 107, 101, 0.2);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      button.secondary {
+        background: #fff3e5;
+        color: var(--accent-2);
+        box-shadow: none;
+        border: 1px solid rgba(199, 106, 45, 0.4);
+      }
+
+      button:hover {
+        transform: translateY(-1px);
+      }
+
+      .feedback {
+        margin-top: 14px;
+        font-weight: 600;
+      }
+
+      .feedback.good {
+        color: #1a7f63;
+      }
+
+      .feedback.bad {
+        color: #b8452c;
+      }
+
+      .solution {
+        margin-top: 12px;
+        border-top: 1px dashed rgba(29, 43, 43, 0.2);
+        padding-top: 12px;
+        color: var(--muted);
+      }
+
+      .solution-block {
+        margin-bottom: 10px;
+      }
+
+      .solution-title {
+        font-weight: 600;
+        color: var(--ink);
+        margin-bottom: 4px;
+      }
+
+      .tips {
+        margin-top: 22px;
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      }
+
+      .tip {
+        background: #f3f0e8;
+        padding: 14px 16px;
+        border-radius: 14px;
+        font-size: 14px;
+        color: var(--muted);
+        border: 1px solid rgba(29, 43, 43, 0.08);
+      }
+
+      .tip strong {
+        color: var(--accent);
+      }
+
+      @keyframes fade-in {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (max-width: 900px) {
+        .panel {
+          grid-template-columns: 1fr;
+        }
+
+        .input-row {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <header>
+        <div>
+          <h1>Ohmsches Gesetz Trainer</h1>
+          <p>
+            Trainiere U = R * I mit zufaelligen Schaltplaenen. Jeder Klick erzeugt
+            eine neue Aufgabe fuer Spannung, Stromstaerke oder Widerstand.
+          </p>
+          <div class="controls">
+            <label for="modeSelect">Gesuchte Groesse:</label>
+            <select id="modeSelect">
+              <option value="random">Zufaellig</option>
+              <option value="U">U (Spannung)</option>
+              <option value="I">I (Stromstaerke)</option>
+              <option value="R">R (Widerstand)</option>
+            </select>
+          </div>
+        </div>
+        <div class="formula-badge">U = R * I</div>
+      </header>
+
+      <section class="panel">
+        <div class="card circuit-wrap">
+          <svg id="circuit" viewBox="0 0 640 280" aria-label="Schaltplan"></svg>
+          <div class="legend" id="circuitLegend"></div>
+        </div>
+
+        <div class="card">
+          <h2 class="task-title">Aufgabe</h2>
+          <div class="task-text" id="taskText"></div>
+          <div class="given" id="givenText"></div>
+
+          <div class="input-row">
+            <div>
+              <label for="answerInput">Dein Ergebnis</label>
+              <div class="input-wrap">
+                <input id="answerInput" type="text" placeholder="z.B. 12,5">
+                <span id="unitLabel"></span>
+              </div>
+            </div>
+            <div>
+              <button id="checkBtn">Pruefen</button>
+              <button class="secondary" id="newBtn">Neue Aufgabe</button>
+            </div>
+          </div>
+
+          <div class="feedback" id="feedback"></div>
+          <div class="solution" id="solution"></div>
+        </div>
+      </section>
+
+      <section class="tips">
+        <div class="tip">
+          <strong>Tipp:</strong> Reihenschaltung: Widerstaende addieren.
+        </div>
+        <div class="tip">
+          <strong>Tipp:</strong> Parallelschaltung: 1 / Rges = Summe(1 / Ri).
+        </div>
+        <div class="tip">
+          <strong>Tipp:</strong> Nutze U = R * I oder eine Umstellung davon.
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const RESISTOR_VALUES = [10, 15, 20, 30, 50, 60, 100, 120, 150, 200, 300];
+      const LAMP_RESISTANCE = 60;
+      const VOLTAGES = [3, 4.5, 6, 9, 12, 18, 24];
+      const CURRENTS = [0.1, 0.2, 0.25, 0.5, 0.75, 1.0];
+
+      const modeSelect = document.getElementById("modeSelect");
+      const taskText = document.getElementById("taskText");
+      const givenText = document.getElementById("givenText");
+      const unitLabel = document.getElementById("unitLabel");
+      const answerInput = document.getElementById("answerInput");
+      const feedback = document.getElementById("feedback");
+      const solution = document.getElementById("solution");
+      const circuitSvg = document.getElementById("circuit");
+      const circuitLegend = document.getElementById("circuitLegend");
+
+      let currentTask = null;
+
+      function randomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+
+      function pick(list) {
+        return list[randomInt(0, list.length - 1)];
+      }
+
+      function formatNumber(value, decimals = 2) {
+        const rounded = Number(value.toFixed(decimals));
+        const text = rounded.toFixed(decimals).replace(/\.?0+$/, "");
+        return text.replace(".", ",");
+      }
+
+      function parseInput(value) {
+        if (!value) return NaN;
+        return Number(value.replace(",", "."));
+      }
+
+      function makeComponent(index) {
+        const isLamp = Math.random() < 0.25;
+        if (isLamp) {
+          return { id: "L" + index, type: "lamp", value: LAMP_RESISTANCE };
+        }
+        return { id: "R" + index, type: "resistor", value: pick(RESISTOR_VALUES) };
+      }
+
+      function makeSeriesCircuit() {
+        const count = randomInt(1, 4);
+        const items = [];
+        for (let i = 0; i < count; i += 1) {
+          items.push(makeComponent(i + 1));
+        }
+        return { type: "series", series: items };
+      }
+
+      function makeParallelCircuit() {
+        const branches = randomInt(1, 5);
+        const items = [];
+        for (let i = 0; i < branches; i += 1) {
+          items.push(makeComponent(i + 1));
+        }
+        return { type: "parallel", parallel: items };
+      }
+
+      function makeComboCircuit() {
+        const seriesTotal = randomInt(1, 2);
+        const beforeCount = randomInt(0, seriesTotal);
+        const afterCount = seriesTotal - beforeCount;
+        const seriesBefore = [];
+        const seriesAfter = [];
+        const parallelCount = randomInt(2, 3);
+        let index = 1;
+
+        for (let i = 0; i < beforeCount; i += 1) {
+          seriesBefore.push(makeComponent(index));
+          index += 1;
+        }
+
+        const parallel = [];
+        for (let i = 0; i < parallelCount; i += 1) {
+          parallel.push(makeComponent(index));
+          index += 1;
+        }
+
+        for (let i = 0; i < afterCount; i += 1) {
+          seriesAfter.push(makeComponent(index));
+          index += 1;
+        }
+
+        if (seriesBefore.length === 0 && seriesAfter.length === 0) {
+          seriesBefore.push(makeComponent(index));
+        }
+
+        return {
+          type: "combo",
+          seriesBefore,
+          parallel,
+          seriesAfter,
+        };
+      }
+
+      function buildCircuit() {
+        const roll = Math.random();
+        if (roll < 0.33) {
+          return makeSeriesCircuit();
+        }
+        if (roll < 0.66) {
+          return makeParallelCircuit();
+        }
+        return makeComboCircuit();
+      }
+
+      function sumResistance(items) {
+        return items.reduce((sum, item) => sum + item.value, 0);
+      }
+
+      function parallelResistance(items) {
+        const inv = items.reduce((sum, item) => sum + 1 / item.value, 0);
+        return 1 / inv;
+      }
+
+      function circuitResistance(circuit) {
+        if (circuit.type === "series") {
+          return sumResistance(circuit.series);
+        }
+        if (circuit.type === "parallel") {
+          return parallelResistance(circuit.parallel);
+        }
+        const seriesTotal = sumResistance(circuit.seriesBefore) + sumResistance(circuit.seriesAfter);
+        return seriesTotal + parallelResistance(circuit.parallel);
+      }
+
+      function describeCircuit(circuit) {
+        if (circuit.type === "series") {
+          return "Reihenschaltung";
+        }
+        if (circuit.type === "parallel") {
+          return "Parallelschaltung";
+        }
+        return "Reihe + Parallel";
+      }
+
+      function collectComponents(circuit) {
+        if (circuit.type === "series") return circuit.series;
+        if (circuit.type === "parallel") return circuit.parallel;
+        return [...circuit.seriesBefore, ...circuit.parallel, ...circuit.seriesAfter];
+      }
+
+      function buildLegend(circuit) {
+        const items = collectComponents(circuit).map((item) => {
+          const label = item.type === "lamp" ? "Lampe" : "Widerstand";
+          return `${item.id}: ${label} ${item.value} Ohm`;
+        });
+        circuitLegend.innerHTML = items.map((text) => `<span>${text}</span>`).join("");
+      }
+
+      function formatList(values) {
+        return values.map((value) => formatNumber(value)).join(" + ");
+      }
+
+      function buildResistanceSteps(circuit) {
+        const steps = [];
+        let total = 0;
+
+        if (circuit.type === "series") {
+          const values = circuit.series.map((item) => item.value);
+          total = sumResistance(circuit.series);
+          steps.push(`Rges = ${formatList(values)} = ${formatNumber(total)} Ohm`);
+          return { steps, total };
+        }
+
+        if (circuit.type === "parallel") {
+          const values = circuit.parallel.map((item) => item.value);
+          const invValues = values.map((value) => 1 / value);
+          const invSum = invValues.reduce((sum, value) => sum + value, 0);
+          total = 1 / invSum;
+          steps.push(`1 / Rges = ${values.map((value) => `1/${value}`).join(" + ")}`);
+          steps.push(
+            `1 / Rges = ${invValues.map((value) => formatNumber(value, 3)).join(" + ")} = ${formatNumber(invSum, 3)}`
+          );
+          steps.push(`Rges = 1 / ${formatNumber(invSum, 3)} = ${formatNumber(total)} Ohm`);
+          return { steps, total };
+        }
+
+        const seriesValues = [...circuit.seriesBefore, ...circuit.seriesAfter].map((item) => item.value);
+        const seriesTotal = sumResistance(circuit.seriesBefore) + sumResistance(circuit.seriesAfter);
+        const parallelValues = circuit.parallel.map((item) => item.value);
+        const parallelInvValues = parallelValues.map((value) => 1 / value);
+        const parallelInvSum = parallelInvValues.reduce((sum, value) => sum + value, 0);
+        const parallelTotal = 1 / parallelInvSum;
+        total = seriesTotal + parallelTotal;
+        if (seriesValues.length > 0) {
+          steps.push(`Rserie = ${formatList(seriesValues)} = ${formatNumber(seriesTotal)} Ohm`);
+        }
+        steps.push(`1 / Rparallel = ${parallelValues.map((value) => `1/${value}`).join(" + ")}`);
+        steps.push(
+          `1 / Rparallel = ${parallelInvValues.map((value) => formatNumber(value, 3)).join(" + ")} = ${formatNumber(parallelInvSum, 3)}`
+        );
+        steps.push(`Rparallel = 1 / ${formatNumber(parallelInvSum, 3)} = ${formatNumber(parallelTotal)} Ohm`);
+        steps.push(`Rges = ${formatNumber(seriesTotal)} + ${formatNumber(parallelTotal)} = ${formatNumber(total)} Ohm`);
+        return { steps, total };
+      }
+
+      function pickReasonableValue(values, min, max, computeFn) {
+        for (let attempt = 0; attempt < 12; attempt += 1) {
+          const candidate = pick(values);
+          const result = computeFn(candidate);
+          if (result >= min && result <= max) {
+            return { candidate, result };
+          }
+        }
+        const candidate = pick(values);
+        return { candidate, result: computeFn(candidate) };
+      }
+
+      function buildTask() {
+        const circuit = buildCircuit();
+        const rTotal = circuitResistance(circuit);
+        const mode = modeSelect.value === "random" ? pick(["U", "I", "R"]) : modeSelect.value;
+        let given = {};
+        let expected = 0;
+        let unit = "";
+
+        if (mode === "U") {
+          const pickCurrent = pickReasonableValue(CURRENTS, 1, 30, (i) => rTotal * i);
+          given = { I: pickCurrent.candidate };
+          expected = pickCurrent.result;
+          unit = "V";
+          taskText.textContent = "Berechne die Gesamtspannung U.";
+        } else if (mode === "I") {
+          const pickVoltage = pickReasonableValue(VOLTAGES, 0.05, 2.5, (u) => u / rTotal);
+          given = { U: pickVoltage.candidate };
+          expected = pickVoltage.result;
+          unit = "A";
+          taskText.textContent = "Berechne die Gesamtstromstaerke I.";
+        } else {
+          const pickCurrent = pickReasonableValue(CURRENTS, 1, 30, (i) => rTotal * i);
+          given = { U: pickCurrent.result, I: pickCurrent.candidate };
+          expected = given.U / given.I;
+          unit = "Ohm";
+          taskText.textContent = "Berechne den Gesamtwiderstand Rges.";
+        }
+
+        const givenLines = [];
+        if (given.U !== undefined) {
+          givenLines.push(`Gesamtspannung U = ${formatNumber(given.U)} V`);
+        }
+        if (given.I !== undefined) {
+          givenLines.push(`Gesamtstrom I = ${formatNumber(given.I)} A`);
+        }
+        const hasLamp = collectComponents(circuit).some((item) => item.type === "lamp");
+        if (hasLamp) {
+          givenLines.push("Lampe: fester Widerstand 60 Ohm (bei Betriebstemperatur)");
+        }
+        givenLines.push(`Schaltung: ${describeCircuit(circuit)}`);
+
+        givenText.innerHTML = `<ul>${givenLines.map((line) => `<li>${line}</li>`).join("")}</ul>`;
+        unitLabel.textContent = unit;
+        answerInput.value = "";
+        feedback.textContent = "";
+        feedback.className = "feedback";
+        solution.innerHTML = "";
+
+        buildLegend(circuit);
+        drawCircuit(circuit);
+
+        currentTask = {
+          circuit,
+          mode,
+          expected,
+          given,
+          unit,
+          rTotal,
+        };
+      }
+
+      function drawCircuit(circuit) {
+        const shapes = [];
+        const wireColor = getComputedStyle(document.documentElement).getPropertyValue("--wire").trim();
+
+        function wire(x1, y1, x2, y2) {
+          shapes.push(
+            `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${wireColor}" stroke-width="3" />`
+          );
+        }
+
+        function resistor(x, y, label) {
+          shapes.push(`<rect x="${x - 30}" y="${y - 12}" width="60" height="24" rx="4" ry="4"
+            fill="#f8efe0" stroke="${wireColor}" stroke-width="2" />`);
+          shapes.push(`<text x="${x}" y="${y + 36}" text-anchor="middle" font-size="12" fill="${wireColor}">${label}</text>`);
+        }
+
+        function lamp(x, y, label) {
+          shapes.push(`<circle cx="${x}" cy="${y}" r="14" fill="#fff6d6" stroke="${wireColor}" stroke-width="2" />`);
+          shapes.push(`<line x1="${x - 8}" y1="${y - 8}" x2="${x + 8}" y2="${y + 8}" stroke="${wireColor}" stroke-width="2" />`);
+          shapes.push(`<line x1="${x - 8}" y1="${y + 8}" x2="${x + 8}" y2="${y - 8}" stroke="${wireColor}" stroke-width="2" />`);
+          shapes.push(`<text x="${x}" y="${y + 36}" text-anchor="middle" font-size="12" fill="${wireColor}">${label}</text>`);
+        }
+
+        function drawComponent(comp, x, y) {
+          const label = `${comp.id} ${comp.value} Ohm`;
+          if (comp.type === "lamp") {
+            lamp(x, y, label);
+          } else {
+            resistor(x, y, label);
+          }
+        }
+
+        if (circuit.type === "series") {
+          const y = 140;
+          const items = circuit.series;
+          wire(40, y, 600, y);
+          const span = 520 / (items.length + 1);
+          items.forEach((item, index) => {
+            const x = 40 + span * (index + 1);
+            drawComponent(item, x, y);
+          });
+        } else if (circuit.type === "parallel") {
+          const top = 60;
+          const bottom = 220;
+          const left = 160;
+          const right = 480;
+          wire(40, 140, left, 140);
+          wire(right, 140, 600, 140);
+          wire(left, top, left, bottom);
+          wire(right, top, right, bottom);
+          const items = circuit.parallel;
+          const step = (bottom - top) / (items.length + 1);
+          items.forEach((item, index) => {
+            const y = top + step * (index + 1);
+            wire(left, y, right, y);
+            drawComponent(item, (left + right) / 2, y);
+          });
+        } else {
+          const y = 140;
+          const leftRail = 260;
+          const rightRail = 420;
+          wire(40, y, leftRail, y);
+          wire(rightRail, y, 600, y);
+          wire(leftRail, 80, leftRail, 200);
+          wire(rightRail, 80, rightRail, 200);
+
+          const before = circuit.seriesBefore;
+          const after = circuit.seriesAfter;
+          if (before.length > 0) {
+            const span = (leftRail - 60) / (before.length + 1);
+            before.forEach((item, index) => {
+              drawComponent(item, 60 + span * (index + 1), y);
+            });
+          }
+          if (after.length > 0) {
+            const span = (600 - rightRail - 40) / (after.length + 1);
+            after.forEach((item, index) => {
+              drawComponent(item, rightRail + 40 + span * (index + 1), y);
+            });
+          }
+
+          const branches = circuit.parallel;
+          const step = 120 / (branches.length + 1);
+          branches.forEach((item, index) => {
+            const yBranch = 80 + step * (index + 1);
+            wire(leftRail, yBranch, rightRail, yBranch);
+            drawComponent(item, (leftRail + rightRail) / 2, yBranch);
+          });
+        }
+
+        circuitSvg.innerHTML = shapes.join("");
+      }
+
+      function buildSolution(task) {
+        const { steps, total } = buildResistanceSteps(task.circuit);
+        const solutionBlocks = [];
+
+        solutionBlocks.push(`
+          <div class="solution-block">
+            <div class="solution-title">1) Gesamtwiderstand</div>
+            <div>${steps.join("<br>")}</div>
+          </div>
+        `);
+
+        if (task.mode === "U") {
+          solutionBlocks.push(`
+            <div class="solution-block">
+              <div class="solution-title">2) Spannung</div>
+              <div>U = Rges * I = ${formatNumber(total)} Ohm * ${formatNumber(task.given.I)} A = ${formatNumber(task.expected)} V</div>
+            </div>
+          `);
+        } else if (task.mode === "I") {
+          solutionBlocks.push(`
+            <div class="solution-block">
+              <div class="solution-title">2) Stromstaerke</div>
+              <div>I = U / Rges = ${formatNumber(task.given.U)} V / ${formatNumber(total)} Ohm = ${formatNumber(task.expected)} A</div>
+            </div>
+          `);
+        } else {
+          solutionBlocks.push(`
+            <div class="solution-block">
+              <div class="solution-title">2) Widerstand</div>
+              <div>R = U / I = ${formatNumber(task.given.U)} V / ${formatNumber(task.given.I)} A = ${formatNumber(task.expected)} Ohm</div>
+              <div>Rges aus dem Schaltplan sollte denselben Wert liefern.</div>
+            </div>
+          `);
+        }
+
+        return solutionBlocks.join("");
+      }
+
+      function checkAnswer() {
+        if (!currentTask) return;
+        const inputValue = parseInput(answerInput.value.trim());
+        if (Number.isNaN(inputValue)) {
+          feedback.textContent = "Bitte gib eine Zahl ein (Komma oder Punkt erlaubt).";
+          feedback.className = "feedback bad";
+          return;
+        }
+
+        const expected = currentTask.expected;
+        const tolerance = Math.max(0.02, Math.abs(expected) * 0.02);
+        const delta = Math.abs(inputValue - expected);
+
+        if (delta <= tolerance) {
+          feedback.textContent = "Richtig! Gut gerechnet.";
+          feedback.className = "feedback good";
+        } else {
+          feedback.textContent = `Leider falsch. Richtiger Wert: ${formatNumber(expected)} ${currentTask.unit}.`;
+          feedback.className = "feedback bad";
+        }
+
+        solution.innerHTML = buildSolution(currentTask);
+      }
+
+      document.getElementById("checkBtn").addEventListener("click", checkAnswer);
+      document.getElementById("newBtn").addEventListener("click", buildTask);
+      modeSelect.addEventListener("change", buildTask);
+      answerInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          checkAnswer();
+        }
+      });
+
+      buildTask();
+    </script>
+  </body>
+</html>
