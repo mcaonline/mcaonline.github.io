@@ -1,6 +1,6 @@
 # HotKeyAI Architecture and Design Specification (Refactored)
 
-Version: 1.1.0-refactor2  
+Version: 1.1.0-refactor3  
 Status: Implementation Ready  
 Normative language: `MUST`, `MUST NOT`, `REQUIRED`, `OPTIONAL`.
 
@@ -92,6 +92,7 @@ Rules:
 - Only first 9 ordered enabled entries receive quick keys `1..9`.
 - Entries at index >= 10 remain clickable and direct-hotkey executable.
 - No feature may maintain a second ordering source.
+- Built-in local/non-AI hotkeys (for example plain/unformatted paste or local-only transforms) must be clearly marked as local/non-AI in runtime and settings surfaces.
 - Mode semantics are contract-bound and must not be redefined elsewhere:
   - `ai_transform`: provider-backed transform using connection routing.
   - `local_transform`: local-only transform; REQUIRED supported types are regex rules and sed-style replacement compatibility mode; expression syntax must be validated at save time.
@@ -215,6 +216,7 @@ Concrete MVP stack decisions:
 - `CoreService`: Python + FastAPI local service boundary.
 - `UIClient`: Flutter desktop client (Windows/macOS/Linux).
 - Hotkey and UI communication with core: localhost IPC with per-session token/nonce authentication.
+- Optional callback channel `CoreService -> HotkeyAgent` may be used for deterministic paste-now requests and focus-restore acknowledgements.
 - Transport evolution: JSON/OpenAPI first; optional gRPC/protobuf later behind unchanged domain contracts.
 - `CoreService` must be callable with `UIClient` not running.
 - `UIClient` failure must not break background hotkey execution paths.
@@ -242,6 +244,12 @@ IEventBus
 ```
 
 OS-specific adapters implement ports for Windows/macOS/Linux. Domain layer must remain OS-agnostic.
+
+`ISecretStore` minimum contract:
+- `save(connection_id, service_category, secret_value)` (create/update)
+- `read(connection_id, service_category) -> secret_value|not_found`
+- `delete(connection_id, service_category)`
+- `list_references() -> metadata[]` (metadata only; never secret values)
 
 ### Immutable State + Event Model
 State updates must be reducer-driven and event-triggered.
@@ -274,6 +282,7 @@ Operational rules:
 - Timeout applies between first `V` release and second `V` press.
 - Timeout boundary is deterministic: boundary-exact late key is failure.
 - Synthetic paste-back key events must be tagged and ignored to prevent recursion.
+- On timeout/invalid sequence/cancel, keyboard events must pass through normally and state resets to `Idle` without interception side effects.
 
 ### Execution Pipeline Contract
 For every run:
@@ -293,6 +302,21 @@ Concurrency rules:
 - New trigger while busy returns deterministic `busy` rejection.
 - User cancellation must be supported for long-running runs.
 
+### Input Capability Resolution Rules
+Before rendering or executing any hotkey, runtime must compute currently available source capabilities:
+- `text`
+- `html`
+- `image`
+- `audio_stream`
+- `audio_file`
+- `file_ref`
+
+Resolution rules:
+- Required input capabilities are declared only in `HotkeyCatalog.input_requirements`.
+- Availability is derived from runtime source snapshot (selection/clipboard/microphone/file context), never hardcoded in UI.
+- If required capability is unavailable, hotkey remains visible but disabled with machine-readable reason and `UiTextCatalog` message key.
+- Image OCR and audio/file paths must use deterministic file/media probing before execution.
+
 ### Prompt Resolution Rules
 - Effective system prompt: connection-level/system prompt if set; otherwise default system prompt.
 - Effective user prompt:
@@ -300,6 +324,23 @@ Concurrency rules:
   - panel flow -> use typed prompt
 - If required user prompt is empty, execution is blocked with validation error.
 - Post-success runtime rule: clipboard/source preview must refresh immediately after a successful run.
+
+### Prompt Assembly Rules
+For text transforms, normalized user payload assembly must follow this template:
+```text
+User instructions:
+{instruction}
+
+Source content:
+{source_text}
+
+Output:
+```
+
+Rules:
+- Preserve ordering exactly (`instructions -> source -> output cue`) unless provider adapter requires structurally different native payload fields.
+- Multimodal calls must include user instruction text plus media payload in provider-native format.
+- Image payloads must be normalized to PNG bytes and base64-encoded when endpoint format requires encoded inline data.
 
 Default system prompt:
 ```text
@@ -410,6 +451,13 @@ Groq:
 - Required header: `Content-Type: application/json`
 - STT path is disabled by default; advanced enablement is explicit.
 
+OpenAI OSS / Local:
+- Adapter route: local-runtime adapter (default: Ollama-compatible path), not a fixed cloud endpoint.
+- Maintain explicit alias mapping in non-secret config:
+  - `gpt-oss-120b` -> `gpt-oss:120b`
+  - `gpt-oss-20b` -> `gpt-oss:20b`
+- UI model labels and runtime identifiers must stay decoupled through this alias map.
+
 Ollama:
 - URL: `http://localhost:11434/api/chat`
 - Required header: `Content-Type: application/json`
@@ -434,10 +482,21 @@ Tesseract OCR:
 - API keys/tokens must be stored only in OS secure storage.
 - Plaintext secrets in files, registry, logs, telemetry, clipboard, or history are prohibited.
 
+Secret lifecycle requirements:
+- Add connection: write secret to `ISecretStore`; write non-secret connection metadata to `SettingsSchema`.
+- Edit connection credentials: overwrite existing secret in `ISecretStore`.
+- Remove connection: delete secret from `ISecretStore` and delete connection metadata from settings.
+- Export/import settings excludes secrets by design; reconnect requires credential re-entry.
+- Secret reference listing must be metadata-only and must never expose secret bytes.
+
 Approved secret backends:
 - Windows: Credential Manager
 - macOS: Keychain Services
 - Linux: Secret Service (`libsecret`)
+
+Future platform portability rule:
+- Android (if platform scope is expanded) must use Android Keystore-backed encrypted storage.
+- Any unsupported platform must require explicit user passphrase with encrypted local vault (Argon2id + AES-256-GCM or XChaCha20-Poly1305); plaintext fallback is prohibited.
 
 If secure store is unavailable:
 - Cloud provider enablement is blocked.
@@ -447,6 +506,7 @@ If secure store is unavailable:
 ### Config vs Secret Separation
 `SettingsSchema` may store:
 - provider id, connection id, model id, endpoint URL, deployment alias, capability.
+- OS integration flags/policies in registry are allowed only when non-secret.
 
 `SettingsSchema` must not store:
 - raw API key, bearer token, refresh token, auth headers.
@@ -460,6 +520,9 @@ Provider consent checkbox is required before saving credentials for:
 - OpenAI
 - Mistral
 - Google
+
+Provider setup UI requirement:
+- For providers requiring consent, setup form must show clickable links to provider terms of use and privacy policy alongside the consent checkbox text.
 
 Consent persistence must include:
 - `provider_id`
@@ -546,9 +609,9 @@ Voice chaining rule:
 Add connection flow:
 1. Select provider.
 2. Select capability (`STT` or `LLM`; others optional later).
-3. Select model from filtered curated list or enter custom model id.
+3. Select model from a provider+capability filtered curated list with typed search/filter input, or enter custom model id.
 4. Enter credentials/endpoint fields as required.
-5. Accept provider consent when required.
+5. Accept provider consent when required, with provider terms/privacy links visible in the same step.
 
 Validation:
 - Provider+capability+model compatibility must pass before save.
@@ -581,12 +644,17 @@ Onboarding defaults (voice-first):
   - Active LLM connection indicator + quick switch.
   - Active STT connection indicator + quick switch.
   - Right-side compact source preview card (text snippet/image thumbnail/audio or file metadata).
-  - Prompt input with `Dictate` button.
+  - Prompt input with `Dictate` button (visible only when at least one healthy `stt` connection exists).
   - History button placed under/near prompt row on the right.
 
 ### Execution Paths
 Main trigger (`Ctrl+V,V`):
 - Opens panel unless direct selected-text fast path applies.
+
+Panel execution (when panel is open/focused):
+- Clicking a hotkey row executes that hotkey.
+- Pressing quick key `1..9` executes the mapped visible hotkey.
+- Click and quick-key execution must dispatch the same backend `hotkey_id` command path.
 
 Direct/global hotkey:
 - With saved prompt: execute immediately.
@@ -614,7 +682,7 @@ Mode options:
 
 Capability gating:
 - Dictation requires healthy `stt` connection.
-- If unavailable, invocation returns deterministic unavailable notification.
+- If unavailable, prompt dictation control is hidden and direct dictation invocation returns deterministic unavailable notification.
 
 Direct insertion behavior:
 - Direct dictation must work whether or not text is selected.
@@ -631,6 +699,7 @@ Direct insertion behavior:
 
 ### Settings Screen Requirements
 Single-page `Hotkeys` management must support:
+- Main trigger configuration (`Ctrl+V,V` chord and second-`V` timeout).
 - Enable/disable
 - Reorder
 - Add/edit custom hotkeys
@@ -641,11 +710,15 @@ Single-page `Hotkeys` management must support:
   - optional `direct_hotkey`
 - Configure mode (`ai_transform`, `local_transform`, `static_text_paste`, `prompt_prefill_only`)
 - Assign direct hotkeys
+- Configure dedicated direct dictation hotkey.
+- Dictation mode selector (`dictate_live_preview_mode` / `dictate_final_quality_mode`).
 - Assign connection overrides
 - Validate and warn on single-key global bindings that reserve normal typing keys.
 - Local transform editor with regex and sed-style validation feedback.
 - Static text template editor for `static_text_paste`.
 - Drag-and-drop target for audio file transcription.
+- History viewer as table/list with input, prompt, and output fields plus row reuse actions (`copy input`, `copy output`, `load prompt`).
+- Status/error visibility and per-hotkey connection visibility (resolved connection(s), health/unavailable reason).
 
 ## Error Taxonomy and Recovery UX
 
@@ -764,6 +837,12 @@ Contract tests:
 - `UiTextCatalog` key coverage for message keys
 - Provider adapter conformance (endpoint/auth/payload/parse contracts, pinned version behavior)
 
+Provider conformance smoke tests (required for every enabled provider adapter):
+- Health/config test: endpoint format validity, required secret presence, provider+model+capability compatibility.
+- Minimal call test: deterministic short transform request returns normalized non-empty output.
+- Error behavior test: invalid key -> `auth_error`; invalid model/task mismatch -> `invalid_model_for_task` (or mapped equivalent); forced timeout -> `timeout`.
+- Retry behavior test: synthetic `429/5xx` triggers capped retries; non-retriable `4xx` does not retry.
+
 Integration tests:
 - Provider adapters
 - Secret store implementations
@@ -798,7 +877,7 @@ Mandatory release gates:
 8. Implement selected-text capture and in-place replacement fast path.
 9. Implement dictation flows (prompt dictation and direct dictation) with STT gating.
 10. Implement session-memory history with opt-in default off and default max=10.
-11. Implement settings migrations, import/export (no secrets), and rollback-safe load path.
+11. Implement settings migrations, config watcher reload behavior, import/export (no secrets), and rollback-safe load path.
 12. Implement observability, redaction, and error taxonomy mapping.
 13. Execute test gates and provider conformance suite.
 14. Ship UI surfaces wired only through contracts and catalog keys.
