@@ -44,7 +44,7 @@ history_repo = HistoryRepository()
 pipeline = ExecutionPipeline(settings, secret_store, clipboard, history_repo)
 
 # --- Background Services ---
-def on_hotkey_trigger(hotkey_id: str = None):
+def on_hotkey_trigger(hotkey_id: Optional[str] = None):
     logger.debug(f"Hotkey trigger received: {hotkey_id}")
     # If hotkey_id is provided, execute it directly.
     # Otherwise, it's the panel trigger.

@@ -25,11 +25,37 @@ class HotkeyCatalogService:
             with open(self.storage_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
             self._catalog = HotkeyCatalogModel.model_validate(data)
+            
+            # Cleanup legacy/duplicates
+            self._cleanup_legacy()
+            
             # Ensure required built-ins exist
             self._ensure_builtins()
         except Exception as e:
             logger.error(f"Failed to load hotkey catalog: {e}")
             self._seed_defaults()
+
+    def _cleanup_legacy(self):
+        """Removes legacy or duplicate hotkeys."""
+        # 1. Remove duplicate Paste Plain with UUIDs (keep only 'paste_plain')
+        original_count = len(self._catalog.hotkeys)
+        self._catalog.hotkeys = [
+            h for h in self._catalog.hotkeys 
+            if not (h.display_key == 'builtin.paste_plain_unformatted_text' and h.id != 'paste_plain')
+        ]
+        
+        # 2. Deduplicate by ID (keep first)
+        seen_ids = set()
+        unique_hotkeys = []
+        for h in self._catalog.hotkeys:
+            if h.id not in seen_ids:
+                unique_hotkeys.append(h)
+                seen_ids.add(h.id)
+        self._catalog.hotkeys = unique_hotkeys
+        
+        if len(self._catalog.hotkeys) != original_count:
+            logger.info("Cleaned up legacy/duplicate hotkeys")
+            self.save()
 
     def _ensure_builtins(self):
         """Ensures all required built-in hotkeys from seed are present."""

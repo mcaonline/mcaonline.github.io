@@ -20,6 +20,8 @@ export type HotkeyDefinition = {
     sequence: number;
     capability_requirements?: { capability: 'llm' | 'stt' | 'ocr' }[];
     prompt_template?: string; // For custom hotkeys
+    direct_hotkey?: string; // Global trigger (e.g. <ctrl>+<alt>+k)
+    panel_quick_key?: number;
 };
 
 export type Settings = {
@@ -115,6 +117,16 @@ export const apiClient = {
             body: JSON.stringify(hotkey)
         });
         if (!res.ok) throw new Error("Failed to create hotkey");
+        return res.json();
+    },
+
+    updateHotkey: async (id: string, hotkey: HotkeyDefinition) => {
+        const res = await fetch(`${API_BASE}/hotkeys/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(hotkey)
+        });
+        if (!res.ok) throw new Error("Failed to update hotkey");
         return res.json();
     },
 

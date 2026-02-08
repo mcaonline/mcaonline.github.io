@@ -72,9 +72,9 @@ export default function Settings({ onBack }: SettingsProps) {
 
     return (
         <div style={{ padding: "20px", height: "100%", display: "flex", flexDirection: "column" }}>
-            <header style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "20px" }}>
+            <header data-tauri-drag-region style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "20px", cursor: "move" }}>
                 <button className="secondary" onClick={onBack}>&larr; Back</button>
-                <h1 style={{ margin: 0, fontSize: "1.5rem" }}>Settings</h1>
+                <h1 data-tauri-drag-region style={{ margin: 0, fontSize: "1.5rem" }}>Settings</h1>
             </header>
 
             <div className="tabs" style={{ display: "flex", gap: "12px", borderBottom: "1px solid var(--glass-border)", marginBottom: "20px" }}>
@@ -179,54 +179,39 @@ export default function Settings({ onBack }: SettingsProps) {
                             <div style={{ display: "grid", gap: "8px", paddingLeft: "12px", borderLeft: "2px solid var(--glass-border)" }}>
                                 {/* Global Hotkey Trigger */}
                                 <label style={{ fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "8px" }}>
-                                    <span style={{ minWidth: "80px", color: "var(--text-secondary)" }}>Trigger:</span>
+                                    <span style={{ minWidth: "60px", color: "var(--text-secondary)" }}>Trigger:</span>
                                     <input
                                         placeholder="e.g. <ctrl>+<alt>+k"
-                                        value={hk.direct_hotkey || ""}
-                                        onChange={(e) => {
-                                            // Optimistic or local state? We need to save this.
-                                            // For now, let's just use strict save on blur to avoid too many requests
-                                        }}
+                                        defaultValue={hk.direct_hotkey || ""}
                                         onBlur={(e) => {
-                                            const val = e.target.value;
-                                            if (val !== hk.direct_hotkey) {
-                                                apiClient.createHotkey({ ...hk, direct_hotkey: val } as any).then(refreshData); // createHotkey is actually update/create if using PUT logic, but client has updateHotkey.
-                                                // Actually client.ts has updateHotkey which takes ID.
-                                                // Wait, I need to call updateHotkey.
-                                                apiClient.updateConnection
-                                                // No, updateHotkey is missing from my memory of client.ts? 
-                                                // Ah, looking at client.ts view, I see updateConnection but I don't recall seeing updateHotkey in the client object I wrote?
-                                                // I wrote createHotkey and deleteHotkey. Did I miss updateHotkey?
-                                                // I better check client.ts again or just implement it if missing.
-                                                // Wait, I saw it in main.py, but did I add it to client.ts? 
-                                                // I see getHotkeys, createHotkey, deleteHotkey in my previous edit to client.ts. I don't see updateHotkey.
-                                                // I must add updateHotkey to client.ts first.
+                                            const val = e.target.value.trim();
+                                            if (val !== (hk.direct_hotkey || "")) {
+                                                apiClient.updateHotkey(hk.id, { ...hk, direct_hotkey: val || undefined }).then(refreshData);
                                             }
                                         }}
                                         onKeyDown={(e) => {
                                             if (e.key === 'Enter') e.currentTarget.blur();
                                         }}
-                                        style={{ padding: "4px", borderRadius: "4px", border: "1px solid var(--glass-border)", background: "transparent", width: "100%" }}
+                                        style={{ padding: "4px 8px", borderRadius: "4px", border: "1px solid var(--glass-border)", background: "rgba(255,255,255,0.05)", width: "100%", color: "var(--text-primary)" }}
                                     />
-                                    <span style={{ fontSize: "0.7rem", opacity: 0.5 }}>Global (Pynput format)</span>
                                 </label>
 
                                 {/* Prompt Template for Custom Hotkeys */}
                                 {hk.kind === 'user' && (
                                     <label style={{ fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "8px" }}>
-                                        <span style={{ minWidth: "80px", color: "var(--text-secondary)" }}>Prompt:</span>
+                                        <span style={{ minWidth: "60px", color: "var(--text-secondary)" }}>Prompt:</span>
                                         <input
-                                            value={(hk as any).prompt_template || ""}
-                                            onChange={(e) => {
-                                                // ...
-                                            }}
+                                            defaultValue={hk.prompt_template || ""}
                                             onBlur={(e) => {
-                                                // Similar save logic
-                                                // I will use a helper function to save
                                                 const val = e.target.value;
-                                                // ...
+                                                if (val !== hk.prompt_template) {
+                                                    apiClient.updateHotkey(hk.id, { ...hk, prompt_template: val }).then(refreshData);
+                                                }
                                             }}
-                                            style={{ padding: "4px", borderRadius: "4px", border: "1px solid var(--glass-border)", background: "transparent", width: "100%" }}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') e.currentTarget.blur();
+                                            }}
+                                            style={{ padding: "4px 8px", borderRadius: "4px", border: "1px solid var(--glass-border)", background: "rgba(255,255,255,0.05)", width: "100%", color: "var(--text-primary)" }}
                                         />
                                     </label>
                                 )}
