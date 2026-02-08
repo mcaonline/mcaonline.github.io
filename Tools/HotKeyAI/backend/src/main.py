@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import APIKeyHeader
 from contextlib import asynccontextmanager
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 import uvicorn
 import secrets
 import os
@@ -47,16 +47,25 @@ pipeline = ExecutionPipeline(settings, secret_store, clipboard, history_repo)
 
 # --- Background Services ---
 def on_hotkey_trigger(hotkey_id: Optional[str] = None):
+    """Callback for global hotkeys. Runs in a background thread."""
     logger.debug(f"Hotkey trigger received: {hotkey_id}")
     # If hotkey_id is provided, execute it directly.
-    # Otherwise, it's the panel trigger.
+    # Otherwise, it's the panel trigger (handled by frontend).
     if hotkey_id:
-         # Execute directly (fire and forget in background)
-         # We need to run inside an async context or similar if pipeline is async? 
-         # Pipeline.execute is likely a generator. We should consume it.
-         # For simplicity in this sync callback, we can just spawn another thread or run sync if pipeline allows.
-         # Actually, better to just log for now and implement the actual execution logic.
-         pass
+        try:
+            hotkey = hotkey_catalog.get(hotkey_id)
+            if not hotkey:
+                logger.warning(f"Hotkey not found for trigger: {hotkey_id}")
+                return
+            
+            # Execute the pipeline and consume the generator
+            results = []
+            for chunk in pipeline.execute(hotkey):
+                results.append(chunk)
+            
+            logger.info(f"Hotkey {hotkey_id} executed successfully: {len(''.join(results))} chars")
+        except Exception as e:
+            logger.error(f"Failed to execute hotkey {hotkey_id}: {e}")
 
 hotkey_agent = HotkeyAgent(on_trigger=on_hotkey_trigger)
 
@@ -135,7 +144,7 @@ def delete_hotkey(hotkey_id: str):
     hotkey_agent.update_hotkeys(hotkey_catalog.get_all())
     return {"status": "deleted"}
 
-@app.post("/execute/{hotkey_id}", dependencies=[Depends(verify_session_token)])
+@app.post("/hotkeys/{hotkey_id}/execute", dependencies=[Depends(verify_session_token)])
 def execute_hotkey(hotkey_id: str):
     # Validate hotkey_id format (prevent injection)
     if not hotkey_id.replace("-", "").replace("_", "").isalnum():
@@ -257,14 +266,22 @@ def shutdown_application():
     import threading
     import time
     import signal
+    import sys
     
     def force_exit():
         time.sleep(0.5) # Allow response to be sent
         logger.info("Exiting process...")
         # Try graceful SIGINT first (Ctrl+C simulation) for Uvicorn
-        os.kill(os.getpid(), signal.SIGINT)
+        try:
+            os.kill(os.getpid(), signal.SIGINT)
+        except Exception:
+            pass
+        # Fallback: if SIGINT doesn't work (common on Windows), force exit after timeout
+        time.sleep(2.0)
+        logger.warning("SIGINT did not terminate process, forcing exit...")
+        sys.exit(0)
         
-    threading.Thread(target=force_exit).start()
+    threading.Thread(target=force_exit, daemon=True).start()
     return {"status": "shutting_down"}
 
 if __name__ == "__main__":

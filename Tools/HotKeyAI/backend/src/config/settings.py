@@ -102,6 +102,19 @@ class SettingsSchema(BaseSettings):
                     # Ensure it's lowercase to match Literal types
                     if isinstance(conn["capabilities"], list):
                         conn["capabilities"] = [c.lower() for c in conn["capabilities"] if isinstance(c, str)]
+                
+                # Deduplicate connections by connection_id (keep first occurrence)
+                seen_ids = set()
+                unique_connections = []
+                for conn in data["connections"]:
+                    if isinstance(conn, dict):
+                        conn_id = conn.get("connection_id")
+                        if conn_id and conn_id not in seen_ids:
+                            unique_connections.append(conn)
+                            seen_ids.add(conn_id)
+                        elif not conn_id:
+                            unique_connections.append(conn)  # Keep invalid entries for validation error
+                data["connections"] = unique_connections
 
             try:
                 return cls.model_validate(data)

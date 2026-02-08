@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List, Optional, Dict
 import keyring
 from pydantic import BaseModel
+from loguru import logger
 
 class SecretMetadata(BaseModel):
     connection_id: str

@@ -16,8 +16,11 @@ class HistoryEntry(BaseModel):
     model_id: str
     status: str
 
+# Use absolute path relative to this file's location, not CWD
+_BASE_DIR = Path(__file__).resolve().parent.parent  # Points to backend/
+
 class HistoryRepository:
-    def __init__(self, storage_path: Path = Path("history.json"), max_entries: int = 50):
+    def __init__(self, storage_path: Path = _BASE_DIR / "history.json", max_entries: int = 50):
         self.storage_path = storage_path
         self._entries: Deque[HistoryEntry] = deque(maxlen=max_entries)
         self._lock = threading.Lock()
@@ -28,8 +31,13 @@ class HistoryRepository:
             try:
                 with open(self.storage_path, "r", encoding="utf-8") as f:
                     data = json.load(f)
+                    # Deduplicate by (hotkey_id, timestamp) tuple
+                    seen = set()
                     for item in data:
-                        self._entries.append(HistoryEntry(**item))
+                        key = (item.get("hotkey_id"), item.get("timestamp"))
+                        if key not in seen:
+                            self._entries.append(HistoryEntry(**item))
+                            seen.add(key)
             except Exception as e:
                 logger.error(f"Failed to load history: {e}")
 
