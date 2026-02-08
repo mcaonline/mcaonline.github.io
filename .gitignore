@@ -355,3 +355,5 @@ output/
 backup/
 ffmpeg/
 codeexamples/
+venv/
+venv

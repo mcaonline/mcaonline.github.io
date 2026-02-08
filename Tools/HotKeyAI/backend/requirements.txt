@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+pydantic
+pydantic-settings
+keyring
+pynput
+httpx
+openai
+loguru
+pyinstaller
