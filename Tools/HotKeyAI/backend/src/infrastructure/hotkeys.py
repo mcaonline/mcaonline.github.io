@@ -1,55 +1,106 @@
 from pynput import keyboard
-from typing import Callable, Optional, Dict
+from typing import Callable, Optional, Dict, List
 import time
 import threading
 import os
 from loguru import logger
+from ..domain.models import HotkeyDefinition
 
 class HotkeyAgent:
     """
     Manages low-level keyboard hooks to detect:
-    1. The primary chord: Ctrl+V,V
-    2. Global/Direct hotkeys (future)
+    1. The primary chord: Ctrl+V,V (or configured trigger)
+    2. Global/Direct hotkeys
     """
 
     def __init__(self, 
-                 on_trigger: Callable[[], None], 
+                 on_trigger: Callable[[str], None], 
                  second_v_timeout_ms: int = 500):
-        self.on_trigger = on_trigger
+        self.on_trigger = on_trigger # Callback now takes a hotkey_id (or None for panel)
         self.timeout_s = second_v_timeout_ms / 1000.0
         
         self.listener: Optional[keyboard.Listener] = None
+        self.global_hotkeys: Optional[keyboard.GlobalHotKeys] = None
         
-        # State Machine
+        # State Machine for Chord
         self._ctrl_down = False
         self._first_v_pressed = False
         self._first_v_time = 0.0
         
         # Lock for thread safety during hook callbacks
         self._lock = threading.Lock()
+        
+        self._registered_definitions: List[HotkeyDefinition] = []
 
     def start(self):
         pid = os.getpid()
         logger.info(f"[{pid}] Starting HotkeyAgent hook...")
+        
+        # 1. Start low-level listener for Chord logic
         self.listener = keyboard.Listener(
             on_press=self._on_press,
             on_release=self._on_release
         )
         self.listener.start()
+        
+        # 2. Apply any pending global hotkeys
+        self._apply_global_hotkeys()
 
     def stop(self):
         pid = os.getpid()
         if self.listener:
             self.listener.stop()
             self.listener = None
+        
+        if self.global_hotkeys:
+            self.global_hotkeys.stop()
+            self.global_hotkeys = None
+            
         logger.info(f"[{pid}] HotkeyAgent hook stopped.")
+
+    def update_hotkeys(self, hotkeys: List[HotkeyDefinition]):
+        """Updates the list of active direct hotkeys."""
+        self._registered_definitions = hotkeys
+        self._apply_global_hotkeys()
+
+    def _apply_global_hotkeys(self):
+        """Re-registers global hotkeys based on current definitions."""
+        if self.global_hotkeys:
+            self.global_hotkeys.stop()
+            self.global_hotkeys = None
+            
+        mapping = {}
+        for hk in self._registered_definitions:
+            if hk.enabled and hk.direct_hotkey:
+                # pynput format: '<ctrl>+<alt>+h'
+                # We assume the frontend sends valid pynput strings or we normalize them.
+                # Common format from frontend might need conversion if not matching pynput.
+                # For now, assuming raw pynput string for MVP.
+                try:
+                    # Capture hk.id in closure
+                    trigger_fn = lambda id=hk.id: self._dispatch_trigger(id)
+                    mapping[hk.direct_hotkey] = trigger_fn
+                    logger.debug(f"Registered global hotkey: {hk.direct_hotkey} -> {hk.id}")
+                except Exception as e:
+                    logger.error(f"Failed to register hotkey {hk.direct_hotkey}: {e}")
+        
+        if mapping:
+            self.global_hotkeys = keyboard.GlobalHotKeys(mapping)
+            self.global_hotkeys.start()
+
+    def _dispatch_trigger(self, hotkey_id: Optional[str]):
+        threading.Thread(target=self.on_trigger, args=(hotkey_id,), daemon=True).start()
 
     def _reset_chord(self):
         self._first_v_pressed = False
         self._first_v_time = 0.0
-        # Do NOT reset Ctrl down state here, as user might still be holding it
-
+        
     def _on_press(self, key):
+        # NOTE: GlobalHotKeys running in parallel might suppress events if not configured to suppress=False?
+        # pynput.GlobalHotKeys is just a convenience wrapper around Listener.
+        # We run our own Listener for the Chord, and GlobalHotKeys for direct triggers.
+        # They should coexist as separate hooks (or same hook depending on OS implementation).
+        
         try:
             with self._lock:
                 # 1. Check for Ctrl
@@ -57,7 +108,7 @@ class HotkeyAgent:
                     self._ctrl_down = True
                     return
 
-                # 2. Check for V
+                # 2. Check for V (Hardcoded Chord for now, Todo: Make configurable)
                 if hasattr(key, 'char') and key.char is not None and key.char.lower() == 'v':
                     if self._ctrl_down:
                         now = time.time()
@@ -73,20 +124,15 @@ class HotkeyAgent:
                             if diff <= self.timeout_s:
                                 logger.info(f"Chord: TRIGGERED (delta {diff:.3f}s)")
                                 self._reset_chord()
-                                # Dispatch trigger in separate thread to not block hook
-                                threading.Thread(target=self.on_trigger, daemon=True).start()
+                                self._dispatch_trigger(None) # None = Panel Trigger
                             else:
-                                # Timeout exceeded, treat this as a potentially new First V?
-                                # Or just reset. For safe "paste-passthrough", we reset.
                                 logger.debug("Chord: Timeout exceeded, resetting.")
-                                self._first_v_pressed = True # Treat as new start? Or strict reset?
+                                self._first_v_pressed = True 
                                 self._first_v_time = now
                     else:
-                        # V pressed without Ctrl
                         self._reset_chord()
                     return
 
-                # 3. Any other key resets the chord state (except modifiers maybe)
                 if key not in [keyboard.Key.shift, keyboard.Key.alt_l, keyboard.Key.alt_r]:
                      self._reset_chord()
 

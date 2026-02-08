@@ -317,22 +317,6 @@ imports:
  &#8226;   <a href="#pynput.mouse._win32">pynput.mouse._win32</a>
  &#8226;   <a href="#re">re</a>
  &#8226;   <a href="#reprlib">reprlib</a>
- &#8226;   <a href="#src">src</a>
- &#8226;   <a href="#src.application">src.application</a>
- &#8226;   <a href="#src.application.pipeline">src.application.pipeline</a>
- &#8226;   <a href="#src.config">src.config</a>
- &#8226;   <a href="#src.config.settings">src.config.settings</a>
- &#8226;   <a href="#src.domain">src.domain</a>
- &#8226;   <a href="#src.domain.hotkey_catalog">src.domain.hotkey_catalog</a>
- &#8226;   <a href="#src.domain.models">src.domain.models</a>
- &#8226;   <a href="#src.domain.ui_text">src.domain.ui_text</a>
- &#8226;   <a href="#src.infrastructure">src.infrastructure</a>
- &#8226;   <a href="#src.infrastructure.clipboard">src.infrastructure.clipboard</a>
- &#8226;   <a href="#src.infrastructure.history">src.infrastructure.history</a>
- &#8226;   <a href="#src.infrastructure.hotkeys">src.infrastructure.hotkeys</a>
- &#8226;   <a href="#src.infrastructure.providers">src.infrastructure.providers</a>
- &#8226;   <a href="#src.infrastructure.providers.base">src.infrastructure.providers.base</a>
- &#8226;   <a href="#src.infrastructure.secrets">src.infrastructure.secrets</a>
  &#8226;   <a href="#src.main">src.main</a>
  &#8226;   <a href="#sre_compile">sre_compile</a>
  &#8226;   <a href="#sre_constants">sre_constants</a>
@@ -4683,6 +4667,7 @@ imports:
  &#8226;   <a href="#PIL.ImageFile">PIL.ImageFile</a>
  &#8226;   <a href="#PIL.ImageFilter">PIL.ImageFilter</a>
  &#8226;   <a href="#PIL.ImageFont">PIL.ImageFont</a>
+ &#8226;   <a href="#PIL.ImageGrab">PIL.ImageGrab</a>
  &#8226;   <a href="#PIL.ImageMath">PIL.ImageMath</a>
  &#8226;   <a href="#PIL.ImageMode">PIL.ImageMode</a>
  &#8226;   <a href="#PIL.ImageOps">PIL.ImageOps</a>
@@ -4746,6 +4731,7 @@ imported by:
  &#8226;   <a href="#PIL.ImageFile">PIL.ImageFile</a>
  &#8226;   <a href="#PIL.ImageFilter">PIL.ImageFilter</a>
  &#8226;   <a href="#PIL.ImageFont">PIL.ImageFont</a>
+ &#8226;   <a href="#PIL.ImageGrab">PIL.ImageGrab</a>
  &#8226;   <a href="#PIL.ImageMath">PIL.ImageMath</a>
  &#8226;   <a href="#PIL.ImageMode">PIL.ImageMode</a>
  &#8226;   <a href="#PIL.ImageOps">PIL.ImageOps</a>
@@ -4805,6 +4791,8 @@ imported by:
  &#8226;   <a href="#matplotlib.colors">matplotlib.colors</a>
  &#8226;   <a href="#matplotlib_inline.config">matplotlib_inline.config</a>
  &#8226;   <a href="#pygments.formatters.img">pygments.formatters.img</a>
+ &#8226;   <a href="#src.infrastructure.clipboard">src.infrastructure.clipboard</a>
+ &#8226;   <a href="#src.infrastructure.providers.tesseract">src.infrastructure.providers.tesseract</a>
 
   </div>
 
@@ -4881,6 +4869,7 @@ imported by:
  &#8226;   <a href="#PIL.CurImagePlugin">PIL.CurImagePlugin</a>
  &#8226;   <a href="#PIL.IcoImagePlugin">PIL.IcoImagePlugin</a>
  &#8226;   <a href="#PIL.Image">PIL.Image</a>
+ &#8226;   <a href="#PIL.ImageGrab">PIL.ImageGrab</a>
 
   </div>
 
@@ -5453,6 +5442,7 @@ imported by:
  &#8226;   <a href="#PIL.ImageFile">PIL.ImageFile</a>
  &#8226;   <a href="#PIL.ImageFilter">PIL.ImageFilter</a>
  &#8226;   <a href="#PIL.ImageFont">PIL.ImageFont</a>
+ &#8226;   <a href="#PIL.ImageGrab">PIL.ImageGrab</a>
  &#8226;   <a href="#PIL.ImageMath">PIL.ImageMath</a>
  &#8226;   <a href="#PIL.ImageOps">PIL.ImageOps</a>
  &#8226;   <a href="#PIL.ImagePalette">PIL.ImagePalette</a>
@@ -5498,6 +5488,8 @@ imported by:
  &#8226;   <a href="#matplotlib.pyplot">matplotlib.pyplot</a>
  &#8226;   <a href="#matplotlib_inline.config">matplotlib_inline.config</a>
  &#8226;   <a href="#pygments.formatters.img">pygments.formatters.img</a>
+ &#8226;   <a href="#src.infrastructure.clipboard">src.infrastructure.clipboard</a>
+ &#8226;   <a href="#src.infrastructure.providers.tesseract">src.infrastructure.providers.tesseract</a>
 
   </div>
 
@@ -5777,6 +5769,36 @@ imported by:
 </div>
 
 <div class="node">
+  <a name="PIL.ImageGrab"></a>
+  <a target="code" href="///C:/Users/subsc/AppData/Local/Programs/Python/Python310/lib/site-packages/PIL/ImageGrab.py" type="text/plain"><tt>PIL.ImageGrab</tt></a>
+<span class="moduletype">SourceModule</span>  <div class="import">
+imports:
+    <a href="#PIL">PIL</a>
+ &#8226;   <a href="#PIL.BmpImagePlugin">PIL.BmpImagePlugin</a>
+ &#8226;   <a href="#PIL.Image">PIL.Image</a>
+ &#8226;   <a href="#PIL.ImageWin">PIL.ImageWin</a>
+ &#8226;   <a href="#PIL.PngImagePlugin">PIL.PngImagePlugin</a>
+ &#8226;   <a href="#__future__">__future__</a>
+ &#8226;   <a href="#binascii">binascii</a>
+ &#8226;   <a href="#io">io</a>
+ &#8226;   <a href="#os">os</a>
+ &#8226;   <a href="#shutil">shutil</a>
+ &#8226;   <a href="#struct">struct</a>
+ &#8226;   <a href="#subprocess">subprocess</a>
+ &#8226;   <a href="#sys">sys</a>
+ &#8226;   <a href="#tempfile">tempfile</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#PIL">PIL</a>
+ &#8226;   <a href="#src.infrastructure.clipboard">src.infrastructure.clipboard</a>
+
+  </div>
+
+</div>
+
+<div class="node">
   <a name="PIL.ImageMath"></a>
   <a target="code" href="///C:/Users/subsc/AppData/Local/Programs/Python/Python310/lib/site-packages/PIL/ImageMath.py" type="text/plain"><tt>PIL.ImageMath</tt></a>
 <span class="moduletype">SourceModule</span>  <div class="import">
@@ -6023,6 +6045,7 @@ imports:
 imported by:
     <a href="#PIL">PIL</a>
  &#8226;   <a href="#PIL.ImageCms">PIL.ImageCms</a>
+ &#8226;   <a href="#PIL.ImageGrab">PIL.ImageGrab</a>
 
   </div>
 
@@ -6462,6 +6485,7 @@ imported by:
  &#8226;   <a href="#PIL.IcnsImagePlugin">PIL.IcnsImagePlugin</a>
  &#8226;   <a href="#PIL.IcoImagePlugin">PIL.IcoImagePlugin</a>
  &#8226;   <a href="#PIL.Image">PIL.Image</a>
+ &#8226;   <a href="#PIL.ImageGrab">PIL.ImageGrab</a>
  &#8226;   <a href="#matplotlib.colors">matplotlib.colors</a>
  &#8226;   <a href="#matplotlib.image">matplotlib.image</a>
 
@@ -7213,6 +7237,7 @@ imported by:
  &#8226;   <a href="#PIL.ImageFile">PIL.ImageFile</a>
  &#8226;   <a href="#PIL.ImageFilter">PIL.ImageFilter</a>
  &#8226;   <a href="#PIL.ImageFont">PIL.ImageFont</a>
+ &#8226;   <a href="#PIL.ImageGrab">PIL.ImageGrab</a>
  &#8226;   <a href="#PIL.ImageMath">PIL.ImageMath</a>
  &#8226;   <a href="#PIL.ImageMode">PIL.ImageMode</a>
  &#8226;   <a href="#PIL.ImageOps">PIL.ImageOps</a>
@@ -11735,6 +11760,7 @@ imported by:
     <a href="#IPython.core.display">IPython.core.display</a>
  &#8226;   <a href="#IPython.core.display_functions">IPython.core.display_functions</a>
  &#8226;   <a href="#IPython.core.pylabtools">IPython.core.pylabtools</a>
+ &#8226;   <a href="#PIL.ImageGrab">PIL.ImageGrab</a>
  &#8226;   <a href="#base64">base64</a>
  &#8226;   <a href="#cffi.verifier">cffi.verifier</a>
  &#8226;   <a href="#email._encoded_words">email._encoded_words</a>
@@ -23759,6 +23785,9 @@ imported by:
  &#8226;   <a href="#openai.resources.images">openai.resources.images</a>
  &#8226;   <a href="#openai.resources.models">openai.resources.models</a>
  &#8226;   <a href="#openai.resources.moderations">openai.resources.moderations</a>
+ &#8226;   <a href="#src.infrastructure.providers.anthropic">src.infrastructure.providers.anthropic</a>
+ &#8226;   <a href="#src.infrastructure.providers.google">src.infrastructure.providers.google</a>
+ &#8226;   <a href="#src.infrastructure.providers.mistral">src.infrastructure.providers.mistral</a>
 
   </div>
 
@@ -25590,6 +25619,7 @@ imported by:
  &#8226;   <a href="#PIL.Image">PIL.Image</a>
  &#8226;   <a href="#PIL.ImageFile">PIL.ImageFile</a>
  &#8226;   <a href="#PIL.ImageFont">PIL.ImageFont</a>
+ &#8226;   <a href="#PIL.ImageGrab">PIL.ImageGrab</a>
  &#8226;   <a href="#PIL.ImageQt">PIL.ImageQt</a>
  &#8226;   <a href="#PIL.ImageTk">PIL.ImageTk</a>
  &#8226;   <a href="#PIL.IptcImagePlugin">PIL.IptcImagePlugin</a>
@@ -25717,6 +25747,7 @@ imported by:
  &#8226;   <a href="#smtplib">smtplib</a>
  &#8226;   <a href="#socket">socket</a>
  &#8226;   <a href="#socketserver">socketserver</a>
+ &#8226;   <a href="#src.infrastructure.clipboard">src.infrastructure.clipboard</a>
  &#8226;   <a href="#subprocess">subprocess</a>
  &#8226;   <a href="#tarfile">tarfile</a>
  &#8226;   <a href="#tempfile">tempfile</a>
@@ -29489,6 +29520,10 @@ imported by:
  &#8226;   <a href="#setuptools.msvc">setuptools.msvc</a>
  &#8226;   <a href="#src.config.settings">src.config.settings</a>
  &#8226;   <a href="#src.domain.hotkey_catalog">src.domain.hotkey_catalog</a>
+ &#8226;   <a href="#src.infrastructure.history">src.infrastructure.history</a>
+ &#8226;   <a href="#src.infrastructure.providers.anthropic">src.infrastructure.providers.anthropic</a>
+ &#8226;   <a href="#src.infrastructure.providers.google">src.infrastructure.providers.google</a>
+ &#8226;   <a href="#src.infrastructure.providers.mistral">src.infrastructure.providers.mistral</a>
  &#8226;   <a href="#starlette.requests">starlette.requests</a>
  &#8226;   <a href="#starlette.responses">starlette.responses</a>
  &#8226;   <a href="#starlette.websockets">starlette.websockets</a>
@@ -30513,9 +30548,12 @@ imported by:
  &#8226;   <a href="#loguru._simple_sinks">loguru._simple_sinks</a>
  &#8226;   <a href="#loguru._string_parsers">loguru._string_parsers</a>
  &#8226;   <a href="#src.application.pipeline">src.application.pipeline</a>
+ &#8226;   <a href="#src.config.settings">src.config.settings</a>
  &#8226;   <a href="#src.domain.hotkey_catalog">src.domain.hotkey_catalog</a>
  &#8226;   <a href="#src.infrastructure.clipboard">src.infrastructure.clipboard</a>
+ &#8226;   <a href="#src.infrastructure.history">src.infrastructure.history</a>
  &#8226;   <a href="#src.infrastructure.hotkeys">src.infrastructure.hotkeys</a>
+ &#8226;   <a href="#src.infrastructure.providers.tesseract">src.infrastructure.providers.tesseract</a>
  &#8226;   <a href="#src.main">src.main</a>
 
   </div>
@@ -49252,6 +49290,7 @@ imported by:
  &#8226;   <a href="#PIL.Image">PIL.Image</a>
  &#8226;   <a href="#PIL.ImageFile">PIL.ImageFile</a>
  &#8226;   <a href="#PIL.ImageFont">PIL.ImageFont</a>
+ &#8226;   <a href="#PIL.ImageGrab">PIL.ImageGrab</a>
  &#8226;   <a href="#PIL.ImageShow">PIL.ImageShow</a>
  &#8226;   <a href="#PIL.Jpeg2KImagePlugin">PIL.Jpeg2KImagePlugin</a>
  &#8226;   <a href="#PIL.JpegImagePlugin">PIL.JpegImagePlugin</a>
@@ -49617,6 +49656,7 @@ imported by:
  &#8226;   <a href="#src.config.settings">src.config.settings</a>
  &#8226;   <a href="#src.infrastructure.hotkeys">src.infrastructure.hotkeys</a>
  &#8226;   <a href="#src.infrastructure.providers.base">src.infrastructure.providers.base</a>
+ &#8226;   <a href="#src.infrastructure.providers.tesseract">src.infrastructure.providers.tesseract</a>
  &#8226;   <a href="#src.main">src.main</a>
  &#8226;   <a href="#ssl">ssl</a>
  &#8226;   <a href="#stack_data.core">stack_data.core</a>
@@ -50771,6 +50811,7 @@ imported by:
  &#8226;   <a href="#setuptools.dist">setuptools.dist</a>
  &#8226;   <a href="#src.config.settings">src.config.settings</a>
  &#8226;   <a href="#src.domain.hotkey_catalog">src.domain.hotkey_catalog</a>
+ &#8226;   <a href="#src.infrastructure.history">src.infrastructure.history</a>
  &#8226;   <a href="#src.main">src.main</a>
  &#8226;   <a href="#traitlets.utils">traitlets.utils</a>
  &#8226;   <a href="#uvicorn.config">uvicorn.config</a>
@@ -76677,6 +76718,7 @@ imported by:
  &#8226;   <a href="#IPython.utils.process">IPython.utils.process</a>
  &#8226;   <a href="#IPython.utils.terminal">IPython.utils.terminal</a>
  &#8226;   <a href="#PIL.EpsImagePlugin">PIL.EpsImagePlugin</a>
+ &#8226;   <a href="#PIL.ImageGrab">PIL.ImageGrab</a>
  &#8226;   <a href="#PIL.ImageShow">PIL.ImageShow</a>
  &#8226;   <a href="#argparse">argparse</a>
  &#8226;   <a href="#backports.tarfile">backports.tarfile</a>
@@ -77216,8 +77258,7 @@ imported by:
   <a target="code" href="///D:/Github/mcaonline.github.io/Tools/HotKeyAI/backend/src/__init__.py" type="text/plain"><tt>src</tt></a>
 <span class="moduletype">Package</span>  <div class="import">
 imported by:
-    <a href="#run_backend.py">run_backend.py</a>
- &#8226;   <a href="#src.application">src.application</a>
+    <a href="#src.application">src.application</a>
  &#8226;   <a href="#src.config">src.config</a>
  &#8226;   <a href="#src.domain">src.domain</a>
  &#8226;   <a href="#src.infrastructure">src.infrastructure</a>
@@ -77237,8 +77278,7 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#run_backend.py">run_backend.py</a>
- &#8226;   <a href="#src.application.pipeline">src.application.pipeline</a>
+    <a href="#src.application.pipeline">src.application.pipeline</a>
 
   </div>
 
@@ -77255,15 +77295,18 @@ imports:
  &#8226;   <a href="#src.domain.models">src.domain.models</a>
  &#8226;   <a href="#src.infrastructure.clipboard">src.infrastructure.clipboard</a>
  &#8226;   <a href="#src.infrastructure.history">src.infrastructure.history</a>
+ &#8226;   <a href="#src.infrastructure.providers.anthropic">src.infrastructure.providers.anthropic</a>
  &#8226;   <a href="#src.infrastructure.providers.base">src.infrastructure.providers.base</a>
+ &#8226;   <a href="#src.infrastructure.providers.google">src.infrastructure.providers.google</a>
+ &#8226;   <a href="#src.infrastructure.providers.mistral">src.infrastructure.providers.mistral</a>
+ &#8226;   <a href="#src.infrastructure.providers.tesseract">src.infrastructure.providers.tesseract</a>
  &#8226;   <a href="#time">time</a>
  &#8226;   <a href="#typing">typing</a>
 
   </div>
   <div class="import">
 imported by:
-    <a href="#run_backend.py">run_backend.py</a>
- &#8226;   <a href="#src.main">src.main</a>
+    <a href="#src.main">src.main</a>
 
   </div>
 
@@ -77279,8 +77322,7 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#run_backend.py">run_backend.py</a>
- &#8226;   <a href="#src.config.settings">src.config.settings</a>
+    <a href="#src.config.settings">src.config.settings</a>
 
   </div>
 
@@ -77292,6 +77334,7 @@ imported by:
 <span class="moduletype">SourceModule</span>  <div class="import">
 imports:
     <a href="#json">json</a>
+ &#8226;   <a href="#loguru">loguru</a>
  &#8226;   <a href="#os">os</a>
  &#8226;   <a href="#pathlib">pathlib</a>
  &#8226;   <a href="#pydantic">pydantic</a>
@@ -77305,8 +77348,7 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#run_backend.py">run_backend.py</a>
- &#8226;   <a href="#src.main">src.main</a>
+    <a href="#src.main">src.main</a>
 
   </div>
 
@@ -77322,8 +77364,7 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#run_backend.py">run_backend.py</a>
- &#8226;   <a href="#src.domain.hotkey_catalog">src.domain.hotkey_catalog</a>
+    <a href="#src.domain.hotkey_catalog">src.domain.hotkey_catalog</a>
  &#8226;   <a href="#src.domain.models">src.domain.models</a>
  &#8226;   <a href="#src.domain.ui_text">src.domain.ui_text</a>
 
@@ -77346,8 +77387,7 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#run_backend.py">run_backend.py</a>
- &#8226;   <a href="#src.main">src.main</a>
+    <a href="#src.main">src.main</a>
 
   </div>
 
@@ -77368,8 +77408,7 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#run_backend.py">run_backend.py</a>
- &#8226;   <a href="#src.application.pipeline">src.application.pipeline</a>
+    <a href="#src.application.pipeline">src.application.pipeline</a>
  &#8226;   <a href="#src.domain.hotkey_catalog">src.domain.hotkey_catalog</a>
  &#8226;   <a href="#src.main">src.main</a>
 
@@ -77391,8 +77430,7 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#run_backend.py">run_backend.py</a>
- &#8226;   <a href="#src.main">src.main</a>
+    <a href="#src.main">src.main</a>
 
   </div>
 
@@ -77408,8 +77446,7 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#run_backend.py">run_backend.py</a>
- &#8226;   <a href="#src.infrastructure.clipboard">src.infrastructure.clipboard</a>
+    <a href="#src.infrastructure.clipboard">src.infrastructure.clipboard</a>
  &#8226;   <a href="#src.infrastructure.history">src.infrastructure.history</a>
  &#8226;   <a href="#src.infrastructure.hotkeys">src.infrastructure.hotkeys</a>
  &#8226;   <a href="#src.infrastructure.providers">src.infrastructure.providers</a>
@@ -77424,7 +77461,11 @@ imported by:
   <a target="code" href="///D:/Github/mcaonline.github.io/Tools/HotKeyAI/backend/src/infrastructure/clipboard.py" type="text/plain"><tt>src.infrastructure.clipboard</tt></a>
 <span class="moduletype">SourceModule</span>  <div class="import">
 imports:
-    <a href="#loguru">loguru</a>
+    <a href="#PIL">PIL</a>
+ &#8226;   <a href="#PIL.Image">PIL.Image</a>
+ &#8226;   <a href="#PIL.ImageGrab">PIL.ImageGrab</a>
+ &#8226;   <a href="#io">io</a>
+ &#8226;   <a href="#loguru">loguru</a>
  &#8226;   <a href="#pynput">pynput</a>
  &#8226;   <a href="#pynput.keyboard">pynput.keyboard</a>
  &#8226;   <a href="#pyperclip">pyperclip</a>
@@ -77435,8 +77476,7 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#run_backend.py">run_backend.py</a>
- &#8226;   <a href="#src.application.pipeline">src.application.pipeline</a>
+    <a href="#src.application.pipeline">src.application.pipeline</a>
  &#8226;   <a href="#src.main">src.main</a>
 
   </div>
@@ -77450,6 +77490,9 @@ imported by:
 imports:
     <a href="#collections">collections</a>
  &#8226;   <a href="#datetime">datetime</a>
+ &#8226;   <a href="#json">json</a>
+ &#8226;   <a href="#loguru">loguru</a>
+ &#8226;   <a href="#pathlib">pathlib</a>
  &#8226;   <a href="#pydantic">pydantic</a>
  &#8226;   <a href="#pydantic.BaseModel">pydantic.BaseModel</a>
  &#8226;   <a href="#src.infrastructure">src.infrastructure</a>
@@ -77459,8 +77502,7 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#run_backend.py">run_backend.py</a>
- &#8226;   <a href="#src.application.pipeline">src.application.pipeline</a>
+    <a href="#src.application.pipeline">src.application.pipeline</a>
  &#8226;   <a href="#src.main">src.main</a>
 
   </div>
@@ -77484,8 +77526,7 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#run_backend.py">run_backend.py</a>
- &#8226;   <a href="#src.main">src.main</a>
+    <a href="#src.main">src.main</a>
 
   </div>
 
@@ -77501,8 +77542,31 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#run_backend.py">run_backend.py</a>
+    <a href="#src.infrastructure.providers.anthropic">src.infrastructure.providers.anthropic</a>
  &#8226;   <a href="#src.infrastructure.providers.base">src.infrastructure.providers.base</a>
+ &#8226;   <a href="#src.infrastructure.providers.google">src.infrastructure.providers.google</a>
+ &#8226;   <a href="#src.infrastructure.providers.mistral">src.infrastructure.providers.mistral</a>
+ &#8226;   <a href="#src.infrastructure.providers.tesseract">src.infrastructure.providers.tesseract</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="src.infrastructure.providers.anthropic"></a>
+  <a target="code" href="///D:/Github/mcaonline.github.io/Tools/HotKeyAI/backend/src/infrastructure/providers/anthropic.py" type="text/plain"><tt>src.infrastructure.providers.anthropic</tt></a>
+<span class="moduletype">SourceModule</span>  <div class="import">
+imports:
+    <a href="#httpx">httpx</a>
+ &#8226;   <a href="#json">json</a>
+ &#8226;   <a href="#src.infrastructure.providers">src.infrastructure.providers</a>
+ &#8226;   <a href="#src.infrastructure.providers.base">src.infrastructure.providers.base</a>
+ &#8226;   <a href="#typing">typing</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#src.application.pipeline">src.application.pipeline</a>
 
   </div>
 
@@ -77525,8 +77589,72 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#run_backend.py">run_backend.py</a>
- &#8226;   <a href="#src.application.pipeline">src.application.pipeline</a>
+    <a href="#src.application.pipeline">src.application.pipeline</a>
+ &#8226;   <a href="#src.infrastructure.providers.anthropic">src.infrastructure.providers.anthropic</a>
+ &#8226;   <a href="#src.infrastructure.providers.google">src.infrastructure.providers.google</a>
+ &#8226;   <a href="#src.infrastructure.providers.mistral">src.infrastructure.providers.mistral</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="src.infrastructure.providers.google"></a>
+  <a target="code" href="///D:/Github/mcaonline.github.io/Tools/HotKeyAI/backend/src/infrastructure/providers/google.py" type="text/plain"><tt>src.infrastructure.providers.google</tt></a>
+<span class="moduletype">SourceModule</span>  <div class="import">
+imports:
+    <a href="#httpx">httpx</a>
+ &#8226;   <a href="#json">json</a>
+ &#8226;   <a href="#src.infrastructure.providers">src.infrastructure.providers</a>
+ &#8226;   <a href="#src.infrastructure.providers.base">src.infrastructure.providers.base</a>
+ &#8226;   <a href="#typing">typing</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#src.application.pipeline">src.application.pipeline</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="src.infrastructure.providers.mistral"></a>
+  <a target="code" href="///D:/Github/mcaonline.github.io/Tools/HotKeyAI/backend/src/infrastructure/providers/mistral.py" type="text/plain"><tt>src.infrastructure.providers.mistral</tt></a>
+<span class="moduletype">SourceModule</span>  <div class="import">
+imports:
+    <a href="#httpx">httpx</a>
+ &#8226;   <a href="#json">json</a>
+ &#8226;   <a href="#src.infrastructure.providers">src.infrastructure.providers</a>
+ &#8226;   <a href="#src.infrastructure.providers.base">src.infrastructure.providers.base</a>
+ &#8226;   <a href="#typing">typing</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#src.application.pipeline">src.application.pipeline</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="src.infrastructure.providers.tesseract"></a>
+  <a target="code" href="///D:/Github/mcaonline.github.io/Tools/HotKeyAI/backend/src/infrastructure/providers/tesseract.py" type="text/plain"><tt>src.infrastructure.providers.tesseract</tt></a>
+<span class="moduletype">SourceModule</span>  <div class="import">
+imports:
+    <a href="#PIL">PIL</a>
+ &#8226;   <a href="#PIL.Image">PIL.Image</a>
+ &#8226;   <a href="#loguru">loguru</a>
+ &#8226;   <a href="#os">os</a>
+ &#8226;   <a href="#src.infrastructure.providers">src.infrastructure.providers</a>
+ &#8226;   <a href="#subprocess">subprocess</a>
+ &#8226;   <a href="#typing">typing</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#src.application.pipeline">src.application.pipeline</a>
 
   </div>
 
@@ -77547,8 +77675,7 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#run_backend.py">run_backend.py</a>
- &#8226;   <a href="#src.main">src.main</a>
+    <a href="#src.main">src.main</a>
 
   </div>
 
@@ -78664,6 +78791,7 @@ imported by:
  &#8226;   <a href="#PIL.Image">PIL.Image</a>
  &#8226;   <a href="#PIL.ImageDraw">PIL.ImageDraw</a>
  &#8226;   <a href="#PIL.ImageFile">PIL.ImageFile</a>
+ &#8226;   <a href="#PIL.ImageGrab">PIL.ImageGrab</a>
  &#8226;   <a href="#PIL.Jpeg2KImagePlugin">PIL.Jpeg2KImagePlugin</a>
  &#8226;   <a href="#PIL.JpegImagePlugin">PIL.JpegImagePlugin</a>
  &#8226;   <a href="#PIL.McIdasImagePlugin">PIL.McIdasImagePlugin</a>
@@ -78754,6 +78882,7 @@ imported by:
  &#8226;   <a href="#IPython.utils.sysinfo">IPython.utils.sysinfo</a>
  &#8226;   <a href="#PIL.EpsImagePlugin">PIL.EpsImagePlugin</a>
  &#8226;   <a href="#PIL.GifImagePlugin">PIL.GifImagePlugin</a>
+ &#8226;   <a href="#PIL.ImageGrab">PIL.ImageGrab</a>
  &#8226;   <a href="#PIL.ImageShow">PIL.ImageShow</a>
  &#8226;   <a href="#PIL.JpegImagePlugin">PIL.JpegImagePlugin</a>
  &#8226;   <a href="#_aix_support">_aix_support</a>
@@ -78814,6 +78943,7 @@ imported by:
  &#8226;   <a href="#setuptools.installer">setuptools.installer</a>
  &#8226;   <a href="#setuptools.msvc">setuptools.msvc</a>
  &#8226;   <a href="#src.config.settings">src.config.settings</a>
+ &#8226;   <a href="#src.infrastructure.providers.tesseract">src.infrastructure.providers.tesseract</a>
  &#8226;   <a href="#uuid">uuid</a>
  &#8226;   <a href="#watchfiles.run">watchfiles.run</a>
  &#8226;   <a href="#webbrowser">webbrowser</a>
@@ -78894,6 +79024,7 @@ imported by:
  &#8226;   <a href="#PIL.Image">PIL.Image</a>
  &#8226;   <a href="#PIL.ImageCms">PIL.ImageCms</a>
  &#8226;   <a href="#PIL.ImageFont">PIL.ImageFont</a>
+ &#8226;   <a href="#PIL.ImageGrab">PIL.ImageGrab</a>
  &#8226;   <a href="#PIL.ImageMode">PIL.ImageMode</a>
  &#8226;   <a href="#PIL.ImageQt">PIL.ImageQt</a>
  &#8226;   <a href="#PIL.ImageShow">PIL.ImageShow</a>
@@ -79513,6 +79644,7 @@ imported by:
  &#8226;   <a href="#IPython.utils.io">IPython.utils.io</a>
  &#8226;   <a href="#PIL.EpsImagePlugin">PIL.EpsImagePlugin</a>
  &#8226;   <a href="#PIL.Image">PIL.Image</a>
+ &#8226;   <a href="#PIL.ImageGrab">PIL.ImageGrab</a>
  &#8226;   <a href="#PIL.JpegImagePlugin">PIL.JpegImagePlugin</a>
  &#8226;   <a href="#_osx_support">_osx_support</a>
  &#8226;   <a href="#_pyi_rth_utils.tempfile">_pyi_rth_utils.tempfile</a>
@@ -82013,7 +82145,11 @@ imported by:
  &#8226;   <a href="#src.infrastructure.clipboard">src.infrastructure.clipboard</a>
  &#8226;   <a href="#src.infrastructure.history">src.infrastructure.history</a>
  &#8226;   <a href="#src.infrastructure.hotkeys">src.infrastructure.hotkeys</a>
+ &#8226;   <a href="#src.infrastructure.providers.anthropic">src.infrastructure.providers.anthropic</a>
  &#8226;   <a href="#src.infrastructure.providers.base">src.infrastructure.providers.base</a>
+ &#8226;   <a href="#src.infrastructure.providers.google">src.infrastructure.providers.google</a>
+ &#8226;   <a href="#src.infrastructure.providers.mistral">src.infrastructure.providers.mistral</a>
+ &#8226;   <a href="#src.infrastructure.providers.tesseract">src.infrastructure.providers.tesseract</a>
  &#8226;   <a href="#src.infrastructure.secrets">src.infrastructure.secrets</a>
  &#8226;   <a href="#src.main">src.main</a>
  &#8226;   <a href="#stack_data.core">stack_data.core</a>

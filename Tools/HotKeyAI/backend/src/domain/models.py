@@ -55,9 +55,12 @@ class ConnectionDefinition(BaseModel):
     transcription_hint: Optional[str] = None # For STT
     
     # State
+    # State
     is_healthy: bool = False
     last_health_check: Optional[datetime] = None
     secret_ref: Optional[str] = None # Reference to secret store items (not the secret itself)
+    endpoint: Optional[str] = None # Override endpoint for custom providers
+    endpoint: Optional[str] = None
 
 # --- Hotkey Catalog Models ---
 

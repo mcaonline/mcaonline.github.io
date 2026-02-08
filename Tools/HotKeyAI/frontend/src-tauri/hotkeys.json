@@ -25,6 +25,83 @@
       },
       "created_at": "2026-02-08T01:11:17.680326",
       "updated_at": "2026-02-08T01:11:17.680326"
+    },
+    {
+      "id": "paste_plain",
+      "kind": "builtin",
+      "mode": "local_transform",
+      "display_key": "builtin.paste_plain_unformatted_text",
+      "description_key": "builtin.paste_plain_desc",
+      "icon": null,
+      "enabled": true,
+      "sequence": 0,
+      "direct_hotkey": null,
+      "panel_quick_key": null,
+      "capability_requirements": [],
+      "input_requirements": [],
+      "llm_connection_id": null,
+      "stt_connection_id": null,
+      "prompt_template": null,
+      "static_text_template": null,
+      "local_transform_config": {
+        "type": "regex",
+        "pattern": ".*",
+        "replacement": "$0"
+      },
+      "created_at": "2026-02-08T10:49:16.907315",
+      "updated_at": "2026-02-08T10:49:16.907315"
+    },
+    {
+      "id": "ocr_paste",
+      "kind": "builtin",
+      "mode": "ai_transform",
+      "display_key": "builtin.paste_image_to_text_ocr",
+      "description_key": "builtin.paste_image_to_text_ocr_desc",
+      "icon": null,
+      "enabled": false,
+      "sequence": 1,
+      "direct_hotkey": null,
+      "panel_quick_key": null,
+      "capability_requirements": [
+        {
+          "capability": "ocr",
+          "min_sequence": 1
+        }
+      ],
+      "input_requirements": [],
+      "llm_connection_id": null,
+      "stt_connection_id": null,
+      "prompt_template": null,
+      "static_text_template": null,
+      "local_transform_config": null,
+      "created_at": "2026-02-08T10:49:16.907315",
+      "updated_at": "2026-02-08T10:49:16.907315"
+    },
+    {
+      "id": "stt_paste",
+      "kind": "builtin",
+      "mode": "ai_transform",
+      "display_key": "builtin.paste_audio_microphone_to_text",
+      "description_key": "builtin.paste_audio_microphone_to_text_desc",
+      "icon": null,
+      "enabled": false,
+      "sequence": 2,
+      "direct_hotkey": null,
+      "panel_quick_key": null,
+      "capability_requirements": [
+        {
+          "capability": "stt",
+          "min_sequence": 1
+        }
+      ],
+      "input_requirements": [],
+      "llm_connection_id": null,
+      "stt_connection_id": null,
+      "prompt_template": null,
+      "static_text_template": null,
+      "local_transform_config": null,
+      "created_at": "2026-02-08T10:49:16.907315",
+      "updated_at": "2026-02-08T10:49:16.907315"
     }
   ]
 }

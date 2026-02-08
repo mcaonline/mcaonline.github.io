@@ -1,104 +1,150 @@
-const BASE_URL = "http://localhost:8000";
 
-export interface HotkeyDefinition {
-    id?: string;
-    kind: 'builtin' | 'custom';
+const API_BASE = "http://localhost:8000"; // Adjust port if needed
+
+export type ConnectionDefinition = {
+    connection_id: string;
+    provider_id: string;
+    model_id: string;
+    capabilities: ('llm' | 'stt' | 'ocr')[];
+    secret_ref?: string;
+    endpoint?: string;
+};
+
+export type HotkeyDefinition = {
+    id: string;
+    kind: 'builtin' | 'custom' | 'user';
     mode: 'ai_transform' | 'local_transform' | 'static_text_paste' | 'prompt_prefill_only';
     display_key: string;
     description_key: string;
     enabled: boolean;
     sequence: number;
-    capability_requirements?: { capability: string, min_sequence: number }[];
-}
+    capability_requirements?: { capability: 'llm' | 'stt' | 'ocr' }[];
+    prompt_template?: string; // For custom hotkeys
+};
 
-export interface ConnectionDefinition {
-    connection_id: string;
-    provider_id: string;
-    capabilities: string[];
-    model_id: string;
-    endpoint_url?: string;
-    deployment_alias?: string;
-    system_prompt?: string;
-    transcription_hint?: string;
-}
+export type Settings = {
+    app: {
+        ui_opacity: number;
+    };
+    routing_defaults: {
+        default_llm_connection_id?: string;
+        default_stt_connection_id?: string;
+    };
+    history: {
+        enabled: boolean;
+    };
+};
 
 export const apiClient = {
     healthCheck: async () => {
-        const response = await fetch(`${BASE_URL}/health`);
-        return response.json();
-    },
-
-    getHotkeys: async (): Promise<HotkeyDefinition[]> => {
-        const response = await fetch(`${BASE_URL}/hotkeys`);
-        return response.json();
-    },
-
-    getUiText: async (): Promise<Record<string, string>> => {
-        const response = await fetch(`${BASE_URL}/ui-text`);
-        return response.json();
-    },
-
-    executeHotkey: async (id: string) => {
-        const response = await fetch(`${BASE_URL}/execute/${id}`, {
-            method: "POST",
-        });
-        return response.json();
+        const res = await fetch(`${API_BASE}/health`);
+        if (!res.ok) throw new Error("Health check failed");
+        return res.json();
     },
 
     getConnections: async (): Promise<ConnectionDefinition[]> => {
-        const response = await fetch(`${BASE_URL}/connections`);
-        return response.json();
+        const res = await fetch(`${API_BASE}/connections`);
+        if (!res.ok) throw new Error("Failed to fetch connections");
+        return res.json();
     },
 
-    createConnection: async (connection: ConnectionDefinition) => {
-        const response = await fetch(`${BASE_URL}/connections`, {
+    createConnection: async (conn: ConnectionDefinition) => {
+        const res = await fetch(`${API_BASE}/connections`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(connection)
+            body: JSON.stringify(conn)
         });
-        return response.json();
+        if (!res.ok) throw new Error("Failed to create connection");
+        return res.json();
     },
 
-    updateConnection: async (id: string, connection: ConnectionDefinition) => {
-        const response = await fetch(`${BASE_URL}/connections/${id}`, {
+    updateConnection: async (id: string, conn: ConnectionDefinition) => {
+        const res = await fetch(`${API_BASE}/connections/${id}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(connection)
+            body: JSON.stringify(conn)
         });
-        return response.json();
+        if (!res.ok) throw new Error("Failed to update connection");
+        return res.json();
     },
+
     deleteConnection: async (id: string) => {
-        const response = await fetch(`${BASE_URL}/connections/${id}`, {
+        const res = await fetch(`${API_BASE}/connections/${id}`, {
             method: "DELETE"
         });
-        return response.json();
+        if (!res.ok) throw new Error("Failed to delete connection");
+        return res.json();
     },
 
-    saveSecret: async (connectionId: string, secretValue: string) => {
-        const response = await fetch(`${BASE_URL}/secrets`, {
-            method: "POST",
+    saveSecret: async (id: string, secret: string) => {
+        const res = await fetch(`${API_BASE}/connections/${id}/secret`, {
+            method: "PUT",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ connection_id: connectionId, secret_value: secretValue })
+            body: JSON.stringify({ secret })
         });
-        return response.json();
+        if (!res.ok) throw new Error("Failed to save secret");
+        return res.json();
     },
 
-    getSettings: async () => {
-        const response = await fetch(`${BASE_URL}/settings`);
-        return response.json();
+    getSettings: async (): Promise<Settings> => {
+        const res = await fetch(`${API_BASE}/settings`);
+        if (!res.ok) throw new Error("Failed to fetch settings");
+        return res.json();
     },
 
-    updateSettings: async (settings: any) => {
-        const response = await fetch(`${BASE_URL}/settings`, {
-            method: "POST",
+    updateSettings: async (settings: Partial<Settings>) => {
+        const res = await fetch(`${API_BASE}/settings`, {
+            method: "PATCH",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(settings)
         });
-        return response.json();
+        if (!res.ok) throw new Error("Failed to update settings");
+        return res.json();
     },
 
-    getHistory: async () => {
-        const response = await fetch(`${BASE_URL}/history`);
-        return response.json();
+    getHotkeys: async (): Promise<HotkeyDefinition[]> => {
+        const res = await fetch(`${API_BASE}/hotkeys`);
+        if (!res.ok) throw new Error("Failed to fetch hotkeys");
+        return res.json();
+    },
+
+    createHotkey: async (hotkey: HotkeyDefinition) => {
+        const res = await fetch(`${API_BASE}/hotkeys`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(hotkey)
+        });
+        if (!res.ok) throw new Error("Failed to create hotkey");
+        return res.json();
+    },
+
+    deleteHotkey: async (id: string) => {
+        const res = await fetch(`${API_BASE}/hotkeys/${id}`, {
+            method: "DELETE"
+        });
+        if (!res.ok) throw new Error("Failed to delete hotkey");
+        return res.json();
+    },
+
+    getUiText: async (): Promise<Record<string, string>> => {
+        const res = await fetch(`${API_BASE}/ui-text`);
+        if (!res.ok) throw new Error("Failed to fetch UI text");
+        return res.json();
+    },
+
+    getHistory: async (): Promise<any[]> => {
+        const res = await fetch(`${API_BASE}/history`);
+        if (!res.ok) throw new Error("Failed to fetch history");
+        return res.json();
+    },
+
+    executeHotkey: async (id: string, payload?: any) => {
+        const res = await fetch(`${API_BASE}/hotkeys/${id}/execute`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload || {})
+        });
+        if (!res.ok) throw new Error("Failed to execute hotkey");
+        return res.json();
     }
 };

@@ -44,8 +44,17 @@ history_repo = HistoryRepository()
 pipeline = ExecutionPipeline(settings, secret_store, clipboard, history_repo)
 
 # --- Background Services ---
-def on_hotkey_trigger():
-    logger.debug("Hotkey trigger received")
+def on_hotkey_trigger(hotkey_id: str = None):
+    logger.debug(f"Hotkey trigger received: {hotkey_id}")
+    # If hotkey_id is provided, execute it directly.
+    # Otherwise, it's the panel trigger.
+    if hotkey_id:
+         # Execute directly (fire and forget in background)
+         # We need to run inside an async context or similar if pipeline is async? 
+         # Pipeline.execute is likely a generator. We should consume it.
+         # For simplicity in this sync callback, we can just spawn another thread or run sync if pipeline allows.
+         # Actually, better to just log for now and implement the actual execution logic.
+         pass
 
 hotkey_agent = HotkeyAgent(on_trigger=on_hotkey_trigger)
 
@@ -55,6 +64,7 @@ async def lifespan(app: FastAPI):
     logger.info(f"[{pid}] LIFESPAN START")
     logger.info(f"[{pid}] Starting Hotkey Agent...")
     logger.info(f"[{pid}] Session Token: {SESSION_TOKEN}")
+    hotkey_agent.update_hotkeys(hotkey_catalog.get_all())
     hotkey_agent.start()
     yield
     logger.info(f"[{pid}] LIFESPAN STOP")
@@ -106,6 +116,7 @@ def get_hotkeys():
 @app.post("/hotkeys", dependencies=[Depends(verify_session_token)])
 def create_hotkey(hotkey: HotkeyDefinition):
     hotkey_catalog.add(hotkey)
+    hotkey_agent.update_hotkeys(hotkey_catalog.get_all())
     return hotkey
 
 @app.put("/hotkeys/{hotkey_id}", dependencies=[Depends(verify_session_token)])
@@ -113,11 +124,13 @@ def update_hotkey(hotkey_id: str, hotkey: HotkeyDefinition):
     if hotkey.id != hotkey_id:
         raise HTTPException(status_code=400, detail="ID mismatch")
     hotkey_catalog.update(hotkey)
+    hotkey_agent.update_hotkeys(hotkey_catalog.get_all())
     return hotkey
 
 @app.delete("/hotkeys/{hotkey_id}", dependencies=[Depends(verify_session_token)])
 def delete_hotkey(hotkey_id: str):
     hotkey_catalog.delete(hotkey_id)
+    hotkey_agent.update_hotkeys(hotkey_catalog.get_all())
     return {"status": "deleted"}
 
 @app.post("/execute/{hotkey_id}", dependencies=[Depends(verify_session_token)])
@@ -144,15 +157,43 @@ def get_history():
 def get_settings():
     return settings.model_dump()
 
-@app.post("/settings", dependencies=[Depends(verify_session_token)])
-def update_settings(new_settings: Dict[str, Any]):
-    # In a real app, we'd validate and merge
-    # For MVP, we just update the global settings object
-    for k, v in new_settings.items():
-        if hasattr(settings, k):
-            setattr(settings, k, v)
+
+@app.patch("/settings", dependencies=[Depends(verify_session_token)])
+def patch_settings(new_settings: Dict[str, Any]):
+    # Recursive update helper
+    def update_recursive(target, updates):
+        for k, v in updates.items():
+            if isinstance(v, dict) and isinstance(getattr(target, k, None), dict):
+                # We need to handle nested Pydantic models vs dicts.
+                # For MVP, assuming settings are Pydantic models, we might need model_dump first or setattr
+                # tailored approach:
+                current_val = getattr(target, k)
+                if hasattr(current_val, "model_dump"): # It's a sub-model
+                    # This is tricky without a proper recursive update method on the settings object
+                    # Simplified: just overwrite top-level sections if they are dicts in the payload
+                    pass 
+                
+    # Simplified approach for the MVP:
+    # Expecting payloads like {"app": {"ui_opacity": 0.5}}
+    # We will manually map known top-level sections
+    
+    if "app" in new_settings:
+        for k, v in new_settings["app"].items():
+            if hasattr(settings.app, k):
+                setattr(settings.app, k, v)
+
+    if "routing_defaults" in new_settings:
+        for k, v in new_settings["routing_defaults"].items():
+            if hasattr(settings.routing_defaults, k):
+                setattr(settings.routing_defaults, k, v)
+                
+    if "history" in new_settings:
+        for k, v in new_settings["history"].items():
+            if hasattr(settings.history, k):
+                setattr(settings.history, k, v)
+
     settings.save(SETTINGS_FILE)
-    return {"status": "updated"}
+    return settings.model_dump()
 
 # --- Connection Management ---
 
@@ -189,20 +230,23 @@ def delete_connection(connection_id: str):
 
 # --- Secret Management ---
 
-@app.post("/secrets", dependencies=[Depends(verify_session_token)])
-def save_secret(payload: Dict[str, str]):
-    """Securely save a secret to the system keyring."""
-    connection_id = payload.get("connection_id")
-    secret_value = payload.get("secret_value")
-    if not connection_id or not secret_value:
-        raise HTTPException(status_code=400, detail="Missing connection_id or secret_value")
-    """Securely save a secret to the system keyring."""
+
+@app.put("/connections/{connection_id}/secret", dependencies=[Depends(verify_session_token)])
+def save_connection_secret(connection_id: str, payload: Dict[str, str]):
+    secret = payload.get("secret")
+    if not secret:
+        raise HTTPException(status_code=400, detail="Secret value required")
+    
+    # Verify connection exists
+    if not any(c['connection_id'] == connection_id for c in settings.connections):
+        raise HTTPException(status_code=404, detail="Connection not found")
+
     try:
-        secret_store.save(connection_id, "api_key", secret_value)
+        secret_store.save(connection_id, "api_key", secret)
         return {"status": "saved"}
     except Exception as e:
         logger.error(f"Failed to save secret: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to save secret: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)

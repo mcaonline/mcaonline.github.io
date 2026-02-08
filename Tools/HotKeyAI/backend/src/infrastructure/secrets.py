@@ -50,6 +50,8 @@ class KeyringSecretStore(ISecretStore):
         except keyring.errors.PasswordDeleteError:
             # Metadata might exist but secret was already gone or never existed
             pass
+        except Exception as e:
+            logger.warning(f"Failed to delete secret for {account_name}: {e}")
 
     def list_references(self) -> List[SecretMetadata]:
         # NOTE: 'keyring' library does not standardly support listing all credentials 
