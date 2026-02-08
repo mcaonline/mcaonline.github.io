@@ -2,7 +2,7 @@
 setlocal
 
 echo ============================================
-echo HotKeyAI Installer Builder
+echo Paste ^& Speech AI Installer Builder
 echo ============================================
 echo.
 

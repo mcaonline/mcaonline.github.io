@@ -3,6 +3,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import Dict, List, Optional
 import json
 import os
+from loguru import logger
 import stat
 from pathlib import Path
 
@@ -30,6 +31,7 @@ class DiagnosticsConfig(BaseModel):
 class AppConfig(BaseModel):
     theme: str = "system"
     language: str = "en"
+    ui_opacity: float = 0.95  # Transparency level (0.0 to 1.0)
 
 class SettingsSchema(BaseSettings):
     schema_version: int = 1
@@ -44,7 +46,7 @@ class SettingsSchema(BaseSettings):
     connections: List[Dict] = Field(default_factory=list)
 
     model_config = SettingsConfigDict(
-        env_prefix="HOTKEYAI_",
+        env_prefix="PASTE_SPEECH_AI_",
         env_nested_delimiter="__",
         case_sensitive=False,
         extra="ignore"
@@ -77,7 +79,36 @@ class SettingsSchema(BaseSettings):
         try:
             with open(path, "r", encoding="utf-8") as f:
                 data = json.load(f)
-            return cls.model_validate(data)
+            
+            # Migration: Robustly ensure all connections have a capabilities list
+            if "connections" in data and isinstance(data["connections"], list):
+                for conn in data["connections"]:
+                    if not isinstance(conn, dict):
+                        continue
+                        
+                    # Fix plural 'capabilities'
+                    existing_caps = conn.get("capabilities")
+                    if existing_caps is None:
+                        # Fallback to singular 'capability'
+                        single_cap = conn.get("capability")
+                        if single_cap:
+                            conn["capabilities"] = [single_cap]
+                        else:
+                            conn["capabilities"] = ["llm"]
+                    elif isinstance(existing_caps, str):
+                        # Fix cases where it might have been saved as a string
+                        conn["capabilities"] = [existing_caps.lower()]
+                    
+                    # Ensure it's lowercase to match Literal types
+                    if isinstance(conn["capabilities"], list):
+                        conn["capabilities"] = [c.lower() for c in conn["capabilities"] if isinstance(c, str)]
+
+            try:
+                return cls.model_validate(data)
+            except Exception as validation_error:
+                logger.error(f"Settings validation failed: {validation_error}")
+                # Log the data for debugging (be careful with secrets, but connections don't have them yet)
+                return cls.model_validate(data) # Just returning it for now, pydantic handles it
         except Exception as e:
             print(f"Error loading settings: {e}")
             return cls()

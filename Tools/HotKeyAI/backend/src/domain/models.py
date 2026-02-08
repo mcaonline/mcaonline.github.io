@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Optional, Literal, Dict, Union
 from datetime import datetime
 import uuid
@@ -14,8 +14,9 @@ ModelSource = Literal['curated', 'custom']
 # --- Provider Catalog Models ---
 
 class ModelDefinition(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
     provider_id: str
-    capability: CapabilityType
+    capabilities: List[CapabilityType]
     model_id: str
     status: Literal['active', 'deprecated', 'beta'] = 'active'
     source: ModelSource = 'curated'
@@ -40,9 +41,10 @@ class ProviderCatalog(BaseModel):
 # --- Connection Models ---
 
 class ConnectionDefinition(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
     connection_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     provider_id: str
-    capability: CapabilityType
+    capabilities: List[CapabilityType]
     model_id: str
     model_source: ModelSource = 'curated'
     
@@ -72,6 +74,7 @@ class LocalTransformConfig(BaseModel):
     replacement: str
 
 class HotkeyDefinition(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     kind: HotkeyKind
     mode: HotkeyMode

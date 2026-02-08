@@ -9,15 +9,15 @@ import os
 from pathlib import Path
 from loguru import logger
 
-from src.config.settings import settings, SETTINGS_FILE
-from src.domain.models import HotkeyDefinition, ConnectionDefinition
-from src.domain.hotkey_catalog import HotkeyCatalogService
-from src.domain.ui_text import UiTextCatalog
-from src.infrastructure.hotkeys import HotkeyAgent
-from src.infrastructure.clipboard import clipboard
-from src.infrastructure.secrets import secret_store
-from src.application.pipeline import ExecutionPipeline
-from src.infrastructure.history import HistoryRepository
+from .config.settings import settings, SETTINGS_FILE
+from .domain.models import HotkeyDefinition, ConnectionDefinition
+from .domain.hotkey_catalog import HotkeyCatalogService
+from .domain.ui_text import UiTextCatalog
+from .infrastructure.hotkeys import HotkeyAgent
+from .infrastructure.clipboard import clipboard
+from .infrastructure.secrets import secret_store
+from .application.pipeline import ExecutionPipeline
+from .infrastructure.history import HistoryRepository
 
 # --- Session Token (regenerated on each start) ---
 SESSION_TOKEN = secrets.token_urlsafe(32)
@@ -45,7 +45,7 @@ pipeline = ExecutionPipeline(settings, secret_store, clipboard, history_repo)
 
 # --- Background Services ---
 def on_hotkey_trigger():
-    print("GLOBAL TRIGGER RECEIVED!")
+    logger.debug("Hotkey trigger received")
 
 hotkey_agent = HotkeyAgent(on_trigger=on_hotkey_trigger)
 
@@ -61,7 +61,7 @@ async def lifespan(app: FastAPI):
     logger.info(f"[{pid}] Stopping Hotkey Agent...")
     hotkey_agent.stop()
 
-app = FastAPI(title="HotKeyAI Core", lifespan=lifespan)
+app = FastAPI(title="Paste & Speech AI Core", lifespan=lifespan)
 
 # CORS - Restricted to localhost only
 app.add_middleware(
@@ -190,7 +190,12 @@ def delete_connection(connection_id: str):
 # --- Secret Management ---
 
 @app.post("/secrets", dependencies=[Depends(verify_session_token)])
-def save_secret(connection_id: str, secret_value: str):
+def save_secret(payload: Dict[str, str]):
+    """Securely save a secret to the system keyring."""
+    connection_id = payload.get("connection_id")
+    secret_value = payload.get("secret_value")
+    if not connection_id or not secret_value:
+        raise HTTPException(status_code=400, detail="Missing connection_id or secret_value")
     """Securely save a secret to the system keyring."""
     try:
         secret_store.save(connection_id, "api_key", secret_value)

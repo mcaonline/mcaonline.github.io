@@ -1,11 +1,15 @@
 from typing import Dict, Optional, Iterator
-from src.infrastructure.providers.base import IProvider, MockProvider, OpenAIProvider, ProviderConfig, Message, StreamChunk
-from src.domain.models import HotkeyDefinition, ConnectionDefinition
-from src.infrastructure.clipboard import ClipboardManager
-from src.infrastructure.history import HistoryRepository, HistoryEntry
+from ..infrastructure.providers.base import IProvider, MockProvider, OpenAIProvider, ProviderConfig, Message, StreamChunk
+from ..domain.models import HotkeyDefinition, ConnectionDefinition
+from ..infrastructure.clipboard import ClipboardManager
+from ..infrastructure.history import HistoryRepository, HistoryEntry
 import time
 import re
 from loguru import logger
+from ..infrastructure.providers.anthropic import AnthropicProvider
+from ..infrastructure.providers.google import GoogleProvider
+from ..infrastructure.providers.mistral import MistralProvider
+from ..infrastructure.providers.tesseract import TesseractProvider
 
 # Sensitive data patterns to redact from logs
 SENSITIVE_PATTERNS = [
@@ -27,9 +31,18 @@ def redact_sensitive(text: str) -> str:
 class ProviderFactory:
     @staticmethod
     def create(connection: ConnectionDefinition, secret_key: Optional[str] = None) -> IProvider:
-        if "mock" in connection.provider_id.lower():
+        p_id = connection.provider_id.lower()
+        if "mock" in p_id:
             return MockProvider()
-        elif "openai" in connection.provider_id.lower():
+        elif "openai" in p_id and "oss" not in p_id:
+            return OpenAIProvider()
+        elif "anthropic" in p_id:
+            return AnthropicProvider()
+        elif "google" in p_id:
+            return GoogleProvider()
+        elif "mistral" in p_id:
+            return MistralProvider()
+        elif "groq" in p_id or "ollama" in p_id or "oss" in p_id:
             return OpenAIProvider()
         else:
             logger.warning(f"Unknown provider type for {connection.provider_id}, defaulting to OpenAI structure")
@@ -51,11 +64,12 @@ class ExecutionPipeline:
         self.secret_store = secret_store
         self.clipboard = clipboard
         self.history = history
+        self.tesseract = TesseractProvider()
 
     def execute(self, hotkey: HotkeyDefinition) -> Iterator[str]:
         """
         Main execution flow:
-        1. Gather Context (Selected Text / Clipboard)
+        1. Gather Context (Text / Image / Audio)
         2. Resolve Connection
         3. Prepare Provider & Config
         4. Stream Response
@@ -64,38 +78,37 @@ class ExecutionPipeline:
         start_time = time.time()
         
         # 1. Gather Context
-        selected_text = self.clipboard.get_selected_text()
-        clipboard_text = self.clipboard.read_text()
-        
         context_data = {
-            "selected_text": selected_text or "",
-            "clipboard": clipboard_text or ""
+            "selected_text": self.clipboard.get_selected_text() or "",
+            "clipboard": self.clipboard.read_text() or ""
         }
         
-        # 2. Resolve Connection & Context
+        # Handle OCR Requirement
+        if hotkey.mode == 'ai_transform' and any(r.capability == 'ocr' for r in hotkey.capability_requirements):
+            image = self.clipboard.read_image()
+            if image:
+                logger.info("OCR Mode: Running Tesseract...")
+                ocr_text = self.tesseract.process_image(image)
+                context_data["ocr_text"] = ocr_text
+                # Merge into selected_text if not explicitly templated
+                if "{ocr_text}" not in (hotkey.prompt_template or ""):
+                    context_data["selected_text"] = ocr_text
+            else:
+                yield "Error: OCR triggered but no image found in clipboard."
+                return
+
+        # 2. Resolve Connection
         if hotkey.mode == 'local_transform':
-            # Local logic: Apply transformation directly
             config = hotkey.local_transform_config or {}
-            transform_type = config.get('type', 'regex')
+            transform_type = config.get('type', 'regex') if isinstance(config, dict) else 'regex'
             
             if transform_type == 'regex':
-                pattern = config.get('pattern', '.*')
-                replacement = config.get('replacement', '$0')
-                try:
-                    # Very basic regex replacement for MVP
-                    # Replace $0, $1 etc with groups if we want to be fancy, 
-                    # but for "Paste as Plain Text" we just return the text.
-                    # In this app, Contract A1 says paste_plain just strips formatting.
-                    # Since we gathered context as strings, formatting is already gone.
-                    source = context_data['selected_text'] or context_data['clipboard']
-                    yield source
-                except Exception as e:
-                    yield f"Error in local transform: {e}"
+                source = context_data['selected_text'] or context_data['clipboard']
+                yield source
             else:
                 yield f"Error: Unknown local transform type {transform_type}"
             return
 
-        # AI Transform Logic
         connection_id = hotkey.llm_connection_id
         if not connection_id:
              connection_id = self.settings.routing_defaults.default_llm_connection_id
@@ -104,28 +117,39 @@ class ExecutionPipeline:
             yield "Error: No AI connection configured for this hotkey."
             return
 
-        # Find Connection Def
-        connection = next((c for c in self.settings.connections if c['connection_id'] == connection_id), None)
-        if isinstance(connection, dict):
-            connection = ConnectionDefinition(**connection)
-            
-        if not connection:
+        connection_dict = next((c for c in self.settings.connections if c['connection_id'] == connection_id), None)
+        if not connection_dict:
             yield "Error: Connection definition not found."
             return
+            
+        # Migration check: if old data only has 'capability', convert to 'capabilities'
+        if 'capability' in connection_dict and 'capabilities' not in connection_dict:
+            connection_dict['capabilities'] = [connection_dict.pop('capability')]
+        
+        connection = ConnectionDefinition(**connection_dict)
+
+        # Check if connection supports all required capabilities
+        for req in hotkey.capability_requirements:
+            if req.capability not in connection.capabilities:
+                yield f"Error: Connection '{connection.connection_id}' does not support required capability '{req.capability}'."
+                return
 
         # 3. Get Secret
         secret = self.secret_store.read(connection.connection_id, "api_key")
-        if not secret:
-            yield "Error: API Key not found for this connection. Please check your settings."
+        # Ollama/Local might not need secret
+        is_local = any(x in connection.provider_id.lower() for x in ['ollama', 'tesseract', 'oss', 'mock'])
+        if not secret and not is_local:
+            yield "Error: API Key missing for this connection."
             return
 
         # 4. Prepare Provider
         provider = ProviderFactory.create(connection, secret)
-        config = ProviderFactory.create_config(connection, secret, hotkey)
+        config = ProviderFactory.create_config(connection, secret or "", hotkey)
+        
         # 5. Build Prompt
         user_prompt = hotkey.prompt_template or "{selected_text}"
         for k, v in context_data.items():
-            user_prompt = user_prompt.replace(f"{{{k}}}", v)
+            user_prompt = user_prompt.replace(f"{{{k}}}", str(v))
             
         messages = [
             Message(role="user", content=user_prompt)
@@ -136,21 +160,18 @@ class ExecutionPipeline:
         try:
             for chunk in provider.stream_chat(messages, config):
                 if chunk.content:
-                    full_response += chunk.content
-                    yield chunk.content
+                    content_str = str(chunk.content)
+                    full_response += content_str
+                    yield content_str
         except Exception as e:
             logger.error(f"Execution failed: {e}")
             yield f"\n[Error: {str(e)}]"
             
-        # 7. Log History (with privacy protection)
+        # 7. History
         duration = time.time() - start_time
-        
-        # Only log if history is enabled and user has acknowledged privacy
         if self.settings.history.enabled:
-            # Redact sensitive data from previews
-            safe_input = redact_sensitive(user_prompt[:50]) if user_prompt else ""
-            safe_output = redact_sensitive(full_response[:50]) if full_response else ""
-            
+            safe_input = redact_sensitive(user_prompt[:50])
+            safe_output = redact_sensitive(full_response[:50])
             self.history.add(HistoryEntry(
                 hotkey_id=hotkey.id,
                 timestamp=start_time,

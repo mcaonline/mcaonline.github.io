@@ -1,4 +1,4 @@
-# HotKeyAI Architecture and Design Specification (Refactored)
+# Paste & Speech AI Architecture and Design Specification (Refactored)
 
 Version: 1.1.0-refactor4  
 Status: Implementation Ready  
@@ -7,7 +7,7 @@ Normative language: `MUST`, `MUST NOT`, `REQUIRED`, `OPTIONAL`.
 ## Product Scope and Defaults
 
 ### Product Scope
-HotKeyAI is a cross-platform, voice-first, hotkey-driven desktop app for transforming and inserting content at the current cursor target. Supported source/input domains:
+Paste & Speech AI is a cross-platform, voice-first, hotkey-driven desktop app for transforming and inserting content at the current cursor target. Supported source/input domains:
 - Selected text from active control
 - Clipboard text
 - Clipboard image/screenshot (OCR)

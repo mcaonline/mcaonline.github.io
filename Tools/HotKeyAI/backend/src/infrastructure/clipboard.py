@@ -3,6 +3,8 @@ import time
 from typing import Optional
 from pynput import keyboard
 from loguru import logger
+from PIL import Image, ImageGrab
+from io import BytesIO
 
 class ClipboardManager:
     """
@@ -14,6 +16,17 @@ class ClipboardManager:
 
     def write_text(self, text: str):
         pyperclip.copy(text)
+
+    def read_image(self) -> Optional[Image.Image]:
+        """Reads an image from the clipboard if present."""
+        try:
+            img = ImageGrab.grabclipboard()
+            if isinstance(img, Image.Image):
+                return img
+            return None
+        except Exception as e:
+            logger.error(f"Failed to read image from clipboard: {e}")
+            return None
 
     def get_selected_text(self) -> Optional[str]:
         """
@@ -30,33 +43,22 @@ class ClipboardManager:
         self._simulate_ctrl_c()
         
         # 4. Wait for OS to process
-        # Retry loop for a few ms
         max_retries = 10
         captured_text = ""
         for _ in range(max_retries):
             captured_text = self.read_text()
             if captured_text:
                 break
-            time.sleep(0.05) # 50ms wait
+            time.sleep(0.05)
             
-        # 5. Restore original if nothing was captured (meaning no selection)
-        # OR if we want to be polite. But if we captured something, we usually
-        # want to use it.
-        # Design decision: If we return a value, we leave it in clipboard?
-        # AppDesign says: "If selected text exists... Selected text becomes active source."
-        # Usually users expect Ctrl+C to overwrite clipboard.
-        
         if not captured_text:
-            # Restore original
             self.write_text(original_content)
             return None
             
         return captured_text
 
     def _simulate_ctrl_c(self):
-        """
-        Sends synthetic Ctrl+C.
-        """
+        """Sends synthetic Ctrl+C."""
         try:
             c = keyboard.Controller()
             with c.pressed(keyboard.Key.ctrl):

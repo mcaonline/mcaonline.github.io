@@ -25,10 +25,32 @@ class HotkeyCatalogService:
             with open(self.storage_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
             self._catalog = HotkeyCatalogModel.model_validate(data)
+            # Ensure required built-ins exist
+            self._ensure_builtins()
         except Exception as e:
             logger.error(f"Failed to load hotkey catalog: {e}")
-            # Backup corrupt file?
             self._seed_defaults()
+
+    def _ensure_builtins(self):
+        """Ensures all required built-in hotkeys from seed are present."""
+        existing_ids = {h.id for h in self._catalog.hotkeys}
+        
+        # We temporarily seed into a dummy catalog to see what we're missing
+        temp_catalog = HotkeyCatalogModel()
+        orig_catalog_ref = self._catalog
+        self._catalog = temp_catalog
+        self._seed_defaults()
+        self._catalog = orig_catalog_ref
+        
+        added = False
+        for builtin in temp_catalog.hotkeys:
+            if builtin.id not in existing_ids:
+                logger.info(f"Restoring missing builtin hotkey: {builtin.id}")
+                self._catalog.hotkeys.append(builtin)
+                added = True
+        
+        if added:
+            self.save()
 
     def save(self):
         try:
@@ -64,17 +86,37 @@ class HotkeyCatalogService:
         Seeds required built-in hotkeys per AppDesign.md Contract A1.
         """
         # 1. Paste as Plain Text
-        paste_plain = HotkeyDefinition(
+        self._catalog.hotkeys.append(HotkeyDefinition(
+            id='paste_plain',
             kind='builtin',
             mode='local_transform',
-            display_key='builtin.paste_plain_unformatted_text', # TODO: Add to UiTextCatalog
+            display_key='builtin.paste_plain_unformatted_text',
             description_key='builtin.paste_plain_desc',
             enabled=True,
             sequence=0,
-            local_transform_config={
-                'type': 'regex',
-                'pattern': '.*', # Dummy, logic handled in code for special builtins?
-                'replacement': '$0'
-            }
-        )
-        self._catalog.hotkeys.append(paste_plain)
+            local_transform_config={'type': 'regex', 'pattern': '.*', 'replacement': '$0'}
+        ))
+
+        # 2. Paste Image to Text (OCR)
+        self._catalog.hotkeys.append(HotkeyDefinition(
+            id='ocr_paste',
+            kind='builtin',
+            mode='ai_transform',
+            display_key='builtin.paste_image_to_text_ocr',
+            description_key='builtin.paste_image_to_text_ocr_desc',
+            enabled=False,
+            sequence=1,
+            capability_requirements=[{'capability': 'ocr', 'min_sequence': 1}]
+        ))
+
+        # 3. Paste Audio to Text (STT)
+        self._catalog.hotkeys.append(HotkeyDefinition(
+            id='stt_paste',
+            kind='builtin',
+            mode='ai_transform',
+            display_key='builtin.paste_audio_microphone_to_text',
+            description_key='builtin.paste_audio_microphone_to_text_desc',
+            enabled=False,
+            sequence=2,
+            capability_requirements=[{'capability': 'stt', 'min_sequence': 1}]
+        ))

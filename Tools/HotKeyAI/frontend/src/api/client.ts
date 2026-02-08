@@ -8,14 +8,18 @@ export interface HotkeyDefinition {
     description_key: string;
     enabled: boolean;
     sequence: number;
+    capability_requirements?: { capability: string, min_sequence: number }[];
 }
 
 export interface ConnectionDefinition {
     connection_id: string;
     provider_id: string;
+    capabilities: string[];
     model_id: string;
     endpoint_url?: string;
+    deployment_alias?: string;
     system_prompt?: string;
+    transcription_hint?: string;
 }
 
 export const apiClient = {
@@ -55,6 +59,14 @@ export const apiClient = {
         return response.json();
     },
 
+    updateConnection: async (id: string, connection: ConnectionDefinition) => {
+        const response = await fetch(`${BASE_URL}/connections/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(connection)
+        });
+        return response.json();
+    },
     deleteConnection: async (id: string) => {
         const response = await fetch(`${BASE_URL}/connections/${id}`, {
             method: "DELETE"
@@ -63,9 +75,30 @@ export const apiClient = {
     },
 
     saveSecret: async (connectionId: string, secretValue: string) => {
-        const response = await fetch(`${BASE_URL}/secrets?connection_id=${connectionId}&secret_value=${encodeURIComponent(secretValue)}`, {
-            method: "POST"
+        const response = await fetch(`${BASE_URL}/secrets`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ connection_id: connectionId, secret_value: secretValue })
         });
+        return response.json();
+    },
+
+    getSettings: async () => {
+        const response = await fetch(`${BASE_URL}/settings`);
+        return response.json();
+    },
+
+    updateSettings: async (settings: any) => {
+        const response = await fetch(`${BASE_URL}/settings`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(settings)
+        });
+        return response.json();
+    },
+
+    getHistory: async () => {
+        const response = await fetch(`${BASE_URL}/history`);
         return response.json();
     }
 };
