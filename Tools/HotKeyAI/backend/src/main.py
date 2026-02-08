@@ -8,14 +8,14 @@ import secrets
 import os
 from pathlib import Path
 
-from .config.settings import settings, SETTINGS_FILE
-from .domain.models import HotkeyDefinition, ConnectionDefinition
-from .domain.hotkey_catalog import HotkeyCatalogService
-from .infrastructure.hotkeys import HotkeyAgent
-from .infrastructure.clipboard import clipboard
-from .infrastructure.secrets import secret_store
-from .application.pipeline import ExecutionPipeline
-from .infrastructure.history import HistoryRepository
+from src.config.settings import settings, SETTINGS_FILE
+from src.domain.models import HotkeyDefinition, ConnectionDefinition
+from src.domain.hotkey_catalog import HotkeyCatalogService
+from src.infrastructure.hotkeys import HotkeyAgent
+from src.infrastructure.clipboard import clipboard
+from src.infrastructure.secrets import secret_store
+from src.application.pipeline import ExecutionPipeline
+from src.infrastructure.history import HistoryRepository
 
 # --- Session Token (regenerated on each start) ---
 SESSION_TOKEN = secrets.token_urlsafe(32)

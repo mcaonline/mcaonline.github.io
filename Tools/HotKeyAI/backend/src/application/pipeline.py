@@ -1,8 +1,8 @@
 from typing import Dict, Optional, Iterator
-from ..infrastructure.providers.base import IProvider, MockProvider, OpenAIProvider, ProviderConfig, Message, StreamChunk
-from ..domain.models import HotkeyDefinition, ConnectionDefinition
-from ..infrastructure.clipboard import ClipboardManager
-from ..infrastructure.history import HistoryRepository, HistoryEntry
+from src.infrastructure.providers.base import IProvider, MockProvider, OpenAIProvider, ProviderConfig, Message, StreamChunk
+from src.domain.models import HotkeyDefinition, ConnectionDefinition
+from src.infrastructure.clipboard import ClipboardManager
+from src.infrastructure.history import HistoryRepository, HistoryEntry
 import time
 import re
 from loguru import logger

@@ -1,17 +1,21 @@
 # -*- mode: python ; coding: utf-8 -*-
-from PyInstaller.utils.hooks import copy_metadata
+from PyInstaller.utils.hooks import copy_metadata, collect_submodules
 
 datas = []
 datas += copy_metadata('click')
 datas += copy_metadata('uvicorn')
 datas += copy_metadata('keyring')
+datas += [('src', 'src')]  # Include the entire src package
+
+# Collect all submodules from src
+hidden = collect_submodules('src')
 
 a = Analysis(
-    ['src/main.py'],
-    pathex=[],
+    ['run_backend.py'],
+    pathex=['.'],
     binaries=[],
     datas=datas,
-    hiddenimports=[
+    hiddenimports=hidden + [
         'uvicorn.logging',
         'uvicorn.loops',
         'uvicorn.loops.auto',
