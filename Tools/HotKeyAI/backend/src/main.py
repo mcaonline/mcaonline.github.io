@@ -2,22 +2,26 @@ from fastapi import FastAPI, HTTPException, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import APIKeyHeader
 from contextlib import asynccontextmanager
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 import uvicorn
 import secrets
 import os
-from pathlib import Path
 from loguru import logger
 
-from .config.settings import settings, SETTINGS_FILE
-from .domain.models import HotkeyDefinition, ConnectionDefinition
-from .domain.hotkey_catalog import HotkeyCatalogService
+from .domain.app_constants import APP_NAME, APP_VERSION, BACKEND_PORT, FRONTEND_DEV_PORT, ALLOWED_HOSTS
+from .domain.models import (
+    ActionDefinition, ConnectionDefinition,
+    ProviderInfoResponse, HealthResponse, ExecuteResponse,
+    StatusResponse, SessionTokenResponse, HistoryEntryResponse,
+)
 from .domain.ui_text import UiTextCatalog
-from .infrastructure.hotkeys import HotkeyAgent
-from .infrastructure.clipboard import clipboard
-from .infrastructure.secrets import secret_store
-from .application.pipeline import ExecutionPipeline
-from .infrastructure.history import HistoryRepository
+from .domain.result import Err
+from .domain.types import ActionId, ConnectionId
+from .domain.events import ActionChanged, SettingsChanged
+from .composition_root import create_services
+
+# --- Bootstrap all services ---
+services = create_services()
 
 # --- Session Token (regenerated on each start) ---
 SESSION_TOKEN = secrets.token_urlsafe(32)
@@ -25,73 +29,41 @@ API_KEY_HEADER = APIKeyHeader(name="X-Session-Token", auto_error=False)
 
 async def verify_session_token(request: Request, token: str = Depends(API_KEY_HEADER)):
     """Verify the session token for API authentication."""
-    # Allow requests from localhost without token for initial setup
     client_host = request.client.host if request.client else ""
-    
-    # Always require token for non-localhost requests
-    if client_host not in ("127.0.0.1", "localhost", "::1"):
+
+    if client_host not in ALLOWED_HOSTS:
         raise HTTPException(status_code=403, detail="Access denied: Non-local requests forbidden")
-    
-    # For localhost, token is optional but recommended
+
     if token and token != SESSION_TOKEN:
         raise HTTPException(status_code=401, detail="Invalid session token")
-    
+
     return True
 
-# --- Dependencies ---
-# Use absolute path relative to this file's location, not CWD
-_BASE_DIR = Path(__file__).resolve().parent.parent  # Points to backend/
-hotkey_catalog = HotkeyCatalogService(_BASE_DIR / "hotkeys.json")
-history_repo = HistoryRepository()
-pipeline = ExecutionPipeline(settings, secret_store, clipboard, history_repo)
-
-# --- Background Services ---
-def on_hotkey_trigger(hotkey_id: Optional[str] = None):
-    """Callback for global hotkeys. Runs in a background thread."""
-    logger.debug(f"Hotkey trigger received: {hotkey_id}")
-    # If hotkey_id is provided, execute it directly.
-    # Otherwise, it's the panel trigger (handled by frontend).
-    if hotkey_id:
-        try:
-            hotkey = hotkey_catalog.get(hotkey_id)
-            if not hotkey:
-                logger.warning(f"Hotkey not found for trigger: {hotkey_id}")
-                return
-            
-            # Execute the pipeline and consume the generator
-            results = []
-            for chunk in pipeline.execute(hotkey):
-                results.append(chunk)
-            
-            logger.info(f"Hotkey {hotkey_id} executed successfully: {len(''.join(results))} chars")
-        except Exception as e:
-            logger.error(f"Failed to execute hotkey {hotkey_id}: {e}")
-
-hotkey_agent = HotkeyAgent(on_trigger=on_hotkey_trigger)
+# --- Lifespan ---
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     pid = os.getpid()
     logger.info(f"[{pid}] LIFESPAN START")
-    logger.info(f"[{pid}] Starting Hotkey Agent...")
+    logger.info(f"[{pid}] Starting Action Agent...")
     logger.info(f"[{pid}] Session Token: {SESSION_TOKEN}")
-    hotkey_agent.update_hotkeys(hotkey_catalog.get_all())
-    hotkey_agent.start()
+    services.action_agent.update_actions(services.action_catalog.get_all())
+    services.action_agent.start()
     yield
     logger.info(f"[{pid}] LIFESPAN STOP")
-    logger.info(f"[{pid}] Stopping Hotkey Agent...")
-    hotkey_agent.stop()
+    logger.info(f"[{pid}] Stopping Action Agent...")
+    services.action_agent.stop()
 
-app = FastAPI(title="Paste & Speech AI Core", lifespan=lifespan)
+app = FastAPI(title=f"{APP_NAME} Core", lifespan=lifespan)
 
 # CORS - Restricted to localhost only
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:8000",
-        "http://127.0.0.1:8000",
-        "http://localhost:1420",
-        "http://127.0.0.1:1420",
+        f"http://localhost:{BACKEND_PORT}",
+        f"http://127.0.0.1:{BACKEND_PORT}",
+        f"http://localhost:{FRONTEND_DEV_PORT}",
+        f"http://127.0.0.1:{FRONTEND_DEV_PORT}",
         "tauri://localhost",
         "https://tauri.localhost",
     ],
@@ -102,152 +74,157 @@ app.add_middleware(
 
 # --- Public Routes (no auth required) ---
 
-@app.get("/health")
+@app.get("/health", response_model=HealthResponse)
 def health_check():
-    return {"status": "ok", "version": "0.1.0"}
+    return {"status": "ok", "version": APP_VERSION}
 
-@app.get("/ui-text")
+@app.get("/ui-text", response_model=Dict[str, str])
 def get_ui_text():
-    # Convert enum keys to string values for JSON serialization
     return {k.value: v for k, v in UiTextCatalog._DEFAULTS.items()}
 
-@app.get("/session-token")
+@app.get("/providers", response_model=List[ProviderInfoResponse])
+def get_providers():
+    return [
+        {
+            "provider_id": r.provider_id,
+            "display_name": r.display_name,
+            "capabilities": r.capabilities,
+            "requires_auth": r.requires_auth,
+            "provider_class": r.provider_class,
+        }
+        for r in services.provider_registry.list_all()
+    ]
+
+@app.get("/session-token", response_model=SessionTokenResponse)
 def get_session_token(request: Request):
     """Returns session token only for localhost requests."""
     client_host = request.client.host if request.client else ""
-    if client_host not in ("127.0.0.1", "localhost", "::1"):
+    if client_host not in ALLOWED_HOSTS:
         raise HTTPException(status_code=403, detail="Access denied")
     return {"token": SESSION_TOKEN}
 
 # --- Protected Routes (require localhost + optional token) ---
 
-@app.get("/hotkeys", response_model=List[HotkeyDefinition], dependencies=[Depends(verify_session_token)])
-def get_hotkeys():
-    return hotkey_catalog.get_all()
+@app.get("/actions", response_model=List[ActionDefinition], dependencies=[Depends(verify_session_token)])
+def get_actions():
+    return services.action_catalog.get_all()
 
-@app.post("/hotkeys", dependencies=[Depends(verify_session_token)])
-def create_hotkey(hotkey: HotkeyDefinition):
-    hotkey_catalog.add(hotkey)
-    hotkey_agent.update_hotkeys(hotkey_catalog.get_all())
-    return hotkey
+@app.post("/actions", response_model=ActionDefinition, dependencies=[Depends(verify_session_token)])
+def create_action(action: ActionDefinition):
+    services.action_catalog.add(action)
+    services.event_bus.publish(ActionChanged())
+    return action
 
-@app.put("/hotkeys/{hotkey_id}", dependencies=[Depends(verify_session_token)])
-def update_hotkey(hotkey_id: str, hotkey: HotkeyDefinition):
-    if hotkey.id != hotkey_id:
+@app.put("/actions/{action_id}", response_model=ActionDefinition, dependencies=[Depends(verify_session_token)])
+def update_action(action_id: str, action: ActionDefinition):
+    if action.id != action_id:
         raise HTTPException(status_code=400, detail="ID mismatch")
-    hotkey_catalog.update(hotkey)
-    hotkey_agent.update_hotkeys(hotkey_catalog.get_all())
-    return hotkey
+    services.action_catalog.update(action)
+    services.event_bus.publish(ActionChanged())
+    return action
 
-@app.delete("/hotkeys/{hotkey_id}", dependencies=[Depends(verify_session_token)])
-def delete_hotkey(hotkey_id: str):
-    hotkey_catalog.delete(hotkey_id)
-    hotkey_agent.update_hotkeys(hotkey_catalog.get_all())
+@app.delete("/actions/{action_id}", response_model=StatusResponse, dependencies=[Depends(verify_session_token)])
+def delete_action(action_id: str):
+    services.action_catalog.delete(ActionId(action_id))
+    services.event_bus.publish(ActionChanged())
     return {"status": "deleted"}
 
-@app.post("/hotkeys/{hotkey_id}/execute", dependencies=[Depends(verify_session_token)])
-def execute_hotkey(hotkey_id: str):
-    # Validate hotkey_id format (prevent injection)
-    if not hotkey_id.replace("-", "").replace("_", "").isalnum():
-        raise HTTPException(status_code=400, detail="Invalid hotkey ID format")
-    
-    hotkey = hotkey_catalog.get(hotkey_id)
-    if not hotkey:
-        raise HTTPException(status_code=404, detail="Hotkey not found")
-    
-    results = []
-    for chunk in pipeline.execute(hotkey):
-        results.append(chunk)
-    
-    return {"result": "".join(results)}
+@app.post("/actions/{action_id}/execute", response_model=ExecuteResponse, dependencies=[Depends(verify_session_token)])
+def execute_action(action_id: str):
+    if not action_id.replace("-", "").replace("_", "").isalnum():
+        raise HTTPException(status_code=400, detail="Invalid action ID format")
 
-@app.get("/history", dependencies=[Depends(verify_session_token)])
+    action = services.action_catalog.get(ActionId(action_id))
+    if not action:
+        raise HTTPException(status_code=404, detail="Action not found")
+
+    result = services.pipeline.execute(action)
+    if isinstance(result, Err):
+        raise HTTPException(status_code=422, detail=result.error.message)
+
+    chunks = list(result.value)
+    return {"result": "".join(chunks)}
+
+@app.get("/history", response_model=List[HistoryEntryResponse], dependencies=[Depends(verify_session_token)])
 def get_history():
-    return history_repo.get_recent()
+    return services.history_repo.get_recent()
 
 @app.get("/settings", dependencies=[Depends(verify_session_token)])
 def get_settings():
-    return settings.model_dump()
-
+    return services.settings.model_dump()
 
 @app.patch("/settings", dependencies=[Depends(verify_session_token)])
 def patch_settings(new_settings: Dict[str, Any]):
-    # Simplified approach for the MVP:
-    # Expecting payloads like {"app": {"ui_opacity": 0.5}}
-    # We will manually map known top-level sections
-    
     if "app" in new_settings:
         for k, v in new_settings["app"].items():
-            if hasattr(settings.app, k):
-                setattr(settings.app, k, v)
+            if hasattr(services.settings.app, k):
+                setattr(services.settings.app, k, v)
 
     if "routing_defaults" in new_settings:
         for k, v in new_settings["routing_defaults"].items():
-            if hasattr(settings.routing_defaults, k):
-                setattr(settings.routing_defaults, k, v)
-                
+            if hasattr(services.settings.routing_defaults, k):
+                setattr(services.settings.routing_defaults, k, v)
+
     if "history" in new_settings:
         for k, v in new_settings["history"].items():
-            if hasattr(settings.history, k):
-                setattr(settings.history, k, v)
+            if hasattr(services.settings.history, k):
+                setattr(services.settings.history, k, v)
 
-    settings.save(SETTINGS_FILE)
-    return settings.model_dump()
+    services.event_bus.publish(SettingsChanged())
+    return services.settings.model_dump()
 
 # --- Connection Management ---
 
 @app.get("/connections", dependencies=[Depends(verify_session_token)])
 def get_connections():
-    return settings.connections
+    return services.settings.connections
 
-@app.post("/connections", dependencies=[Depends(verify_session_token)])
+@app.post("/connections", response_model=ConnectionDefinition, dependencies=[Depends(verify_session_token)])
 def create_connection(connection: ConnectionDefinition):
-    # Check if duplicate
-    if any(c['connection_id'] == connection.connection_id for c in settings.connections):
+    if any(c['connection_id'] == connection.connection_id for c in services.settings.connections):
         raise HTTPException(status_code=400, detail="Connection ID already exists")
-    
-    settings.connections.append(connection.model_dump())
-    settings.save(SETTINGS_FILE)
+
+    services.settings.connections.append(connection.model_dump())
+    services.event_bus.publish(SettingsChanged())
     return connection
 
-@app.put("/connections/{connection_id}", dependencies=[Depends(verify_session_token)])
+@app.put("/connections/{connection_id}", response_model=ConnectionDefinition, dependencies=[Depends(verify_session_token)])
 def update_connection(connection_id: str, connection: ConnectionDefinition):
-    for i, c in enumerate(settings.connections):
+    for i, c in enumerate(services.settings.connections):
         if c['connection_id'] == connection_id:
-            settings.connections[i] = connection.model_dump()
-            settings.save(SETTINGS_FILE)
+            services.settings.connections[i] = connection.model_dump()
+            services.event_bus.publish(SettingsChanged())
             return connection
     raise HTTPException(status_code=404, detail="Connection not found")
 
-@app.delete("/connections/{connection_id}", dependencies=[Depends(verify_session_token)])
+@app.delete("/connections/{connection_id}", response_model=StatusResponse, dependencies=[Depends(verify_session_token)])
 def delete_connection(connection_id: str):
-    settings.connections = [c for c in settings.connections if c['connection_id'] != connection_id]
-    # Also delete secret from store
-    secret_store.delete(connection_id, "api_key")
-    settings.save(SETTINGS_FILE)
+    services.settings.connections = [
+        c for c in services.settings.connections if c['connection_id'] != connection_id
+    ]
+    services.secret_store.delete(ConnectionId(connection_id), "api_key")
+    services.event_bus.publish(SettingsChanged())
     return {"status": "deleted"}
 
 # --- Secret Management ---
 
-
-@app.put("/connections/{connection_id}/secret", dependencies=[Depends(verify_session_token)])
+@app.put("/connections/{connection_id}/secret", response_model=StatusResponse, dependencies=[Depends(verify_session_token)])
 def save_connection_secret(connection_id: str, payload: Dict[str, str]):
     secret = payload.get("secret")
     if not secret:
         raise HTTPException(status_code=400, detail="Secret value required")
-    
-    # Verify connection exists
-    if not any(c['connection_id'] == connection_id for c in settings.connections):
+
+    if not any(c['connection_id'] == connection_id for c in services.settings.connections):
         raise HTTPException(status_code=404, detail="Connection not found")
 
     try:
-        secret_store.save(connection_id, "api_key", secret)
+        services.secret_store.save(ConnectionId(connection_id), "api_key", secret)
         return {"status": "saved"}
     except Exception as e:
         logger.error(f"Failed to save secret: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.post("/shutdown", dependencies=[Depends(verify_session_token)])
+@app.post("/shutdown", response_model=StatusResponse, dependencies=[Depends(verify_session_token)])
 def shutdown_application():
     """Shuts down the backend server."""
     logger.info("Shutdown requested via API")
@@ -255,22 +232,20 @@ def shutdown_application():
     import time
     import signal
     import sys
-    
+
     def force_exit():
-        time.sleep(0.5) # Allow response to be sent
+        time.sleep(0.5)
         logger.info("Exiting process...")
-        # Try graceful SIGINT first (Ctrl+C simulation) for Uvicorn
         try:
             os.kill(os.getpid(), signal.SIGINT)
         except Exception:
             pass
-        # Fallback: if SIGINT doesn't work (common on Windows), force exit after timeout
         time.sleep(2.0)
         logger.warning("SIGINT did not terminate process, forcing exit...")
         sys.exit(0)
-        
+
     threading.Thread(target=force_exit, daemon=True).start()
     return {"status": "shutting_down"}
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    uvicorn.run(app, host="127.0.0.1", port=BACKEND_PORT)

@@ -18,7 +18,7 @@ export default function ConfirmDialog({
     onReset,
     onConfirm,
     confirmLabel = "OK",
-    cancelLabel = "Abbrechen",
+    cancelLabel = "Cancel",
     isAlert = false
 }: ConfirmDialogProps) {
     if (!isOpen) return null;

@@ -53,3 +53,14 @@ class MistralProvider(IProvider):
                 yield StreamChunk(content="", done=True)
         except Exception as e:
             raise Exception(f"Mistral connection failed: {str(e)}")
+
+
+def register_mistral(registry) -> None:
+    from ...application.provider_registry import ProviderRegistration
+    from ...domain.types import ProviderId
+    registry.register(ProviderRegistration(
+        provider_id=ProviderId("mistral"),
+        display_name="Mistral AI",
+        capabilities=["llm"],
+        factory=MistralProvider,
+    ))

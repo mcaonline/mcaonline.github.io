@@ -51,3 +51,16 @@ class TesseractProvider:
 
     def process_image(self, image: Image.Image) -> str:
         return self.ocr.image_to_string(image)
+
+
+def register_tesseract(registry) -> None:
+    from ...application.provider_registry import ProviderRegistration
+    from ...domain.types import ProviderId
+    registry.register(ProviderRegistration(
+        provider_id=ProviderId("tesseract"),
+        display_name="Tesseract OCR (Local)",
+        capabilities=["ocr"],
+        requires_auth=False,
+        provider_class="local",
+        factory=TesseractProvider,
+    ))

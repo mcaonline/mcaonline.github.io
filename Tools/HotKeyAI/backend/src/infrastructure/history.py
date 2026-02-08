@@ -7,8 +7,10 @@ from loguru import logger
 import json
 from pathlib import Path
 
+from ..domain.types import ActionId
+
 class HistoryEntry(BaseModel):
-    hotkey_id: str
+    action_id: ActionId
     timestamp: float
     duration: float
     input_preview: str
@@ -31,10 +33,13 @@ class HistoryRepository:
             try:
                 with open(self.storage_path, "r", encoding="utf-8") as f:
                     data = json.load(f)
-                    # Deduplicate by (hotkey_id, timestamp) tuple
+                    # Deduplicate by (action_id, timestamp) tuple
                     seen = set()
                     for item in data:
-                        key = (item.get("hotkey_id"), item.get("timestamp"))
+                        # Migration: rename hotkey_id -> action_id
+                        if "hotkey_id" in item and "action_id" not in item:
+                            item["action_id"] = item.pop("hotkey_id")
+                        key = (item.get("action_id"), item.get("timestamp"))
                         if key not in seen:
                             self._entries.append(HistoryEntry(**item))
                             seen.add(key)

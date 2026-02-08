@@ -1,6 +1,6 @@
 {
   "catalog_version": 1,
-  "hotkeys": [
+  "actions": [
     {
       "id": "paste_plain",
       "kind": "builtin",

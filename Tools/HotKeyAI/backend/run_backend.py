@@ -13,7 +13,8 @@ sys.path.insert(0, base_path)
 
 # Now import and run the actual main module
 from src.main import app
+from src.domain.app_constants import BACKEND_PORT
 import uvicorn
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    uvicorn.run(app, host="127.0.0.1", port=BACKEND_PORT)

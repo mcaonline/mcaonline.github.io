@@ -7,7 +7,7 @@ interface SettingsProps {
     onBack: () => void;
 }
 
-type Tab = 'general' | 'hotkeys' | 'connections' | 'history';
+type Tab = 'general' | 'actions' | 'connections' | 'history';
 
 export default function Settings({ onBack }: SettingsProps) {
     const { state, refreshData } = useApp();
@@ -63,22 +63,20 @@ export default function Settings({ onBack }: SettingsProps) {
         await refreshData();
     };
 
-    const handleToggleHotkey = async (id: string, enabled: boolean) => {
-        // Optimistic update
-        // const updatedHotkeys = state.hotkeys.map(h => h.id === id ? { ...h, enabled } : h);
-        console.log(`[Mock] Toggling hotkey ${id} to ${enabled}`);
+    const handleToggleAction = async (id: string, enabled: boolean) => {
+        console.log(`[Mock] Toggling action ${id} to ${enabled}`);
         await refreshData();
     };
 
     return (
         <div style={{ padding: "20px", height: "100%", display: "flex", flexDirection: "column" }}>
             <header data-tauri-drag-region style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "20px", cursor: "move" }}>
-                <button className="secondary" onClick={onBack}>&larr; Back</button>
-                <h1 data-tauri-drag-region style={{ margin: 0, fontSize: "1.5rem" }}>Settings</h1>
+                <button className="secondary" onClick={onBack}>{t("label.back")}</button>
+                <h1 data-tauri-drag-region style={{ margin: 0, fontSize: "1.5rem" }}>{t("label.settings")}</h1>
             </header>
 
             <div className="tabs" style={{ display: "flex", gap: "12px", borderBottom: "1px solid var(--glass-border)", marginBottom: "20px" }}>
-                {(['general', 'hotkeys', 'connections', 'history'] as Tab[]).map(tab => (
+                {(['general', 'actions', 'connections', 'history'] as Tab[]).map(tab => (
                     <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
@@ -90,7 +88,7 @@ export default function Settings({ onBack }: SettingsProps) {
                             fontWeight: activeTab === tab ? 600 : 400
                         }}
                     >
-                        {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                        {t("label." + tab)}
                     </button>
                 ))}
             </div>
@@ -99,11 +97,11 @@ export default function Settings({ onBack }: SettingsProps) {
                 {activeTab === 'general' && (
                     <div style={{ display: "grid", gap: "20px" }}>
                         <section>
-                            <h3>Appearance</h3>
+                            <h3>{t("label.appearance")}</h3>
                             <div style={{ display: "grid", gap: "12px", background: "rgba(0,0,0,0.02)", padding: "12px", borderRadius: "8px" }}>
                                 <label>
                                     <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "4px" }}>
-                                        <span style={{ fontSize: "0.9rem" }}>Window Opacity</span>
+                                        <span style={{ fontSize: "0.9rem" }}>{t("label.window_opacity")}</span>
                                         <span style={{ fontSize: "0.9rem", fontWeight: 600 }}>{Math.round((state.settings?.app?.ui_opacity ?? 0.95) * 100)}%</span>
                                     </div>
                                     <input
@@ -114,7 +112,7 @@ export default function Settings({ onBack }: SettingsProps) {
                                         value={state.settings?.app?.ui_opacity ?? 0.95}
                                         onChange={(e) => {
                                             const val = parseFloat(e.target.value);
-                                            const currentApp = state.settings?.app || { ui_opacity: 0.95, ui_decorations: false };
+                                            const currentApp = state.settings?.app || { theme: 'system', language: 'en', ui_opacity: 0.95, ui_decorations: false };
                                             apiClient.updateSettings({ app: { ...currentApp, ui_opacity: val } }).then(refreshData);
                                         }}
                                         style={{ width: "100%" }}
@@ -125,35 +123,35 @@ export default function Settings({ onBack }: SettingsProps) {
                                         type="checkbox"
                                         checked={state.settings?.app?.ui_decorations ?? false}
                                         onChange={(e) => {
-                                            const currentApp = state.settings?.app || { ui_opacity: 0.95, ui_decorations: false };
+                                            const currentApp = state.settings?.app || { theme: 'system', language: 'en', ui_opacity: 0.95, ui_decorations: false };
                                             apiClient.updateSettings({ app: { ...currentApp, ui_decorations: e.target.checked } }).then(refreshData);
                                         }}
                                     />
-                                    <span style={{ fontSize: "0.9rem" }}>Show Window Decorations (Requires Restart)</span>
+                                    <span style={{ fontSize: "0.9rem" }}>{t("label.window_decorations")}</span>
                                 </label>
                             </div>
                         </section>
                         <section>
-                            <h3>Global Shortcuts</h3>
+                            <h3>{t("label.global_shortcuts")}</h3>
                             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px", background: "rgba(0,0,0,0.02)", borderRadius: "8px" }}>
                                 <div>
-                                    <div style={{ fontWeight: 600 }}>Main Trigger</div>
-                                    <div style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>The chord to open the panel</div>
+                                    <div style={{ fontWeight: 600 }}>{t("label.main_trigger")}</div>
+                                    <div style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>{t("label.main_trigger_desc")}</div>
                                 </div>
-                                <div style={{ fontWeight: 700, background: "var(--surface-2)", padding: "4px 8px", borderRadius: "4px" }}>Ctrl + V, V</div>
+                                <div style={{ fontWeight: 700, background: "var(--surface-2)", padding: "4px 8px", borderRadius: "4px" }}>{state.settings?.actions?.main_trigger?.chord ?? "Ctrl+V,V"}</div>
                             </div>
                         </section>
                         <section>
-                            <h3>Routing Defaults</h3>
+                            <h3>{t("label.routing_defaults")}</h3>
                             <div style={{ display: "grid", gap: "12px" }}>
                                 <label>
-                                    <span style={{ display: "block", fontSize: "0.9rem", marginBottom: "4px" }}>Default Text AI</span>
+                                    <span style={{ display: "block", fontSize: "0.9rem", marginBottom: "4px" }}>{t("label.default_text_ai")}</span>
                                     <select
                                         value={state.activeDefaults.llm || ""}
                                         onChange={(e) => apiClient.updateSettings({ routing_defaults: { ...state.settings?.routing_defaults, default_llm_connection_id: e.target.value } }).then(refreshData)}
                                         style={{ width: "100%", padding: "8px" }}
                                     >
-                                        <option value="">Select a connection...</option>
+                                        <option value="">{t("label.select_connection")}</option>
                                         {state.connections.filter(c => c.capabilities.includes('llm')).map(c => (
                                             <option key={c.connection_id} value={c.connection_id}>{c.connection_id} ({c.model_id})</option>
                                         ))}
@@ -164,48 +162,46 @@ export default function Settings({ onBack }: SettingsProps) {
                     </div>
                 )}
 
-                {activeTab === 'hotkeys' && (
+                {activeTab === 'actions' && (
                     <div>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
-                            <h3>Hotkeys</h3>
+                            <h3>{t("label.actions")}</h3>
                             <button onClick={() => {
-                                // Template for new hotkey
-                                const newHk = {
+                                // Template for new action
+                                const newAction = {
                                     id: crypto.randomUUID(),
                                     kind: 'user',
                                     mode: 'ai_transform',
-                                    display_key: 'New Hotkey',
-                                    description_key: 'Custom AI Command',
+                                    display_key: 'label.new_action',
+                                    description_key: 'label.custom_ai_command',
                                     enabled: true,
                                     prompt_template: "Summarize this text",
                                     capability_requirements: [{ capability: 'llm', min_sequence: 1 }]
                                 };
-                                // For MVP, we just create it immediately and let user edit (editing not fully implemented yet, but creation is step 1)
-                                // Ideally we'd show a modal.
-                                apiClient.createHotkey(newHk as any).then(refreshData);
-                            }}>Add New</button>
+                                apiClient.createAction(newAction as any).then(refreshData);
+                            }}>{t("label.add_new")}</button>
                         </div>
-                        {state.hotkeys.map(hk => (
-                            <div key={hk.id} style={{ padding: "12px", borderBottom: "1px solid var(--glass-border)", background: "rgba(0,0,0,0.02)" }}>
+                        {state.actions.map(a => (
+                            <div key={a.id} style={{ padding: "12px", borderBottom: "1px solid var(--glass-border)", background: "rgba(0,0,0,0.02)" }}>
                                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
                                     <div>
-                                        <div style={{ fontWeight: 600 }}>{t(hk.display_key)}</div>
-                                        <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>{t(hk.description_key)}</div>
+                                        <div style={{ fontWeight: 600 }}>{t(a.display_key)}</div>
+                                        <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>{t(a.description_key)}</div>
                                     </div>
                                     <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                                         <input
                                             type="checkbox"
-                                            checked={hk.enabled}
-                                            onChange={(e) => handleToggleHotkey(hk.id, e.target.checked)}
+                                            checked={a.enabled}
+                                            onChange={(e) => handleToggleAction(a.id!, e.target.checked)}
                                         />
-                                        {hk.kind === 'user' && (
+                                        {a.kind === 'user' && (
                                             <button onClick={async () => {
-                                                if (confirm("Delete this hotkey?")) {
-                                                    await apiClient.deleteHotkey(hk.id);
+                                                if (confirm("Delete this action?")) {
+                                                    await apiClient.deleteAction(a.id!);
                                                     refreshData();
                                                 }
                                             }} style={{ padding: "4px 8px", background: "transparent", color: "#f43f5e", border: "1px solid #f43f5e", fontSize: "0.7rem", borderRadius: "4px" }}>
-                                                Del
+                                                {t("label.del")}
                                             </button>
                                         )}
                                     </div>
@@ -215,14 +211,14 @@ export default function Settings({ onBack }: SettingsProps) {
                                 <div style={{ display: "grid", gap: "8px", paddingLeft: "12px", borderLeft: "2px solid var(--glass-border)" }}>
                                     {/* Global Hotkey Trigger */}
                                     <label style={{ fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "8px" }}>
-                                        <span style={{ minWidth: "60px", color: "var(--text-secondary)" }}>Trigger:</span>
+                                        <span style={{ minWidth: "60px", color: "var(--text-secondary)" }}>{t("label.trigger")}:</span>
                                         <input
-                                            placeholder="e.g. <ctrl>+<alt>+k"
-                                            defaultValue={hk.direct_hotkey || ""}
+                                            placeholder={t("placeholder.action_trigger")}
+                                            defaultValue={a.direct_hotkey || ""}
                                             onBlur={(e) => {
                                                 const val = e.target.value.trim();
-                                                if (val !== (hk.direct_hotkey || "")) {
-                                                    apiClient.updateHotkey(hk.id, { ...hk, direct_hotkey: val || undefined }).then(refreshData);
+                                                if (val !== (a.direct_hotkey || "")) {
+                                                    apiClient.updateAction(a.id!, { ...a, direct_hotkey: val || undefined }).then(refreshData);
                                                 }
                                             }}
                                             onKeyDown={(e) => {
@@ -232,16 +228,16 @@ export default function Settings({ onBack }: SettingsProps) {
                                         />
                                     </label>
 
-                                    {/* Prompt Template for Custom Hotkeys */}
-                                    {hk.kind === 'user' && (
+                                    {/* Prompt Template for Custom Actions */}
+                                    {a.kind === 'user' && (
                                         <label style={{ fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "8px" }}>
-                                            <span style={{ minWidth: "60px", color: "var(--text-secondary)" }}>Prompt:</span>
+                                            <span style={{ minWidth: "60px", color: "var(--text-secondary)" }}>{t("label.prompt")}:</span>
                                             <input
-                                                defaultValue={hk.prompt_template || ""}
+                                                defaultValue={a.prompt_template || ""}
                                                 onBlur={(e) => {
                                                     const val = e.target.value;
-                                                    if (val !== hk.prompt_template) {
-                                                        apiClient.updateHotkey(hk.id, { ...hk, prompt_template: val }).then(refreshData);
+                                                    if (val !== a.prompt_template) {
+                                                        apiClient.updateAction(a.id!, { ...a, prompt_template: val }).then(refreshData);
                                                     }
                                                 }}
                                                 onKeyDown={(e) => {
@@ -260,11 +256,11 @@ export default function Settings({ onBack }: SettingsProps) {
                 {activeTab === 'connections' && (
                     <div>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
-                            <h3>Active Connections</h3>
-                            <button onClick={() => { setConnForm({ capabilities: ['llm'] }); setIsEditingConn(false); setActiveTab('connections'); /* scroll to form */ }}>Add New</button>
+                            <h3>{t("label.active_connections")}</h3>
+                            <button onClick={() => { setConnForm({ capabilities: ['llm'] }); setIsEditingConn(false); setActiveTab('connections'); /* scroll to form */ }}>{t("label.add_new")}</button>
                         </div>
                         <div style={{ display: "grid", gap: "12px", marginBottom: "32px" }}>
-                            {state.connections.length === 0 && <div style={{ opacity: 0.5, fontStyle: "italic" }}>No connections found.</div>}
+                            {state.connections.length === 0 && <div style={{ opacity: 0.5, fontStyle: "italic" }}>{t("label.no_connections")}</div>}
                             {state.connections.map(c => (
                                 <div key={c.connection_id} style={{ padding: "12px", background: "rgba(0,0,0,0.02)", borderRadius: "8px", border: "1px solid var(--glass-border)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                                     <div>
@@ -272,17 +268,17 @@ export default function Settings({ onBack }: SettingsProps) {
                                         <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>{c.provider_id} • {c.model_id}</div>
                                     </div>
                                     <div style={{ display: "flex", gap: "8px" }}>
-                                        <button onClick={() => handleEditConnection(c)} className="secondary" style={{ padding: "4px 8px", fontSize: "0.8rem" }}>Edit</button>
-                                        <button onClick={() => handleDeleteConnection(c.connection_id)} style={{ color: "#f43f5e", padding: "4px 8px", fontSize: "0.8rem", border: "1px solid #f43f5e", background: "transparent" }}>Delete</button>
+                                        <button onClick={() => handleEditConnection(c)} className="secondary" style={{ padding: "4px 8px", fontSize: "0.8rem" }}>{t("label.edit")}</button>
+                                        <button onClick={() => handleDeleteConnection(c.connection_id!)} style={{ color: "#f43f5e", padding: "4px 8px", fontSize: "0.8rem", border: "1px solid #f43f5e", background: "transparent" }}>{t("label.delete")}</button>
                                     </div>
                                 </div>
                             ))}
                         </div>
 
-                        <h3>{isEditingConn ? "Edit" : "Add"} Connection</h3>
+                        <h3>{isEditingConn ? t("label.edit") : t("label.add_new")} {t("label.add_edit_connection")}</h3>
                         <div style={{ display: "grid", gap: "12px", padding: "20px", background: "rgba(0,0,0,0.02)", borderRadius: "8px" }}>
                             <input
-                                placeholder="Connection ID (e.g. my-gpt)"
+                                placeholder={t("placeholder.connection_id")}
                                 value={connForm.connection_id || ""}
                                 onChange={e => setConnForm({ ...connForm, connection_id: e.target.value })}
                                 disabled={isEditingConn}
@@ -291,25 +287,24 @@ export default function Settings({ onBack }: SettingsProps) {
                                 value={connForm.provider_id || ""}
                                 onChange={e => setConnForm({ ...connForm, provider_id: e.target.value })}
                             >
-                                <option value="">Select Provider</option>
-                                <option value="openai">OpenAI</option>
-                                <option value="anthropic">Anthropic</option>
-                                <option value="google">Google</option>
-                                <option value="mistral">Mistral</option>
+                                <option value="">{t("label.select_provider")}</option>
+                                {state.providers.filter(p => p.provider_id !== 'mock').map(p => (
+                                    <option key={p.provider_id} value={p.provider_id}>{p.display_name}</option>
+                                ))}
                             </select>
                             <input
-                                placeholder="Model ID"
+                                placeholder={t("placeholder.model_id")}
                                 value={connForm.model_id || ""}
                                 onChange={e => setConnForm({ ...connForm, model_id: e.target.value })}
                             />
                             <input
                                 type="password"
-                                placeholder="API Key"
+                                placeholder={t("placeholder.api_key")}
                                 value={secret}
                                 onChange={e => setSecret(e.target.value)}
                             />
-                            <button onClick={handleSaveConnection} disabled={loading} style={{ background: "var(--accent-primary)", color: "white", padding: "8px 16px", borderRadius: "4px", border: "none" }}>{loading ? "Saving..." : isEditingConn ? "Update Connection" : "Save Connection"}</button>
-                            {isEditingConn && <button onClick={() => { setIsEditingConn(false); setConnForm({ capabilities: ['llm'] }); setSecret(""); }} className="secondary">Cancel Edit</button>}
+                            <button onClick={handleSaveConnection} disabled={loading} style={{ background: "var(--accent-primary)", color: "white", padding: "8px 16px", borderRadius: "4px", border: "none" }}>{loading ? t("label.saving") : isEditingConn ? t("label.update_connection") : t("label.save_connection")}</button>
+                            {isEditingConn && <button onClick={() => { setIsEditingConn(false); setConnForm({ capabilities: ['llm'] }); setSecret(""); }} className="secondary">{t("label.cancel_edit")}</button>}
                         </div>
                     </div>
                 )}
@@ -317,22 +312,22 @@ export default function Settings({ onBack }: SettingsProps) {
                 {activeTab === 'history' && (
                     <div>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
-                            <h3>Session History</h3>
+                            <h3>{t("label.session_history")}</h3>
                             <label style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                                 <input
                                     type="checkbox"
                                     checked={state.settings?.history?.enabled || false}
-                                    onChange={(e) => apiClient.updateSettings({ history: { enabled: e.target.checked } }).then(refreshData)}
+                                    onChange={(e) => apiClient.updateSettings({ history: { enabled: e.target.checked, max_entries: state.settings?.history?.max_entries ?? 10 } }).then(refreshData)}
                                 />
-                                Enable History
+                                {t("label.enable_history")}
                             </label>
                         </div>
                         {state.history.length === 0 ? (
-                            <div style={{ textAlign: "center", padding: "20px", opacity: 0.5 }}>No history</div>
+                            <div style={{ textAlign: "center", padding: "20px", opacity: 0.5 }}>{t("label.no_history")}</div>
                         ) : (
                             state.history.map((h, i) => (
                                 <div key={i} style={{ padding: "12px", borderBottom: "1px solid var(--glass-border)" }}>
-                                    <div style={{ fontWeight: 600 }}>{h.hotkey_id}</div>
+                                    <div style={{ fontWeight: 600 }}>{h.action_id}</div>
                                     <div style={{ fontSize: "0.8rem", opacity: 0.7 }}>{h.timestamp}</div>
                                 </div>
                             ))

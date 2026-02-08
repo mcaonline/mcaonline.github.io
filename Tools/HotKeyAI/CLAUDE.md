@@ -1,0 +1,278 @@
+# CLAUDE.md — HotKeyAI Agent Instructions
+
+> Auto-loaded in every Claude Code context window.
+> For deeper architecture rationale see [agent.md](agent.md).
+> For remaining debt see [VIOLATIONS.md](VIOLATIONS.md).
+
+---
+
+## Project Overview
+
+**App name**: Paste & Speech AI (UI-facing) / HotKeyAI (internal/OS)
+**Version**: 0.1.0
+**What it does**: Desktop hotkey tool — paste plain text, OCR images, transcribe speech, run AI text transforms via configurable hotkeys.
+
+### Tech Stack
+| Layer | Tech |
+|-------|------|
+| Backend | Python 3.12 + FastAPI (port 8000) |
+| Frontend | React 19 + TypeScript + Vite 7 (port 1420) |
+| Desktop | Tauri 2 (bundles backend.exe as sidecar) |
+| Secrets | Windows Credential Manager via `keyring` |
+
+---
+
+## 1) The SSoT Principle (MOST IMPORTANT RULE)
+
+**Every constant, string, setting, and list is defined EXACTLY ONCE.** All other files import or are generated from that single definition.
+
+Violating SSoT is the #1 thing to avoid. Before writing any value, ask: "Where is this already defined?"
+
+### SSoT Sources (the ONLY places that define things)
+
+| What | SSoT File | How consumers access it |
+|------|-----------|------------------------|
+| App name, version, identifier, ports, dir names, env prefix, allowed hosts | `backend/src/domain/app_constants.py` | Python: `import`. Non-Python: stamped by `sync_constants.py` |
+| All UI-visible strings | `backend/src/domain/ui_text.py` (`UiTextCatalog`) | Backend: `GET /ui-text`. Frontend: `t("key")` from `useApp()` |
+| Hotkey definitions (built-in + custom) | `backend/src/domain/hotkey_catalog.py` + `frontend/src-tauri/hotkeys.json` | Frontend: via `GET /hotkeys` |
+| Settings schema + defaults | `backend/src/config/settings.py` (`SettingsSchema`) | Persisted to `%APPDATA%/HotKeyAI/settings.json` |
+| Provider metadata (id, name, capabilities) | Each provider's `register_*()` → `ProviderRegistry` | Backend: `GET /providers`. Frontend: `state.providers` |
+| Connection definitions (user-configured) | `SettingsSchema.connections` list | Backend: `GET/POST /connections` |
+
+### SSoT Enforcement Rules
+
+1. **Python files** → `from ..domain.app_constants import X`
+2. **Non-Python config** (`tauri.conf.json`, `package.json`, `Cargo.toml`, `vite.config.ts`, `client.ts`) → stamped by `python sync_constants.py`. NEVER hand-edit these values.
+3. **Frontend strings** → `{t("key")}` from UiTextCatalog. ZERO hardcoded user-visible text in `.tsx`.
+4. **Provider names/options** → fetched from `GET /providers`. NEVER hardcode `<option>` lists.
+5. **Settings values** → read from `state.settings`. NEVER hardcode defaults in frontend.
+6. **Any new constant/string** → define in its SSoT file first, then reference everywhere else.
+
+---
+
+## 2) File Map
+
+### Backend (`backend/src/`)
+
+| File | Responsibility |
+|------|---------------|
+| `domain/app_constants.py` | SSoT: app metadata constants (name, version, ports, etc.) |
+| `domain/ui_text.py` | SSoT: `UiTextKey` enum + `UiTextCatalog` defaults dict |
+| `domain/models.py` | Domain models: `ConnectionDefinition`, `HotkeyDefinition` + API response models |
+| `domain/types.py` | Value Object IDs: `ConnectionId`, `HotkeyId`, `ProviderId` (NewType wrappers) |
+| `domain/result.py` | `Ok[T]`, `Err`, `Result = Union[Ok[T], Err]` for structured error handling |
+| `domain/errors.py` | `ErrorCategory` enum + `PipelineError` dataclass |
+| `domain/events.py` | `DomainEvent` base + concrete events + `EventBus` (sync pub/sub) |
+| `domain/hotkey_catalog.py` | Built-in hotkey definitions |
+| `config/settings.py` | `SettingsSchema` (Pydantic), load/save, migrations |
+| `composition_root.py` | `AppServices` dataclass + `create_services()` — single wiring point |
+| `application/pipeline.py` | `ExecutionPipeline` — validate/execute returning `Result[T]` |
+| `application/provider_registry.py` | `ProviderRegistry` + `ProviderRegistration` dataclass |
+| `application/handlers.py` | Event handlers: `HistoryRecorder`, `HotkeySync`, `SettingsPersister` |
+| `infrastructure/providers/base.py` | `IProvider` interface, `OpenAIProvider`, `MockProvider` + register functions |
+| `infrastructure/providers/anthropic.py` | `AnthropicProvider` + `register_anthropic()` |
+| `infrastructure/providers/google.py` | `GoogleProvider` + `register_google()` |
+| `infrastructure/providers/mistral.py` | `MistralProvider` + `register_mistral()` |
+| `infrastructure/providers/tesseract.py` | `TesseractOCR` + `TesseractProvider` + `register_tesseract()` |
+| `infrastructure/clipboard.py` | OS clipboard access |
+| `infrastructure/secrets.py` | `KeyringSecretStore` — OS keychain |
+| `infrastructure/history.py` | In-memory session history |
+| `infrastructure/hotkeys.py` | Global hotkey listener |
+| `main.py` | FastAPI app, all endpoints, CORS — uses `composition_root.create_services()` |
+
+### Frontend (`frontend/src/`)
+
+| File | Responsibility |
+|------|---------------|
+| `api/client.ts` | `apiClient` + typed exports from `generated-types.ts` (SSoT: Python models → OpenAPI → TS) |
+| `api/generated-types.ts` | Auto-generated by `openapi-typescript` from `openapi.json` — DO NOT EDIT |
+| `api/openapi.json` | OpenAPI schema exported from FastAPI — DO NOT EDIT |
+| `store/context.tsx` | `AppProvider`, `useApp()` hook, global state, `t()` text lookup, `refreshData()` |
+| `components/Panel.tsx` | Main panel UI (hotkey list, model selector, prompt input) |
+| `components/Settings.tsx` | Settings page (tabs: General, Hotkeys, Connections, History) |
+| `components/ConfirmDialog.tsx` | Reusable confirmation dialog |
+| `App.tsx` | Root component, routes between Panel and Settings |
+
+### Root
+
+| File | Responsibility |
+|------|---------------|
+| `sync_constants.py` | Build-time sync: reads `app_constants.py`, stamps 5 config files. `--check` for CI. |
+| `backend/export_openapi.py` | Exports FastAPI OpenAPI schema to `frontend/src/api/openapi.json` |
+| `CHANGELOG.md` | **Must update after every major change.** Timestamped log of features, fixes, refactors. |
+| `agent.md` | Full architecture spec + design rules (reference) |
+| `VIOLATIONS.md` | SSoT violation tracker (open + resolved) |
+| `AppDesign.md` | Original product design document |
+
+---
+
+## 3) API Endpoints
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| `GET` | `/health` | Health check (returns `APP_VERSION`) |
+| `GET/PATCH` | `/settings` | Settings CRUD |
+| `GET/POST` | `/connections` | Connection list / create |
+| `PUT/DELETE` | `/connections/{id}` | Connection update / delete |
+| `PUT` | `/connections/{id}/secret` | Save API key to OS keychain |
+| `GET/POST` | `/hotkeys` | Hotkey list / create |
+| `PUT/DELETE` | `/hotkeys/{id}` | Hotkey update / delete |
+| `POST` | `/hotkeys/{id}/execute` | Execute a hotkey |
+| `GET` | `/providers` | List registered providers (from `ProviderRegistry`) |
+| `GET` | `/ui-text` | All UI strings (from `UiTextCatalog`) |
+| `GET` | `/history` | Session history |
+| `POST` | `/shutdown` | Graceful shutdown |
+
+---
+
+## 4) Implemented Patterns (MUST FOLLOW)
+
+### Provider Self-Registration
+Each provider adapter has a `register_*(registry)` function called in `main.py`. Pipeline uses `registry.create_provider(provider_id)`. Frontend renders dropdown from `GET /providers`. **To add a provider**: one adapter file + one register call in `main.py`. Zero changes to pipeline or UI.
+
+### UiTextCatalog + `t()` Pattern
+All strings in `UiTextCatalog._DEFAULTS` dict. Served via `GET /ui-text`. Frontend: `const { t } = useApp()` then `{t("label.settings")}`. **To add a string**: add `UiTextKey` enum entry + default in `_DEFAULTS`. Use `t("the.key")` in frontend.
+
+### Build-Time Sync (`sync_constants.py`)
+Run `python sync_constants.py` after changing `app_constants.py`. Stamps into: `package.json`, `tauri.conf.json`, `Cargo.toml`, `vite.config.ts`, `client.ts`. Run `--check` in CI.
+
+### Composition Root (`composition_root.py`)
+All services wired in `create_services()` → `AppServices` dataclass. `main.py` calls it once and references `services.xxx`. **To add a service**: instantiate in `create_services()`, add field to `AppServices`.
+
+### Result Type (`result.py` + `errors.py`)
+Pipeline returns `Result[T]` instead of raising exceptions. `validate()` → `Result[PipelineContext]`, `execute()` → `Result[Iterator[str]]`. Callers check `isinstance(result, Err)`. Error details in `PipelineError(category, message, connection_id?, provider_id?)`.
+
+### Domain Events + EventBus (`events.py` + `handlers.py`)
+Side effects decoupled from triggers. `EventBus.publish(event)` → subscribed handlers run. Events: `ExecutionCompleted`, `HotkeyChanged`, `SettingsChanged`, `ConnectionChanged`. Handlers: `HistoryRecorder`, `HotkeySync`, `SettingsPersister`. Wired in composition root.
+
+### Value Object IDs (`types.py`)
+`ConnectionId`, `HotkeyId`, `ProviderId` are `NewType` wrappers over `str`. Pydantic serializes them as plain strings (zero API change). All domain models and service signatures use them.
+
+### Generated TypeScript Types
+Python models → `export_openapi.py` → `openapi.json` → `openapi-typescript` → `generated-types.ts` → imported in `client.ts`. **To regenerate**: `cd backend && python export_openapi.py && cd ../frontend && npm run generate:types`.
+
+### Settings Flow
+`SettingsSchema` in `config/settings.py` owns all defaults. Frontend reads via `GET /settings`. All defaults live in Pydantic, not in frontend.
+
+### Registered Providers (current)
+
+| provider_id | display_name | capabilities | auth | class |
+|-------------|-------------|-------------|------|-------|
+| `openai` | OpenAI | llm, stt | yes | cloud |
+| `anthropic` | Anthropic | llm | yes | cloud |
+| `google` | Google Gemini | llm | yes | cloud |
+| `mistral` | Mistral AI | llm | yes | cloud |
+| `groq` | Groq | llm | yes | cloud |
+| `ollama` | Ollama (Local) | llm | no | local |
+| `openai-compat` | OpenAI-Compatible | llm | yes | cloud |
+| `tesseract` | Tesseract OCR (Local) | ocr | no | local |
+| `mock` | Mock (Testing) | llm | no | local |
+
+---
+
+## 5) Product Rules (NON-NEGOTIABLE)
+
+- **UI term**: "Hotkeys" (never "Actions").
+- **Defaults**: Only `paste_plain_text` enabled. Everything else disabled.
+- **History**: OFF by default. Max 10 entries. Cleared on restart.
+- **Fast path**: Selected text + hotkey = immediate execution, no UI, replace in place.
+- **Secrets**: OS keychain ONLY. Never plaintext. Never logged.
+- **Consent**: Require checkbox before saving API credentials.
+- **No provider-specific branches in UI or pipeline.** Use capability interfaces + registry.
+
+---
+
+## 6) Coding Rules
+
+### MUST DO
+- Read before edit. Always read a file before modifying.
+- Import, don't duplicate. Constants → `app_constants.py`. Strings → `UiTextCatalog` + `t("key")`.
+- Register, don't hardcode. Providers → adapter + `register_*()`.
+- Run sync after constant changes: `python sync_constants.py`.
+- Check VIOLATIONS.md before architectural changes.
+- Create/modify code ONLY in the correct layer per ownership map.
+- **Update `CHANGELOG.md`** after every major code change (new feature, refactor, bug fix, pattern change). Entry format: `**[YYYY-MM-DD HH:MM UTC]** Category — summary`. Append to the top of the changelog under the current date section.
+
+### MUST NOT DO
+- Hardcode user-visible strings in `.tsx`.
+- Hardcode port numbers, app name, version outside `app_constants.py`.
+- Add `<option>` tags with provider names — use `state.providers`.
+- Read settings defaults from frontend code — use `state.settings`.
+- Store secrets in settings or env vars — use `keyring`.
+- Add provider-specific `if/else` in pipeline — use registry.
+- Hand-edit values in config files that `sync_constants.py` manages.
+- Duplicate models between frontend and backend (TS types should be generated).
+
+### Layering
+```
+Frontend (.tsx) → api/client.ts → Backend API
+Backend: main.py → application/ → domain/
+                → infrastructure/ (implements domain interfaces)
+Domain MUST NOT import from application, infrastructure, or UI.
+```
+
+---
+
+## 7) Not Yet Implemented (DEFERRED)
+
+These are target architecture from `agent.md` but NOT yet built. Do not assume they exist:
+
+| Pattern | Status |
+|---------|--------|
+| Error taxonomy classes (`UserFixable`, etc.) | Not built — basic `ErrorCategory` enum exists |
+| Curated offline model catalog | Not built |
+| Consent checkbox UI flows | Not built |
+| Settings `response_model` in OpenAPI | Not built — settings endpoints return `model_dump()`, TS `Settings` type is manual |
+
+---
+
+## 8) Build & Run
+
+```bash
+# Backend
+cd backend && python run_backend.py          # port 8000
+
+# Frontend
+cd frontend && npm run dev                   # port 1420
+
+# Sync constants (after changing app_constants.py, or before builds)
+python sync_constants.py                     # stamps config files
+python sync_constants.py --check             # CI: fails if stale
+
+# Regenerate TS types (after changing Pydantic models or endpoints)
+cd backend && python export_openapi.py       # export OpenAPI schema
+cd frontend && npm run generate:types        # generate TS types
+
+# Tauri build
+cd frontend && npm run tauri build
+```
+
+---
+
+## 9) Quick Reference: Adding Things
+
+### New UI string
+1. Add `UiTextKey.LABEL_FOO = "label.foo"` to `ui_text.py`
+2. Add `UiTextKey.LABEL_FOO: "Foo Label"` to `_DEFAULTS`
+3. Use `{t("label.foo")}` in frontend
+
+### New provider
+1. Create `backend/src/infrastructure/providers/foo.py` with `FooProvider` + `register_foo()`
+2. Call `register_foo(provider_registry)` in `main.py`
+3. Done — pipeline and frontend pick it up automatically
+
+### New app constant
+1. Add to `app_constants.py`
+2. Import in Python consumers
+3. Add stamping to `sync_constants.py` if non-Python files need it
+4. Run `python sync_constants.py`
+
+### New setting
+1. Add field to config class in `settings.py`
+2. Add migration in `SettingsSchema.load()` if needed
+3. Frontend reads from `state.settings`
+
+### New API endpoint
+1. Add to `main.py`
+2. Add method to `frontend/src/api/client.ts`
+3. If state data, add to `refreshData()` in `context.tsx`

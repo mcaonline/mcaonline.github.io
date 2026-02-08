@@ -4,6 +4,8 @@ from pydantic import BaseModel
 from openai import OpenAI
 import os
 
+from ...domain.app_constants import APP_NAME
+
 class Message(BaseModel):
     role: str
     content: str
@@ -60,8 +62,51 @@ class OpenAIProvider(IProvider):
 
 class MockProvider(IProvider):
     def stream_chat(self, messages: List[Message], config: ProviderConfig) -> Iterator[StreamChunk]:
-        dummy_response = "This is a mock response from HotKeyAI. "
+        dummy_response = f"This is a mock response from {APP_NAME}. "
         for word in dummy_response.split():
             yield StreamChunk(content=word + " ")
             import time; time.sleep(0.05)
         yield StreamChunk(content="", done=True)
+
+
+def register_openai(registry) -> None:
+    from ...application.provider_registry import ProviderRegistration
+    from ...domain.types import ProviderId
+    registry.register(ProviderRegistration(
+        provider_id=ProviderId("openai"),
+        display_name="OpenAI",
+        capabilities=["llm", "stt"],
+        factory=OpenAIProvider,
+    ))
+
+
+def register_openai_compatible(registry) -> None:
+    """Register OpenAI-compatible endpoints (Groq, Ollama, vLLM, etc.)."""
+    from ...application.provider_registry import ProviderRegistration
+    from ...domain.types import ProviderId
+    for pid, name, auth in [
+        (ProviderId("groq"), "Groq", True),
+        (ProviderId("ollama"), "Ollama (Local)", False),
+        (ProviderId("openai-compat"), "OpenAI-Compatible", True),
+    ]:
+        registry.register(ProviderRegistration(
+            provider_id=pid,
+            display_name=name,
+            capabilities=["llm"],
+            requires_auth=auth,
+            provider_class="local" if not auth else "cloud",
+            factory=OpenAIProvider,
+        ))
+
+
+def register_mock(registry) -> None:
+    from ...application.provider_registry import ProviderRegistration
+    from ...domain.types import ProviderId
+    registry.register(ProviderRegistration(
+        provider_id=ProviderId("mock"),
+        display_name="Mock (Testing)",
+        capabilities=["llm"],
+        requires_auth=False,
+        provider_class="local",
+        factory=MockProvider,
+    ))

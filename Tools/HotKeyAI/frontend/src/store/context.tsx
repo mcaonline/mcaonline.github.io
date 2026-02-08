@@ -1,15 +1,16 @@
 
 import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
-import { apiClient, ConnectionDefinition, HotkeyDefinition, Settings } from '../api/client';
+import { apiClient, ConnectionDefinition, ActionDefinition, Settings, ProviderInfo, HistoryEntry } from '../api/client';
 
 // State Interface
 interface AppState {
     status: 'initializing' | 'connected' | 'offline' | 'error';
-    hotkeys: HotkeyDefinition[];
+    actions: ActionDefinition[];
     connections: ConnectionDefinition[];
     settings: Settings | null;
+    providers: ProviderInfo[];
     uiText: Record<string, string>;
-    history: any[];
+    history: HistoryEntry[];
     activeDefaults: {
         llm?: string;
         stt?: string;
@@ -20,8 +21,9 @@ interface AppState {
 // Initial State
 const initialState: AppState = {
     status: 'initializing',
-    hotkeys: [],
+    actions: [],
     connections: [],
+    providers: [],
     settings: null,
     uiText: {},
     history: [],
@@ -32,8 +34,8 @@ const initialState: AppState = {
 // Actions
 type Action =
     | { type: 'SET_STATUS'; payload: AppState['status'] }
-    | { type: 'SET_DATA'; payload: { hotkeys: HotkeyDefinition[], uiText: Record<string, string>, settings: Settings, connections: ConnectionDefinition[] } }
-    | { type: 'SET_HISTORY'; payload: any[] }
+    | { type: 'SET_DATA'; payload: { actions: ActionDefinition[], uiText: Record<string, string>, settings: Settings, connections: ConnectionDefinition[], providers: ProviderInfo[] } }
+    | { type: 'SET_HISTORY'; payload: HistoryEntry[] }
     | { type: 'SET_LAST_OUTPUT'; payload: string }
     | { type: 'UPDATE_SETTINGS'; payload: Settings }
     | { type: 'UPDATE_CONNECTIONS'; payload: ConnectionDefinition[] };
@@ -46,10 +48,11 @@ function appReducer(state: AppState, action: Action): AppState {
         case 'SET_DATA':
             return {
                 ...state,
-                hotkeys: action.payload.hotkeys,
+                actions: action.payload.actions,
                 uiText: action.payload.uiText,
                 settings: action.payload.settings,
                 connections: action.payload.connections,
+                providers: action.payload.providers,
                 activeDefaults: {
                     llm: action.payload.settings.routing_defaults?.default_llm_connection_id,
                     stt: action.payload.settings.routing_defaults?.default_stt_connection_id
@@ -90,16 +93,17 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     const refreshData = async () => {
         try {
             await apiClient.healthCheck();
-            const [hotkeys, uiText, settings, connections] = await Promise.all([
-                apiClient.getHotkeys(),
+            const [actions, uiText, settings, connections, providers] = await Promise.all([
+                apiClient.getActions(),
                 apiClient.getUiText(),
                 apiClient.getSettings(),
-                apiClient.getConnections()
+                apiClient.getConnections(),
+                apiClient.getProviders()
             ]);
 
             dispatch({
                 type: 'SET_DATA',
-                payload: { hotkeys, uiText, settings, connections }
+                payload: { actions, uiText, settings, connections, providers }
             });
             dispatch({ type: 'SET_STATUS', payload: 'connected' });
         } catch (e) {

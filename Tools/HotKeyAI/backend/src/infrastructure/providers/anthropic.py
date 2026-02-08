@@ -56,3 +56,14 @@ class AnthropicProvider(IProvider):
                         continue
         except Exception as e:
             raise Exception(f"Anthropic connection failed: {str(e)}")
+
+
+def register_anthropic(registry) -> None:
+    from ...application.provider_registry import ProviderRegistration
+    from ...domain.types import ProviderId
+    registry.register(ProviderRegistration(
+        provider_id=ProviderId("anthropic"),
+        display_name="Anthropic",
+        capabilities=["llm"],
+        factory=AnthropicProvider,
+    ))

@@ -35,7 +35,7 @@ export default function Panel() {
             timer = setInterval(updateWindowSize, 500);
         }
         return () => { if (timer) clearInterval(timer); };
-    }, [showSettings, state.hotkeys, state.lastOutput, state.connections, prompt]);
+    }, [showSettings, state.actions, state.lastOutput, state.connections, prompt]);
 
     // Sync Window Decorations
     useEffect(() => {
@@ -48,7 +48,7 @@ export default function Panel() {
 
     const execute = async (id: string) => {
         try {
-            await apiClient.executeHotkey(id, { prompt });
+            await apiClient.executeAction(id, { prompt });
         } catch (e) {
             console.error("Execution failed", e);
         }
@@ -82,10 +82,10 @@ export default function Panel() {
                         {/* Header */}
                         <header data-tauri-drag-region style={{ display: "flex", justifyContent: "space-between", alignItems: "start", marginBottom: "24px", cursor: "move" }}>
                             <div data-tauri-drag-region style={{ pointerEvents: "none" }}>
-                                <h1 data-tauri-drag-region style={{ margin: 0, fontSize: "1.2rem" }}>Paste & Speech AI</h1>
+                                <h1 data-tauri-drag-region style={{ margin: 0, fontSize: "1.2rem" }}>{t("app.name")}</h1>
                                 <div style={{ display: "flex", alignItems: "center", gap: "12px", marginTop: "4px", pointerEvents: "auto" }}>
                                     <div style={{ fontSize: "0.8rem", color: isConnected ? "var(--text-secondary)" : "#f43f5e" }}>
-                                        {isConnected ? "Ready" : "Disconnected"}
+                                        {isConnected ? t("status.ready") : t("status.disconnected")}
                                     </div>
 
                                     {/* Model Selector */}
@@ -106,7 +106,7 @@ export default function Panel() {
                                                 cursor: "pointer"
                                             }}
                                         >
-                                            <option value="" disabled>Select Model</option>
+                                            <option value="" disabled>{t("label.select_model")}</option>
                                             {state.connections.filter(c => c.capabilities.includes('llm')).map(c => (
                                                 <option key={c.connection_id} value={c.connection_id}>{c.connection_id}</option>
                                             ))}
@@ -115,7 +115,7 @@ export default function Panel() {
                                 </div>
                             </div>
                             <div style={{ display: "flex", gap: "8px", pointerEvents: "auto", alignItems: "center" }}>
-                                <button className="secondary" onClick={() => setShowSettings(true)} style={{ padding: "6px 12px" }}>Settings</button>
+                                <button className="secondary" onClick={() => setShowSettings(true)} style={{ padding: "6px 12px" }}>{t("label.settings")}</button>
                                 <button className="close-button" onClick={async (e) => {
                                     e.stopPropagation();
                                     // Trigger backend shutdown
@@ -136,18 +136,13 @@ export default function Panel() {
                             <div style={{ flex: 1, position: "relative" }}>
                                 <textarea
                                     className="prompt-input"
-                                    placeholder="Enter instructions... (Ctrl+Enter to send)"
+                                    placeholder={t("placeholder.prompt_input")}
                                     value={prompt}
                                     onChange={(e) => setPrompt(e.target.value)}
                                     onKeyDown={(e) => {
                                         if (e.key === 'Enter' && e.ctrlKey) {
-                                            // Default execute? We need a default 'Execute' action or just run the first AI hotkey?
-                                            // For now, let's assume we run the "General AI" hotkey if available, or just log.
-                                            // The user usually clicks a specific hotkey below.
-                                            // If we have a 'Send' button, what does it do? It likely runs a default AI transformation.
-                                            // Let's search for a generic AI hotkey or use the first one.
-                                            const defaultHk = state.hotkeys.find(h => h.mode === 'ai_transform' && h.enabled);
-                                            if (defaultHk) execute(defaultHk.id);
+                                            const defaultAction = state.actions.find(a => a.mode === 'ai_transform' && a.enabled);
+                                            if (defaultAction) execute(defaultAction.id!);
                                         }
                                     }}
                                     style={{
@@ -165,8 +160,8 @@ export default function Panel() {
                                 />
                                 <button
                                     onClick={() => {
-                                        const defaultHk = state.hotkeys.find(h => h.mode === 'ai_transform' && h.enabled);
-                                        if (defaultHk) execute(defaultHk.id);
+                                        const defaultAction = state.actions.find(a => a.mode === 'ai_transform' && a.enabled);
+                                        if (defaultAction) execute(defaultAction.id!);
                                     }}
                                     style={{
                                         position: "absolute",
@@ -184,7 +179,7 @@ export default function Panel() {
                                         cursor: "pointer",
                                         opacity: prompt ? 1 : 0.5
                                     }}
-                                    title="Run Default AI Command"
+                                    title={t("tooltip.run_default_ai")}
                                 >
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <line x1="22" y1="2" x2="11" y2="13"></line>
@@ -194,32 +189,32 @@ export default function Panel() {
                             </div>
                             {/* Preview Card */}
                             <div style={{ width: "160px", background: "rgba(255,255,255,0.4)", borderRadius: "8px", border: "1px solid var(--glass-border)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", fontSize: "0.75rem", color: "var(--text-secondary)" }}>
-                                <div style={{ fontWeight: 600, marginBottom: "4px" }}>Context</div>
-                                <div>Text Selection</div>
+                                <div style={{ fontWeight: 600, marginBottom: "4px" }}>{t("label.context")}</div>
+                                <div>{t("label.text_selection")}</div>
                             </div>
                         </div>
 
-                        {/* Hotkey List */}
-                        <div className="hotkey-list" style={{ display: "grid", gap: "12px" }}>
-                            <h2 style={{ fontSize: "1rem", marginBottom: "8px", borderBottom: "1px solid var(--glass-border)", paddingBottom: "4px" }}>Hotkeys</h2>
-                            {Array.from(new Map(state.hotkeys.map(hk => [hk.id, hk])).values()).map((hk) => {
-                                const needsLLM = hk.mode === 'ai_transform' || hk.capability_requirements?.some(r => r.capability === 'llm');
-                                const needsSTT = hk.capability_requirements?.some(r => r.capability === 'stt');
+                        {/* Action List */}
+                        <div className="action-list" style={{ display: "grid", gap: "12px" }}>
+                            <h2 style={{ fontSize: "1rem", marginBottom: "8px", borderBottom: "1px solid var(--glass-border)", paddingBottom: "4px" }}>{t("label.actions")}</h2>
+                            {Array.from(new Map(state.actions.map(a => [a.id, a])).values()).map((a) => {
+                                const needsLLM = a.mode === 'ai_transform' || a.capability_requirements?.some(r => r.capability === 'llm');
+                                const needsSTT = a.capability_requirements?.some(r => r.capability === 'stt');
                                 const isMissingConfig = (needsLLM && !activeLLM) || (needsSTT && !activeSTT);
-                                const isDisabled = !hk.enabled || !isConnected || isMissingConfig;
+                                const isDisabled = !a.enabled || !isConnected || isMissingConfig;
 
                                 return (
-                                    <div key={hk.id} className="hotkey-card" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px", opacity: isDisabled ? 0.6 : 1 }}>
+                                    <div key={a.id} className="action-card" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px", opacity: isDisabled ? 0.6 : 1 }}>
                                         <div>
                                             <div style={{ fontWeight: 600, display: "flex", alignItems: "center", gap: "8px" }}>
-                                                {t(hk.display_key)}
-                                                {(hk as any).quick_key && <span style={{ fontSize: "0.7rem", border: "1px solid var(--text-secondary)", borderRadius: "4px", padding: "0 4px", opacity: 0.5 }}>{(hk as any).quick_key}</span>}
-                                                {isMissingConfig && <span style={{ fontSize: "0.7rem", color: "#f43f5e", background: "rgba(244, 63, 94, 0.1)", padding: "2px 4px", borderRadius: "4px" }}>Setup Required</span>}
+                                                {t(a.display_key)}
+                                                {(a as any).quick_key && <span style={{ fontSize: "0.7rem", border: "1px solid var(--text-secondary)", borderRadius: "4px", padding: "0 4px", opacity: 0.5 }}>{(a as any).quick_key}</span>}
+                                                {isMissingConfig && <span style={{ fontSize: "0.7rem", color: "#f43f5e", background: "rgba(244, 63, 94, 0.1)", padding: "2px 4px", borderRadius: "4px" }}>{t("label.setup_required")}</span>}
                                             </div>
-                                            <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>{t(hk.description_key)}</div>
+                                            <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>{t(a.description_key)}</div>
                                         </div>
-                                        <button disabled={isDisabled} onClick={() => execute(hk.id)} style={{ padding: "6px 12px", fontSize: "0.85rem" }}>
-                                            {isMissingConfig ? "Setup" : "Run"}
+                                        <button disabled={isDisabled} onClick={() => execute(a.id!)} style={{ padding: "6px 12px", fontSize: "0.85rem" }}>
+                                            {isMissingConfig ? t("label.setup") : t("label.run")}
                                         </button>
                                     </div>
                                 );

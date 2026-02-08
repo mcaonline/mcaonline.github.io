@@ -7,11 +7,13 @@ from loguru import logger
 import stat
 from pathlib import Path
 
+from ..domain.app_constants import ENV_PREFIX, APP_DIR_NAME
+
 class MainTriggerConfig(BaseModel):
     chord: str = "Ctrl+V,V"
     second_v_timeout_ms: int = 500
 
-class HotkeysConfig(BaseModel):
+class ActionsConfig(BaseModel):
     main_trigger: MainTriggerConfig = Field(default_factory=MainTriggerConfig)
 
 class RoutingDefaults(BaseModel):
@@ -37,17 +39,17 @@ class AppConfig(BaseModel):
 class SettingsSchema(BaseSettings):
     schema_version: int = 1
     app: AppConfig = Field(default_factory=AppConfig)
-    hotkeys: HotkeysConfig = Field(default_factory=HotkeysConfig)
+    actions: ActionsConfig = Field(default_factory=ActionsConfig)
     routing_defaults: RoutingDefaults = Field(default_factory=RoutingDefaults)
     history: HistoryConfig = Field(default_factory=HistoryConfig)
     privacy: PrivacyConfig = Field(default_factory=PrivacyConfig)
     diagnostics: DiagnosticsConfig = Field(default_factory=DiagnosticsConfig)
-    
+
     # Store Connection Metadata (Not secrets)
     connections: List[Dict] = Field(default_factory=list)
 
     model_config = SettingsConfigDict(
-        env_prefix="PASTE_SPEECH_AI_",
+        env_prefix=ENV_PREFIX,
         env_nested_delimiter="__",
         case_sensitive=False,
         extra="ignore"
@@ -57,7 +59,7 @@ class SettingsSchema(BaseSettings):
         """Save settings with secure file permissions."""
         with open(path, "w", encoding="utf-8") as f:
             f.write(self.model_dump_json(indent=2))
-        
+
         # Set file permissions to user-only read/write (Windows-safe)
         try:
             if os.name == 'nt':
@@ -80,13 +82,17 @@ class SettingsSchema(BaseSettings):
         try:
             with open(path, "r", encoding="utf-8") as f:
                 data = json.load(f)
-            
+
+            # Migration: rename "hotkeys" key to "actions"
+            if "hotkeys" in data and "actions" not in data:
+                data["actions"] = data.pop("hotkeys")
+
             # Migration: Robustly ensure all connections have a capabilities list
             if "connections" in data and isinstance(data["connections"], list):
                 for conn in data["connections"]:
                     if not isinstance(conn, dict):
                         continue
-                        
+
                     # Fix plural 'capabilities'
                     existing_caps = conn.get("capabilities")
                     if existing_caps is None:
@@ -99,11 +105,11 @@ class SettingsSchema(BaseSettings):
                     elif isinstance(existing_caps, str):
                         # Fix cases where it might have been saved as a string
                         conn["capabilities"] = [existing_caps.lower()]
-                    
+
                     # Ensure it's lowercase to match Literal types
                     if isinstance(conn["capabilities"], list):
                         conn["capabilities"] = [c.lower() for c in conn["capabilities"] if isinstance(c, str)]
-                
+
                 # Deduplicate connections by connection_id (keep first occurrence)
                 seen_ids = set()
                 unique_connections = []
@@ -121,8 +127,7 @@ class SettingsSchema(BaseSettings):
                 return cls.model_validate(data)
             except Exception as validation_error:
                 logger.error(f"Settings validation failed: {validation_error}")
-                # Log the data for debugging (be careful with secrets, but connections don't have them yet)
-                return cls.model_validate(data) # Just returning it for now, pydantic handles it
+                return cls.model_validate(data)
         except Exception as e:
             print(f"Error loading settings: {e}")
             return cls()
@@ -133,8 +138,8 @@ def get_settings_path() -> Path:
         base = Path(os.environ.get('APPDATA', Path.home()))
     else:
         base = Path.home() / '.config'
-    
-    app_dir = base / 'HotKeyAI'
+
+    app_dir = base / APP_DIR_NAME
     app_dir.mkdir(parents=True, exist_ok=True)
     return app_dir / 'settings.json'
 

@@ -57,3 +57,14 @@ class GoogleProvider(IProvider):
                 yield StreamChunk(content="", done=True)
         except Exception as e:
             raise Exception(f"Google Gemini connection failed: {str(e)}")
+
+
+def register_google(registry) -> None:
+    from ...application.provider_registry import ProviderRegistration
+    from ...domain.types import ProviderId
+    registry.register(ProviderRegistration(
+        provider_id=ProviderId("google"),
+        display_name="Google Gemini",
+        capabilities=["llm"],
+        factory=GoogleProvider,
+    ))

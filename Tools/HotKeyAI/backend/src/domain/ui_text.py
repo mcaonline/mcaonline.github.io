@@ -2,36 +2,38 @@ from typing import Dict, Optional
 from pydantic import BaseModel
 from enum import Enum
 
+from .app_constants import APP_NAME
+
 class UiTextKey(str, Enum):
     # App Metadata
     APP_NAME = "app.name"
-    
+
     # Trust & Connect
     TRUST_NOTICE = "trust.ai_mistakes_notice"
-    
+
     # Consent
     CONSENT_AZURE_REQUIRED = "consent.azure_openai.required"
     CONSENT_OPENAI_REQUIRED = "consent.openai.required"
     CONSENT_MISTRAL_REQUIRED = "consent.mistral.required"
     CONSENT_GOOGLE_REQUIRED = "consent.google.required"
-    
+
     # Legal Titles (Bilingual support placeholders)
     LEGAL_TERMS = "legal.terms_of_use"
     LEGAL_PRIVACY = "legal.privacy_policy"
     LEGAL_MS_PRIVACY = "legal.ms_privacy"
-    
+
     # Errors
     ERR_CONNECTION_REQUIRED = "error.connection_required"
     ERR_AUTH_FAILED = "error.auth_failed"
     ERR_PROVIDER_UNAVAILABLE = "error.provider_unavailable"
-    
+
     # Status
     STATUS_NOT_READY = "status.not_ready"
     STATUS_READY = "status.ready"
     STATUS_DISCONNECTED = "status.disconnected"
-    
+
     # General Labels
-    LABEL_HOTKEYS = "label.hotkeys"
+    LABEL_ACTIONS = "label.actions"
     LABEL_SETTINGS = "label.settings"
     LABEL_SAVE = "label.save"
     LABEL_DELETE = "label.delete"
@@ -68,19 +70,29 @@ class UiTextKey(str, Enum):
     LABEL_DEFAULT_TEXT_AI = "label.default_text_ai"
     LABEL_ACTIVE_CONNECTIONS = "label.active_connections"
     LABEL_SESSION_HISTORY = "label.session_history"
-    LABEL_NEW_HOTKEY = "label.new_hotkey"
+    LABEL_NEW_ACTION = "label.new_action"
     LABEL_CUSTOM_AI_COMMAND = "label.custom_ai_command"
     LABEL_TRIGGER = "label.trigger"
     LABEL_PROMPT = "label.prompt"
-    
+    LABEL_APPEARANCE = "label.appearance"
+    LABEL_WINDOW_OPACITY = "label.window_opacity"
+    LABEL_WINDOW_DECORATIONS = "label.window_decorations"
+    LABEL_OK = "label.ok"
+    LABEL_CANCEL = "label.cancel"
+    LABEL_DEL = "label.del"
+    LABEL_ADD_EDIT_CONNECTION = "label.add_edit_connection"
+
     # Placeholders
     PLACEHOLDER_PROMPT_INPUT = "placeholder.prompt_input"
-    PLACEHOLDER_HOTKEY_TRIGGER = "placeholder.hotkey_trigger"
-    
+    PLACEHOLDER_ACTION_TRIGGER = "placeholder.action_trigger"
+    PLACEHOLDER_CONNECTION_ID = "placeholder.connection_id"
+    PLACEHOLDER_MODEL_ID = "placeholder.model_id"
+    PLACEHOLDER_API_KEY = "placeholder.api_key"
+
     # Tooltips
     TOOLTIP_RUN_DEFAULT_AI = "tooltip.run_default_ai"
-    
-    # Built-in Hotkeys
+
+    # Built-in Actions
     HK_PASTE_PLAIN = "builtin.paste_plain_unformatted_text"
     HK_PASTE_PLAIN_DESC = "builtin.paste_plain_desc"
     HK_OCR = "builtin.paste_image_to_text_ocr"
@@ -95,42 +107,42 @@ class UiTextCatalog:
     Single Source of Truth for all user-visible text.
     Handles fallback logic and language lookup (stubbed for 'en' now).
     """
-    
+
     _DEFAULTS = {
         # App Metadata
-        UiTextKey.APP_NAME: "Paste & Speech AI",
-        
+        UiTextKey.APP_NAME: APP_NAME,
+
         # Trust
         UiTextKey.TRUST_NOTICE: "AI can make mistakes. Please review important outputs before you use or share them.",
-        
+
         # Consent
         UiTextKey.CONSENT_AZURE_REQUIRED: "By adding an Azure key, you confirm that you accept Microsoft usage/data processing terms and are comfortable with Microsoft licensing, contract terms, and data protection (Vertragsbedingungen und Microsoft Datenschutzbestimmungen).",
         UiTextKey.CONSENT_OPENAI_REQUIRED: "By adding an OpenAI key, you confirm that you accept OpenAI terms of use and privacy policy (OpenAI Nutzungsbedingungen und Datenschutzrichtlinie).",
         UiTextKey.CONSENT_MISTRAL_REQUIRED: "By adding a Mistral key, you confirm that you accept Mistral terms of use and privacy policy (Mistral Nutzungsbedingungen und Mistral Datenschutzrichtlinie).",
         UiTextKey.CONSENT_GOOGLE_REQUIRED: "By adding a Google key, you confirm that you accept Google terms of use and privacy policy (Google Nutzungsbedingungen und Google Datenschutzrichtlinie).",
-        
+
         # Legal
         UiTextKey.LEGAL_TERMS: "Nutzungsbedingungen",
         UiTextKey.LEGAL_PRIVACY: "Datenschutzrichtlinie",
         UiTextKey.LEGAL_MS_PRIVACY: "Microsoft Datenschutzbestimmungen",
-        
+
         # Errors
         UiTextKey.ERR_CONNECTION_REQUIRED: "This action needs an API provider connection. You can add your API key now; until then this action stays unavailable.",
         UiTextKey.ERR_AUTH_FAILED: "Authentication failed. Please check your API key.",
         UiTextKey.ERR_PROVIDER_UNAVAILABLE: "Provider is currently unavailable.",
-        
+
         # Status
         UiTextKey.STATUS_NOT_READY: "Not ready",
         UiTextKey.STATUS_READY: "Ready",
         UiTextKey.STATUS_DISCONNECTED: "Disconnected",
-        
+
         # General Labels
-        UiTextKey.LABEL_HOTKEYS: "Hotkeys",
+        UiTextKey.LABEL_ACTIONS: "Actions",
         UiTextKey.LABEL_SETTINGS: "Settings",
         UiTextKey.LABEL_SAVE: "Save",
         UiTextKey.LABEL_DELETE: "Delete",
         UiTextKey.LABEL_ADD_CONNECTION: "Add Connection",
-        UiTextKey.LABEL_BACK: "← Back",
+        UiTextKey.LABEL_BACK: "\u2190 Back",
         UiTextKey.LABEL_CONTEXT: "Context",
         UiTextKey.LABEL_TEXT_SELECTION: "Text Selection",
         UiTextKey.LABEL_RUN: "Run",
@@ -162,19 +174,29 @@ class UiTextCatalog:
         UiTextKey.LABEL_DEFAULT_TEXT_AI: "Default Text AI",
         UiTextKey.LABEL_ACTIVE_CONNECTIONS: "Active Connections",
         UiTextKey.LABEL_SESSION_HISTORY: "Session History",
-        UiTextKey.LABEL_NEW_HOTKEY: "New Hotkey",
+        UiTextKey.LABEL_NEW_ACTION: "New Action",
         UiTextKey.LABEL_CUSTOM_AI_COMMAND: "Custom AI Command",
         UiTextKey.LABEL_TRIGGER: "Trigger",
         UiTextKey.LABEL_PROMPT: "Prompt",
-        
+        UiTextKey.LABEL_APPEARANCE: "Appearance",
+        UiTextKey.LABEL_WINDOW_OPACITY: "Window Opacity",
+        UiTextKey.LABEL_WINDOW_DECORATIONS: "Show Window Decorations (Requires Restart)",
+        UiTextKey.LABEL_OK: "OK",
+        UiTextKey.LABEL_CANCEL: "Cancel",
+        UiTextKey.LABEL_DEL: "Del",
+        UiTextKey.LABEL_ADD_EDIT_CONNECTION: "Connection",
+
         # Placeholders
         UiTextKey.PLACEHOLDER_PROMPT_INPUT: "Enter instructions... (Ctrl+Enter to send)",
-        UiTextKey.PLACEHOLDER_HOTKEY_TRIGGER: "e.g. <ctrl>+<alt>+k",
-        
+        UiTextKey.PLACEHOLDER_ACTION_TRIGGER: "e.g. <ctrl>+<alt>+k",
+        UiTextKey.PLACEHOLDER_CONNECTION_ID: "Connection ID (e.g. my-gpt)",
+        UiTextKey.PLACEHOLDER_MODEL_ID: "Model ID",
+        UiTextKey.PLACEHOLDER_API_KEY: "API Key",
+
         # Tooltips
         UiTextKey.TOOLTIP_RUN_DEFAULT_AI: "Run Default AI Command",
-        
-        # Built-in Hotkeys
+
+        # Built-in Actions
         UiTextKey.HK_PASTE_PLAIN: "Paste as Plain Text",
         UiTextKey.HK_PASTE_PLAIN_DESC: "Strips formatting and pastes unformatted text.",
         UiTextKey.HK_OCR: "Image to Text (OCR)",

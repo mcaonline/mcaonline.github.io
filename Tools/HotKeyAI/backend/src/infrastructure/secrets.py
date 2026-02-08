@@ -4,22 +4,24 @@ import keyring
 from pydantic import BaseModel
 from loguru import logger
 
+from ..domain.types import ConnectionId
+
 class SecretMetadata(BaseModel):
-    connection_id: str
+    connection_id: ConnectionId
     service_category: str
     account_name: str
 
 class ISecretStore(ABC):
     @abstractmethod
-    def save(self, connection_id: str, service_category: str, secret_value: str) -> None:
+    def save(self, connection_id: ConnectionId, service_category: str, secret_value: str) -> None:
         pass
 
     @abstractmethod
-    def read(self, connection_id: str, service_category: str) -> Optional[str]:
+    def read(self, connection_id: ConnectionId, service_category: str) -> Optional[str]:
         pass
 
     @abstractmethod
-    def delete(self, connection_id: str, service_category: str) -> None:
+    def delete(self, connection_id: ConnectionId, service_category: str) -> None:
         pass
 
     @abstractmethod
@@ -31,20 +33,20 @@ class KeyringSecretStore(ISecretStore):
     Implementation of ISecretStore using the system keyring service.
     On Windows, this targets Windows Credential Manager.
     """
-    SERVICE_NAME = "HotKeyAI"
+    from ..domain.app_constants import SERVICE_NAME
 
-    def _get_account_name(self, connection_id: str, service_category: str) -> str:
+    def _get_account_name(self, connection_id: ConnectionId, service_category: str) -> str:
         return f"{connection_id}::{service_category}"
 
-    def save(self, connection_id: str, service_category: str, secret_value: str) -> None:
+    def save(self, connection_id: ConnectionId, service_category: str, secret_value: str) -> None:
         account_name = self._get_account_name(connection_id, service_category)
         keyring.set_password(self.SERVICE_NAME, account_name, secret_value)
 
-    def read(self, connection_id: str, service_category: str) -> Optional[str]:
+    def read(self, connection_id: ConnectionId, service_category: str) -> Optional[str]:
         account_name = self._get_account_name(connection_id, service_category)
         return keyring.get_password(self.SERVICE_NAME, account_name)
 
-    def delete(self, connection_id: str, service_category: str) -> None:
+    def delete(self, connection_id: ConnectionId, service_category: str) -> None:
         account_name = self._get_account_name(connection_id, service_category)
         try:
             keyring.delete_password(self.SERVICE_NAME, account_name)
