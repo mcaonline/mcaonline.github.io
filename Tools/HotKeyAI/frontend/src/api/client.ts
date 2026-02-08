@@ -158,5 +158,14 @@ export const apiClient = {
         });
         if (!res.ok) throw new Error("Failed to execute hotkey");
         return res.json();
+    },
+
+    shutdown: async () => {
+        // We don't verify response OK because the server might die before returning
+        try {
+            await fetch(`${API_BASE}/shutdown`, { method: "POST" });
+        } catch (e) {
+            // Ignore error if connection reset (expected)
+        }
     }
 };

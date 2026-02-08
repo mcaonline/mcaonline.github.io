@@ -107,7 +107,13 @@ export default function Panel() {
                             </div>
                             <div style={{ display: "flex", gap: "8px", pointerEvents: "auto", alignItems: "center" }}>
                                 <button className="secondary" onClick={() => setShowSettings(true)} style={{ padding: "6px 12px" }}>Settings</button>
-                                <button className="close-button" onClick={(e) => { e.stopPropagation(); getCurrentWindow().close(); }} aria-label="Close">
+                                <button className="close-button" onClick={async (e) => {
+                                    e.stopPropagation();
+                                    // Trigger backend shutdown
+                                    await apiClient.shutdown();
+                                    // Close frontend window
+                                    await getCurrentWindow().close();
+                                }} aria-label="Close">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                                         <line x1="18" y1="6" x2="6" y2="18"></line>
                                         <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -187,7 +193,7 @@ export default function Panel() {
                         {/* Hotkey List */}
                         <div className="hotkey-list" style={{ display: "grid", gap: "12px" }}>
                             <h2 style={{ fontSize: "1rem", marginBottom: "8px", borderBottom: "1px solid var(--glass-border)", paddingBottom: "4px" }}>Hotkeys</h2>
-                            {state.hotkeys.map((hk) => {
+                            {Array.from(new Map(state.hotkeys.map(hk => [hk.id, hk])).values()).map((hk) => {
                                 const needsLLM = hk.mode === 'ai_transform' || hk.capability_requirements?.some(r => r.capability === 'llm');
                                 const needsSTT = hk.capability_requirements?.some(r => r.capability === 'stt');
                                 const isMissingConfig = (needsLLM && !activeLLM) || (needsSTT && !activeSTT);

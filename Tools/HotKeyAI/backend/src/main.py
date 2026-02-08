@@ -39,7 +39,9 @@ async def verify_session_token(request: Request, token: str = Depends(API_KEY_HE
     return True
 
 # --- Dependencies ---
-hotkey_catalog = HotkeyCatalogService(Path("hotkeys.json"))
+# Use absolute path relative to this file's location, not CWD
+_BASE_DIR = Path(__file__).resolve().parent.parent  # Points to backend/
+hotkey_catalog = HotkeyCatalogService(_BASE_DIR / "hotkeys.json")
 history_repo = HistoryRepository()
 pipeline = ExecutionPipeline(settings, secret_store, clipboard, history_repo)
 
@@ -247,6 +249,23 @@ def save_connection_secret(connection_id: str, payload: Dict[str, str]):
     except Exception as e:
         logger.error(f"Failed to save secret: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/shutdown", dependencies=[Depends(verify_session_token)])
+def shutdown_application():
+    """Shuts down the backend server."""
+    logger.info("Shutdown requested via API")
+    import threading
+    import time
+    import signal
+    
+    def force_exit():
+        time.sleep(0.5) # Allow response to be sent
+        logger.info("Exiting process...")
+        # Try graceful SIGINT first (Ctrl+C simulation) for Uvicorn
+        os.kill(os.getpid(), signal.SIGINT)
+        
+    threading.Thread(target=force_exit).start()
+    return {"status": "shutting_down"}
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
