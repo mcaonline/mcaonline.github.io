@@ -248,8 +248,8 @@ The following are derived-only views and may not become independent persisted tr
 
 Concrete MVP stack decisions:
 - `CoreService`: Python + FastAPI local service boundary.
-- `UIClient`: Flutter client with platform adapters for Windows/macOS/Linux/Android.
-- Distribution profile: desktop (Windows/macOS/Linux) is required for MVP shipment; Android adapter is required at architecture and contract-test level even when not packaged for initial release.
+- `UIClient`: Tauri (Rust + Web) client with platform adapters for Windows/macOS/Linux.
+- Distribution profile: desktop (Windows/macOS/Linux) is required for MVP shipment; mobile adapter may be considered post-MVP.
 - Hotkey and UI communication with core: localhost IPC with per-session token/nonce authentication.
 - Optional callback channel `CoreService -> HotkeyAgent` may be used for deterministic paste-now requests and focus-restore acknowledgements.
 - Transport evolution: JSON/OpenAPI first; optional gRPC/protobuf later behind unchanged domain contracts.

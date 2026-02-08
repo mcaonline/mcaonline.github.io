@@ -1,0 +1,30 @@
+{
+  "catalog_version": 1,
+  "hotkeys": [
+    {
+      "id": "30a051dc-07e3-4d30-a451-682fa1af958b",
+      "kind": "builtin",
+      "mode": "local_transform",
+      "display_key": "builtin.paste_plain_unformatted_text",
+      "description_key": "builtin.paste_plain_desc",
+      "icon": null,
+      "enabled": true,
+      "sequence": 0,
+      "direct_hotkey": null,
+      "panel_quick_key": null,
+      "capability_requirements": [],
+      "input_requirements": [],
+      "llm_connection_id": null,
+      "stt_connection_id": null,
+      "prompt_template": null,
+      "static_text_template": null,
+      "local_transform_config": {
+        "type": "regex",
+        "pattern": ".*",
+        "replacement": "$0"
+      },
+      "created_at": "2026-02-08T01:11:17.680326",
+      "updated_at": "2026-02-08T01:11:17.680326"
+    }
+  ]
+}
