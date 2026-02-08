@@ -13,9 +13,7 @@ export default function Panel() {
     const t = (key: string) => uiText[key] || key;
 
     useEffect(() => {
-        console.log("[Frontend] Panel Component Mounted");
-        const checkConnection = async (retries = 10) => {
-            console.log("[Frontend] Starting Connection Check Sequence");
+        const checkConnection = async (retries = 15) => {
             for (let i = 0; i < retries; i++) {
                 try {
                     await apiClient.healthCheck();
@@ -30,7 +28,6 @@ export default function Panel() {
                     setUiText(textCatalog);
                     return;
                 } catch (e) {
-                    console.warn("Backend not ready yet, retrying...");
                     await new Promise(r => setTimeout(r, 1000));
                 }
             }
@@ -55,63 +52,53 @@ export default function Panel() {
     }
 
     return (
-        <div className="container" style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
-            <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-                <h1>{t("label.hotkeys")} Panel</h1>
-                <button onClick={() => setShowSettings(true)} style={{ padding: "8px 16px" }}>Settings</button>
-            </header>
-
-            <p>Status: <span style={{ color: status === 'Connected' ? 'green' : 'red' }}>{status}</span></p>
-
-            <div className="prompt-zone" style={{ marginBottom: "30px", background: "#f5f5f5", padding: "15px", borderRadius: "8px" }}>
-                <textarea
-                    placeholder="Enter instructions (e.g. 'Summarize this')"
-                    value={prompt}
-                    onChange={(e) => setPrompt(e.target.value)}
-                    style={{ width: "100%", height: "80px", marginBottom: "10px", padding: "10px", borderRadius: "4px", border: "1px solid #ddd" }}
-                />
-                <div style={{ fontSize: "12px", color: "#666" }}>
-                    {t("trust.ai_mistakes_notice")}
-                </div>
-            </div>
-
-            <div className="hotkey-list">
-                <h2>Available Hotkeys</h2>
-                {hotkeys.map((hk) => (
-                    <div key={hk.id || hk.display_key} style={{
-                        marginBottom: "12px",
-                        border: "1px solid #eee",
-                        padding: "15px",
-                        borderRadius: "8px",
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        background: hk.enabled ? "white" : "#fafafa"
-                    }}>
-                        <div>
-                            <strong style={{ fontSize: "1.1em" }}>{t(hk.display_key)}</strong>
-                            <div style={{ fontSize: "0.9em", color: "#666", marginTop: "4px" }}>{t(hk.description_key)}</div>
-                        </div>
-                        <button
-                            onClick={() => execute(hk.id!)}
-                            disabled={!hk.enabled || status !== "Connected"}
-                            style={{
-                                padding: "8px 20px",
-                                cursor: hk.enabled ? "pointer" : "not-allowed",
-                                opacity: hk.enabled ? 1 : 0.5
-                            }}
-                        >
-                            Run
-                        </button>
+        <div className="container">
+            <div className="glass-pane">
+                <header style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "32px" }}>
+                    <div>
+                        <h1>HotKeyAI</h1>
+                        <p style={{ margin: 0, color: "var(--text-secondary)", fontSize: "0.9rem" }}>
+                            Status: <span style={{ color: status === 'Connected' ? '#10b981' : '#f43f5e', fontWeight: 700 }}>{status}</span>
+                        </p>
                     </div>
-                ))}
-            </div>
+                    <button className="secondary" onClick={() => setShowSettings(true)}>Settings</button>
+                </header>
 
-            <div className="output-area" style={{ marginTop: "30px", background: "#f0f7ff", padding: "20px", borderRadius: "8px", border: "1px solid #cce5ff" }}>
-                <h3 style={{ marginTop: 0 }}>Output:</h3>
-                <pre style={{ whiteSpace: "pre-wrap", wordBreak: "break-word", background: "white", padding: "15px", borderRadius: "4px", border: "1px solid #ddd" }}>
-                    {lastOutput || "Results will appear here..."}
-                </pre>
+                <div className="prompt-zone">
+                    <textarea
+                        placeholder="Enter custom instructions (e.g. 'Translate to German' or 'Fix grammar')"
+                        value={prompt}
+                        onChange={(e) => setPrompt(e.target.value)}
+                    />
+                    <div style={{ fontSize: "12px", color: "var(--text-secondary)", marginTop: "8px", opacity: 0.8 }}>
+                        {t("trust.ai_mistakes_notice")}
+                    </div>
+                </div>
+
+                <div className="hotkey-list">
+                    <h2 style={{ marginBottom: "20px", borderBottom: "1px solid var(--glass-border)", paddingBottom: "10px" }}>Hotkeys</h2>
+                    {hotkeys.map((hk) => (
+                        <div key={hk.id || hk.display_key} className="hotkey-card">
+                            <div style={{ paddingRight: "20px" }}>
+                                <div style={{ fontWeight: 700, fontSize: "1.1rem" }}>{t(hk.display_key)}</div>
+                                <div style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginTop: "4px" }}>{t(hk.description_key)}</div>
+                            </div>
+                            <button
+                                onClick={() => execute(hk.id!)}
+                                disabled={!hk.enabled || status !== "Connected"}
+                            >
+                                Run
+                            </button>
+                        </div>
+                    ))}
+                </div>
+
+                <div className="output-area" style={{ marginTop: "40px" }}>
+                    <h2 style={{ fontSize: "1.1rem", marginBottom: "12px", color: "var(--accent-primary)" }}>Latest Output</h2>
+                    <pre>
+                        {lastOutput || "Press a hotkey to see results..."}
+                    </pre>
+                </div>
             </div>
         </div>
     );
