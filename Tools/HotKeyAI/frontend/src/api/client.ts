@@ -27,6 +27,7 @@ export type HotkeyDefinition = {
 export type Settings = {
     app: {
         ui_opacity: number;
+        ui_decorations: boolean;
     };
     routing_defaults: {
         default_llm_connection_id?: string;

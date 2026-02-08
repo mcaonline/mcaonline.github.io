@@ -108,7 +108,8 @@ def health_check():
 
 @app.get("/ui-text")
 def get_ui_text():
-    return UiTextCatalog._DEFAULTS
+    # Convert enum keys to string values for JSON serialization
+    return {k.value: v for k, v in UiTextCatalog._DEFAULTS.items()}
 
 @app.get("/session-token")
 def get_session_token(request: Request):
@@ -171,19 +172,6 @@ def get_settings():
 
 @app.patch("/settings", dependencies=[Depends(verify_session_token)])
 def patch_settings(new_settings: Dict[str, Any]):
-    # Recursive update helper
-    def update_recursive(target, updates):
-        for k, v in updates.items():
-            if isinstance(v, dict) and isinstance(getattr(target, k, None), dict):
-                # We need to handle nested Pydantic models vs dicts.
-                # For MVP, assuming settings are Pydantic models, we might need model_dump first or setattr
-                # tailored approach:
-                current_val = getattr(target, k)
-                if hasattr(current_val, "model_dump"): # It's a sub-model
-                    # This is tricky without a proper recursive update method on the settings object
-                    # Simplified: just overwrite top-level sections if they are dicts in the payload
-                    pass 
-                
     # Simplified approach for the MVP:
     # Expecting payloads like {"app": {"ui_opacity": 0.5}}
     # We will manually map known top-level sections

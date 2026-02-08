@@ -1,0 +1,8 @@
+[search_path]
+site_package = "backend/.venv/Lib/site-packages"
+
+[source_directories]
+- "backend/src"
+
+[python_version]
+value = "3.10"

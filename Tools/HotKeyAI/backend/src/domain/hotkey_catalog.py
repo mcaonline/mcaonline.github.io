@@ -1,7 +1,7 @@
 from typing import List, Optional
 from pathlib import Path
 import json
-from src.domain.models import HotkeyCatalog as HotkeyCatalogModel, HotkeyDefinition, HotkeyKind
+from ..domain.models import HotkeyCatalog as HotkeyCatalogModel, HotkeyDefinition, HotkeyKind
 from loguru import logger
 
 class HotkeyCatalogService:

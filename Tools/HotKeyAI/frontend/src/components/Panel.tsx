@@ -6,7 +6,7 @@ import Settings from "./Settings";
 import { getCurrentWindow, LogicalSize } from "@tauri-apps/api/window";
 
 export default function Panel() {
-    const { state } = useApp();
+    const { state, refreshData } = useApp();
     const [prompt, setPrompt] = useState("");
     const [showSettings, setShowSettings] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -36,6 +36,15 @@ export default function Panel() {
         }
         return () => { if (timer) clearInterval(timer); };
     }, [showSettings, state.hotkeys, state.lastOutput, state.connections, prompt]);
+
+    // Sync Window Decorations
+    useEffect(() => {
+        const updateDecorations = async () => {
+            const showDecorations = state.settings?.app?.ui_decorations ?? false;
+            await getCurrentWindow().setDecorations(showDecorations);
+        };
+        updateDecorations();
+    }, [state.settings?.app?.ui_decorations]);
 
     const execute = async (id: string) => {
         try {

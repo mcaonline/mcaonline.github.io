@@ -1,6 +1,6 @@
 import httpx
 from typing import Iterator, List
-from src.infrastructure.providers.base import IProvider, Message, StreamChunk, ProviderConfig
+from .base import IProvider, Message, StreamChunk, ProviderConfig
 import json
 
 class MistralProvider(IProvider):

@@ -32,6 +32,7 @@ class AppConfig(BaseModel):
     theme: str = "system"
     language: str = "en"
     ui_opacity: float = 0.95  # Transparency level (0.0 to 1.0)
+    ui_decorations: bool = False  # Frameless window toggle
 
 class SettingsSchema(BaseSettings):
     schema_version: int = 1

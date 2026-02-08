@@ -99,6 +99,41 @@ export default function Settings({ onBack }: SettingsProps) {
                 {activeTab === 'general' && (
                     <div style={{ display: "grid", gap: "20px" }}>
                         <section>
+                            <h3>Appearance</h3>
+                            <div style={{ display: "grid", gap: "12px", background: "rgba(0,0,0,0.02)", padding: "12px", borderRadius: "8px" }}>
+                                <label>
+                                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "4px" }}>
+                                        <span style={{ fontSize: "0.9rem" }}>Window Opacity</span>
+                                        <span style={{ fontSize: "0.9rem", fontWeight: 600 }}>{Math.round((state.settings?.app?.ui_opacity ?? 0.95) * 100)}%</span>
+                                    </div>
+                                    <input
+                                        type="range"
+                                        min="0.1"
+                                        max="1.0"
+                                        step="0.05"
+                                        value={state.settings?.app?.ui_opacity ?? 0.95}
+                                        onChange={(e) => {
+                                            const val = parseFloat(e.target.value);
+                                            const currentApp = state.settings?.app || { ui_opacity: 0.95, ui_decorations: false };
+                                            apiClient.updateSettings({ app: { ...currentApp, ui_opacity: val } }).then(refreshData);
+                                        }}
+                                        style={{ width: "100%" }}
+                                    />
+                                </label>
+                                <label style={{ display: "flex", alignItems: "center", gap: "12px", cursor: "pointer" }}>
+                                    <input
+                                        type="checkbox"
+                                        checked={state.settings?.app?.ui_decorations ?? false}
+                                        onChange={(e) => {
+                                            const currentApp = state.settings?.app || { ui_opacity: 0.95, ui_decorations: false };
+                                            apiClient.updateSettings({ app: { ...currentApp, ui_decorations: e.target.checked } }).then(refreshData);
+                                        }}
+                                    />
+                                    <span style={{ fontSize: "0.9rem" }}>Show Window Decorations (Requires Restart)</span>
+                                </label>
+                            </div>
+                        </section>
+                        <section>
                             <h3>Global Shortcuts</h3>
                             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px", background: "rgba(0,0,0,0.02)", borderRadius: "8px" }}>
                                 <div>
@@ -129,83 +164,65 @@ export default function Settings({ onBack }: SettingsProps) {
                     </div>
                 )}
 
-                <div>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
-                        <h3>Hotkeys</h3>
-                        <button onClick={() => {
-                            // Template for new hotkey
-                            const newHk = {
-                                id: crypto.randomUUID(),
-                                kind: 'user',
-                                mode: 'ai_transform',
-                                display_key: 'New Hotkey',
-                                description_key: 'Custom AI Command',
-                                enabled: true,
-                                prompt_template: "Summarize this text",
-                                capability_requirements: [{ capability: 'llm', min_sequence: 1 }]
-                            };
-                            // For MVP, we just create it immediately and let user edit (editing not fully implemented yet, but creation is step 1)
-                            // Ideally we'd show a modal.
-                            apiClient.createHotkey(newHk as any).then(refreshData);
-                        }}>Add New</button>
-                    </div>
-                    {state.hotkeys.map(hk => (
-                        <div key={hk.id} style={{ padding: "12px", borderBottom: "1px solid var(--glass-border)", background: "rgba(0,0,0,0.02)" }}>
-                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
-                                <div>
-                                    <div style={{ fontWeight: 600 }}>{t(hk.display_key)}</div>
-                                    <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>{t(hk.description_key)}</div>
-                                </div>
-                                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                                    <input
-                                        type="checkbox"
-                                        checked={hk.enabled}
-                                        onChange={(e) => handleToggleHotkey(hk.id, e.target.checked)}
-                                    />
-                                    {hk.kind === 'user' && (
-                                        <button onClick={async () => {
-                                            if (confirm("Delete this hotkey?")) {
-                                                await apiClient.deleteHotkey(hk.id);
-                                                refreshData();
-                                            }
-                                        }} style={{ padding: "4px 8px", background: "transparent", color: "#f43f5e", border: "1px solid #f43f5e", fontSize: "0.7rem", borderRadius: "4px" }}>
-                                            Del
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Configuration Fields */}
-                            <div style={{ display: "grid", gap: "8px", paddingLeft: "12px", borderLeft: "2px solid var(--glass-border)" }}>
-                                {/* Global Hotkey Trigger */}
-                                <label style={{ fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "8px" }}>
-                                    <span style={{ minWidth: "60px", color: "var(--text-secondary)" }}>Trigger:</span>
-                                    <input
-                                        placeholder="e.g. <ctrl>+<alt>+k"
-                                        defaultValue={hk.direct_hotkey || ""}
-                                        onBlur={(e) => {
-                                            const val = e.target.value.trim();
-                                            if (val !== (hk.direct_hotkey || "")) {
-                                                apiClient.updateHotkey(hk.id, { ...hk, direct_hotkey: val || undefined }).then(refreshData);
-                                            }
-                                        }}
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter') e.currentTarget.blur();
-                                        }}
-                                        style={{ padding: "4px 8px", borderRadius: "4px", border: "1px solid var(--glass-border)", background: "rgba(255,255,255,0.05)", width: "100%", color: "var(--text-primary)" }}
-                                    />
-                                </label>
-
-                                {/* Prompt Template for Custom Hotkeys */}
-                                {hk.kind === 'user' && (
-                                    <label style={{ fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "8px" }}>
-                                        <span style={{ minWidth: "60px", color: "var(--text-secondary)" }}>Prompt:</span>
+                {activeTab === 'hotkeys' && (
+                    <div>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+                            <h3>Hotkeys</h3>
+                            <button onClick={() => {
+                                // Template for new hotkey
+                                const newHk = {
+                                    id: crypto.randomUUID(),
+                                    kind: 'user',
+                                    mode: 'ai_transform',
+                                    display_key: 'New Hotkey',
+                                    description_key: 'Custom AI Command',
+                                    enabled: true,
+                                    prompt_template: "Summarize this text",
+                                    capability_requirements: [{ capability: 'llm', min_sequence: 1 }]
+                                };
+                                // For MVP, we just create it immediately and let user edit (editing not fully implemented yet, but creation is step 1)
+                                // Ideally we'd show a modal.
+                                apiClient.createHotkey(newHk as any).then(refreshData);
+                            }}>Add New</button>
+                        </div>
+                        {state.hotkeys.map(hk => (
+                            <div key={hk.id} style={{ padding: "12px", borderBottom: "1px solid var(--glass-border)", background: "rgba(0,0,0,0.02)" }}>
+                                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
+                                    <div>
+                                        <div style={{ fontWeight: 600 }}>{t(hk.display_key)}</div>
+                                        <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>{t(hk.description_key)}</div>
+                                    </div>
+                                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                                         <input
-                                            defaultValue={hk.prompt_template || ""}
+                                            type="checkbox"
+                                            checked={hk.enabled}
+                                            onChange={(e) => handleToggleHotkey(hk.id, e.target.checked)}
+                                        />
+                                        {hk.kind === 'user' && (
+                                            <button onClick={async () => {
+                                                if (confirm("Delete this hotkey?")) {
+                                                    await apiClient.deleteHotkey(hk.id);
+                                                    refreshData();
+                                                }
+                                            }} style={{ padding: "4px 8px", background: "transparent", color: "#f43f5e", border: "1px solid #f43f5e", fontSize: "0.7rem", borderRadius: "4px" }}>
+                                                Del
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Configuration Fields */}
+                                <div style={{ display: "grid", gap: "8px", paddingLeft: "12px", borderLeft: "2px solid var(--glass-border)" }}>
+                                    {/* Global Hotkey Trigger */}
+                                    <label style={{ fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "8px" }}>
+                                        <span style={{ minWidth: "60px", color: "var(--text-secondary)" }}>Trigger:</span>
+                                        <input
+                                            placeholder="e.g. <ctrl>+<alt>+k"
+                                            defaultValue={hk.direct_hotkey || ""}
                                             onBlur={(e) => {
-                                                const val = e.target.value;
-                                                if (val !== hk.prompt_template) {
-                                                    apiClient.updateHotkey(hk.id, { ...hk, prompt_template: val }).then(refreshData);
+                                                const val = e.target.value.trim();
+                                                if (val !== (hk.direct_hotkey || "")) {
+                                                    apiClient.updateHotkey(hk.id, { ...hk, direct_hotkey: val || undefined }).then(refreshData);
                                                 }
                                             }}
                                             onKeyDown={(e) => {
@@ -214,11 +231,31 @@ export default function Settings({ onBack }: SettingsProps) {
                                             style={{ padding: "4px 8px", borderRadius: "4px", border: "1px solid var(--glass-border)", background: "rgba(255,255,255,0.05)", width: "100%", color: "var(--text-primary)" }}
                                         />
                                     </label>
-                                )}
+
+                                    {/* Prompt Template for Custom Hotkeys */}
+                                    {hk.kind === 'user' && (
+                                        <label style={{ fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "8px" }}>
+                                            <span style={{ minWidth: "60px", color: "var(--text-secondary)" }}>Prompt:</span>
+                                            <input
+                                                defaultValue={hk.prompt_template || ""}
+                                                onBlur={(e) => {
+                                                    const val = e.target.value;
+                                                    if (val !== hk.prompt_template) {
+                                                        apiClient.updateHotkey(hk.id, { ...hk, prompt_template: val }).then(refreshData);
+                                                    }
+                                                }}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter') e.currentTarget.blur();
+                                                }}
+                                                style={{ padding: "4px 8px", borderRadius: "4px", border: "1px solid var(--glass-border)", background: "rgba(255,255,255,0.05)", width: "100%", color: "var(--text-primary)" }}
+                                            />
+                                        </label>
+                                    )}
+                                </div>
                             </div>
-                        </div>
-                    ))}
-                </div>
+                        ))}
+                    </div>
+                )}
 
                 {activeTab === 'connections' && (
                     <div>
