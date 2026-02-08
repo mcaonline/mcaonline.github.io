@@ -13,7 +13,10 @@
       "Bash(npm run build:*)",
       "Bash(del \"backend\\\\src\\\\domain\\\\hotkey_catalog.py\")",
       "Bash(del \"backend\\\\src\\\\infrastructure\\\\hotkeys.py\")",
-      "Bash(.venvScriptspython.exe -c \"from src.main import app; print\\(''Import OK''\\); print\\(''Routes:''\\); [print\\(f''  {r.methods} {r.path}''\\) for r in app.routes]\")"
+      "Bash(.venvScriptspython.exe -c \"from src.main import app; print\\(''Import OK''\\); print\\(''Routes:''\\); [print\\(f''  {r.methods} {r.path}''\\) for r in app.routes]\")",
+      "Bash(\"backend\\\\.venv\\\\Scripts\\\\python.exe\" backend/export_openapi.py:*)",
+      "Bash(npm run generate:types:*)",
+      "Bash(npx tsc:*)"
     ]
   }
 }

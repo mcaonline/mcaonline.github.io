@@ -1,4 +1,4 @@
-# SSoT Violations & Design Debt Tracker
+# SSoT Violations & Design Debt Tracker — PasteSuiteAI
 
 Status: Updated 2026-02-08
 Audited by: Claude Code
@@ -26,12 +26,12 @@ When fixed, move entry to `## Resolved` section at the bottom with date.
 - Created `backend/export_openapi.py` — exports OpenAPI schema to `frontend/src/api/openapi.json`
 - Installed `openapi-typescript`, added `npm run generate:types` script
 - `client.ts` now imports types from `generated-types.ts` instead of manual definitions
-- `ConnectionDefinition` and `HotkeyDefinition` types now have all fields (was missing 18+ fields)
+- `ConnectionDefinition` and `ActionDefinition` types now have all fields (was missing 18+ fields)
 
 ### 2026-02-08 — P2: Composition Root / DI (implemented)
 
 - Created `backend/src/composition_root.py` with `AppServices` dataclass and `create_services()` function
-- All services wired in dependency order: Settings → SecretStore → Clipboard → HistoryRepo → HotkeyCatalog → ProviderRegistry → EventBus → Pipeline → HotkeyAgent → Event handlers
+- All services wired in dependency order: Settings → SecretStore → Clipboard → HistoryRepo → ActionCatalog → ProviderRegistry → EventBus → Pipeline → ActionAgent → Event handlers
 - `main.py` refactored to use `services.xxx` instead of module-level globals
 
 ### 2026-02-08 — P2: Result Type (implemented)
@@ -44,15 +44,15 @@ When fixed, move entry to `## Resolved` section at the bottom with date.
 
 ### 2026-02-08 — P2: Typed Domain Events + EventBus (implemented)
 
-- Created `backend/src/domain/events.py` with `DomainEvent` base, `ExecutionCompleted`, `HotkeyChanged`, `ConnectionChanged`, `SettingsChanged`
-- Created `backend/src/application/handlers.py` with `HistoryRecorder`, `HotkeySync`, `SettingsPersister`
+- Created `backend/src/domain/events.py` with `DomainEvent` base, `ExecutionCompleted`, `ActionChanged`, `ConnectionChanged`, `SettingsChanged`
+- Created `backend/src/application/handlers.py` with `HistoryRecorder`, `ActionSync`, `SettingsPersister`
 - Pipeline publishes `ExecutionCompleted` event instead of directly calling `history.add()`
-- Hotkey CRUD endpoints publish `HotkeyChanged`; settings/connection endpoints publish `SettingsChanged`
+- Action CRUD endpoints publish `ActionChanged`; settings/connection endpoints publish `SettingsChanged`
 
 ### 2026-02-08 — P2: Value Objects for IDs (implemented)
 
-- Created `backend/src/domain/types.py` with `ConnectionId`, `HotkeyId`, `ProviderId` via `NewType`
-- Updated all domain models, registry, secrets, history, hotkey catalog, providers
+- Created `backend/src/domain/types.py` with `ConnectionId`, `ActionId`, `ProviderId` via `NewType`
+- Updated all domain models, registry, secrets, history, action catalog, providers
 - Pydantic v2 serializes `NewType` as base `str` — zero API contract change
 
 ### 2026-02-08 — P2: Generated API Client (implemented)
@@ -126,9 +126,9 @@ Replaced `ProviderFactory` substring matching with `ProviderRegistry` pattern.
 - Both usages in `backend/src/main.py` (verify_session_token + get_session_token) now import from `app_constants`
 - CORS origins computed from `BACKEND_PORT` and `FRONTEND_DEV_PORT` constants
 
-### 2026-02-08 — P2: Hotkey Trigger Display Hardcoded (fixed)
+### 2026-02-08 — P2: Action Trigger Display Hardcoded (fixed)
 
-- `Settings.tsx` now reads from `state.settings?.hotkeys?.main_trigger?.chord` instead of hardcoded `"Ctrl + V, V"`
+- `Settings.tsx` now reads from `state.settings?.actions?.main_trigger?.chord` instead of hardcoded `"Ctrl + V, V"`
 
 ### 2026-02-08 — P2: Build-Time Sync Script (created)
 

@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "Paste & Speech AI Core",
+    "title": "PasteSuiteAI Core",
     "version": "0.1.0"
   },
   "paths": {
@@ -86,10 +86,10 @@
         }
       }
     },
-    "/hotkeys": {
+    "/actions": {
       "get": {
-        "summary": "Get Hotkeys",
-        "operationId": "get_hotkeys_hotkeys_get",
+        "summary": "Get Actions",
+        "operationId": "get_actions_actions_get",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -97,10 +97,10 @@
               "application/json": {
                 "schema": {
                   "items": {
-                    "$ref": "#/components/schemas/HotkeyDefinition"
+                    "$ref": "#/components/schemas/ActionDefinition"
                   },
                   "type": "array",
-                  "title": "Response Get Hotkeys Hotkeys Get"
+                  "title": "Response Get Actions Actions Get"
                 }
               }
             }
@@ -113,13 +113,13 @@
         ]
       },
       "post": {
-        "summary": "Create Hotkey",
-        "operationId": "create_hotkey_hotkeys_post",
+        "summary": "Create Action",
+        "operationId": "create_action_actions_post",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/HotkeyDefinition"
+                "$ref": "#/components/schemas/ActionDefinition"
               }
             }
           },
@@ -131,7 +131,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/HotkeyDefinition"
+                  "$ref": "#/components/schemas/ActionDefinition"
                 }
               }
             }
@@ -154,10 +154,10 @@
         ]
       }
     },
-    "/hotkeys/{hotkey_id}": {
+    "/actions/{action_id}": {
       "put": {
-        "summary": "Update Hotkey",
-        "operationId": "update_hotkey_hotkeys__hotkey_id__put",
+        "summary": "Update Action",
+        "operationId": "update_action_actions__action_id__put",
         "security": [
           {
             "APIKeyHeader": []
@@ -165,12 +165,12 @@
         ],
         "parameters": [
           {
-            "name": "hotkey_id",
+            "name": "action_id",
             "in": "path",
             "required": true,
             "schema": {
               "type": "string",
-              "title": "Hotkey Id"
+              "title": "Action Id"
             }
           }
         ],
@@ -179,7 +179,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/HotkeyDefinition"
+                "$ref": "#/components/schemas/ActionDefinition"
               }
             }
           }
@@ -190,7 +190,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/HotkeyDefinition"
+                  "$ref": "#/components/schemas/ActionDefinition"
                 }
               }
             }
@@ -208,8 +208,8 @@
         }
       },
       "delete": {
-        "summary": "Delete Hotkey",
-        "operationId": "delete_hotkey_hotkeys__hotkey_id__delete",
+        "summary": "Delete Action",
+        "operationId": "delete_action_actions__action_id__delete",
         "security": [
           {
             "APIKeyHeader": []
@@ -217,12 +217,12 @@
         ],
         "parameters": [
           {
-            "name": "hotkey_id",
+            "name": "action_id",
             "in": "path",
             "required": true,
             "schema": {
               "type": "string",
-              "title": "Hotkey Id"
+              "title": "Action Id"
             }
           }
         ],
@@ -250,10 +250,10 @@
         }
       }
     },
-    "/hotkeys/{hotkey_id}/execute": {
+    "/actions/{action_id}/execute": {
       "post": {
-        "summary": "Execute Hotkey",
-        "operationId": "execute_hotkey_hotkeys__hotkey_id__execute_post",
+        "summary": "Execute Action",
+        "operationId": "execute_action_actions__action_id__execute_post",
         "security": [
           {
             "APIKeyHeader": []
@@ -261,12 +261,12 @@
         ],
         "parameters": [
           {
-            "name": "hotkey_id",
+            "name": "action_id",
             "in": "path",
             "required": true,
             "schema": {
               "type": "string",
-              "title": "Hotkey Id"
+              "title": "Action Id"
             }
           }
         ],
@@ -626,6 +626,172 @@
   },
   "components": {
     "schemas": {
+      "ActionDefinition": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "builtin",
+              "custom",
+              "user"
+            ],
+            "title": "Kind"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "ai_transform",
+              "local_transform",
+              "static_text_paste",
+              "prompt_prefill_only"
+            ],
+            "title": "Mode"
+          },
+          "display_key": {
+            "type": "string",
+            "title": "Display Key"
+          },
+          "description_key": {
+            "type": "string",
+            "title": "Description Key"
+          },
+          "icon": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Icon"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "default": false
+          },
+          "sequence": {
+            "type": "integer",
+            "title": "Sequence",
+            "default": 0
+          },
+          "direct_hotkey": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Direct Hotkey"
+          },
+          "panel_quick_key": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Panel Quick Key"
+          },
+          "capability_requirements": {
+            "items": {
+              "$ref": "#/components/schemas/CapabilityRequirement"
+            },
+            "type": "array",
+            "title": "Capability Requirements",
+            "default": []
+          },
+          "input_requirements": {
+            "items": {
+              "$ref": "#/components/schemas/InputRequirement"
+            },
+            "type": "array",
+            "title": "Input Requirements",
+            "default": []
+          },
+          "llm_connection_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Llm Connection Id"
+          },
+          "stt_connection_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stt Connection Id"
+          },
+          "prompt_template": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prompt Template"
+          },
+          "static_text_template": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Static Text Template"
+          },
+          "local_transform_config": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LocalTransformConfig"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind",
+          "mode",
+          "display_key",
+          "description_key"
+        ],
+        "title": "ActionDefinition"
+      },
       "CapabilityRequirement": {
         "properties": {
           "capability": {
@@ -826,9 +992,9 @@
       },
       "HistoryEntryResponse": {
         "properties": {
-          "hotkey_id": {
+          "action_id": {
             "type": "string",
-            "title": "Hotkey Id"
+            "title": "Action Id"
           },
           "timestamp": {
             "type": "number",
@@ -857,7 +1023,7 @@
         },
         "type": "object",
         "required": [
-          "hotkey_id",
+          "action_id",
           "timestamp",
           "duration",
           "input_preview",
@@ -866,172 +1032,6 @@
           "status"
         ],
         "title": "HistoryEntryResponse"
-      },
-      "HotkeyDefinition": {
-        "properties": {
-          "id": {
-            "type": "string",
-            "title": "Id"
-          },
-          "kind": {
-            "type": "string",
-            "enum": [
-              "builtin",
-              "custom",
-              "user"
-            ],
-            "title": "Kind"
-          },
-          "mode": {
-            "type": "string",
-            "enum": [
-              "ai_transform",
-              "local_transform",
-              "static_text_paste",
-              "prompt_prefill_only"
-            ],
-            "title": "Mode"
-          },
-          "display_key": {
-            "type": "string",
-            "title": "Display Key"
-          },
-          "description_key": {
-            "type": "string",
-            "title": "Description Key"
-          },
-          "icon": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Icon"
-          },
-          "enabled": {
-            "type": "boolean",
-            "title": "Enabled",
-            "default": false
-          },
-          "sequence": {
-            "type": "integer",
-            "title": "Sequence",
-            "default": 0
-          },
-          "direct_hotkey": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Direct Hotkey"
-          },
-          "panel_quick_key": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Panel Quick Key"
-          },
-          "capability_requirements": {
-            "items": {
-              "$ref": "#/components/schemas/CapabilityRequirement"
-            },
-            "type": "array",
-            "title": "Capability Requirements",
-            "default": []
-          },
-          "input_requirements": {
-            "items": {
-              "$ref": "#/components/schemas/InputRequirement"
-            },
-            "type": "array",
-            "title": "Input Requirements",
-            "default": []
-          },
-          "llm_connection_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Llm Connection Id"
-          },
-          "stt_connection_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Stt Connection Id"
-          },
-          "prompt_template": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Prompt Template"
-          },
-          "static_text_template": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Static Text Template"
-          },
-          "local_transform_config": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/LocalTransformConfig"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Created At"
-          },
-          "updated_at": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Updated At"
-          }
-        },
-        "type": "object",
-        "required": [
-          "kind",
-          "mode",
-          "display_key",
-          "description_key"
-        ],
-        "title": "HotkeyDefinition"
       },
       "InputRequirement": {
         "properties": {

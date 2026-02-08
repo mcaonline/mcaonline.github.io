@@ -75,25 +75,25 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/hotkeys": {
+    "/actions": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get Hotkeys */
-        get: operations["get_hotkeys_hotkeys_get"];
+        /** Get Actions */
+        get: operations["get_actions_actions_get"];
         put?: never;
-        /** Create Hotkey */
-        post: operations["create_hotkey_hotkeys_post"];
+        /** Create Action */
+        post: operations["create_action_actions_post"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/hotkeys/{hotkey_id}": {
+    "/actions/{action_id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -101,17 +101,17 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        /** Update Hotkey */
-        put: operations["update_hotkey_hotkeys__hotkey_id__put"];
+        /** Update Action */
+        put: operations["update_action_actions__action_id__put"];
         post?: never;
-        /** Delete Hotkey */
-        delete: operations["delete_hotkey_hotkeys__hotkey_id__delete"];
+        /** Delete Action */
+        delete: operations["delete_action_actions__action_id__delete"];
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/hotkeys/{hotkey_id}/execute": {
+    "/actions/{action_id}/execute": {
         parameters: {
             query?: never;
             header?: never;
@@ -120,8 +120,8 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Execute Hotkey */
-        post: operations["execute_hotkey_hotkeys__hotkey_id__execute_post"];
+        /** Execute Action */
+        post: operations["execute_action_actions__action_id__execute_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -240,6 +240,70 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** ActionDefinition */
+        ActionDefinition: {
+            /** Id */
+            id?: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "builtin" | "custom" | "user";
+            /**
+             * Mode
+             * @enum {string}
+             */
+            mode: "ai_transform" | "local_transform" | "static_text_paste" | "prompt_prefill_only";
+            /** Display Key */
+            display_key: string;
+            /** Description Key */
+            description_key: string;
+            /** Icon */
+            icon?: string | null;
+            /**
+             * Enabled
+             * @default false
+             */
+            enabled: boolean;
+            /**
+             * Sequence
+             * @default 0
+             */
+            sequence: number;
+            /** Direct Hotkey */
+            direct_hotkey?: string | null;
+            /** Panel Quick Key */
+            panel_quick_key?: number | null;
+            /**
+             * Capability Requirements
+             * @default []
+             */
+            capability_requirements: components["schemas"]["CapabilityRequirement"][];
+            /**
+             * Input Requirements
+             * @default []
+             */
+            input_requirements: components["schemas"]["InputRequirement"][];
+            /** Llm Connection Id */
+            llm_connection_id?: string | null;
+            /** Stt Connection Id */
+            stt_connection_id?: string | null;
+            /** Prompt Template */
+            prompt_template?: string | null;
+            /** Static Text Template */
+            static_text_template?: string | null;
+            local_transform_config?: components["schemas"]["LocalTransformConfig"] | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at?: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at?: string;
+        };
         /** CapabilityRequirement */
         CapabilityRequirement: {
             /**
@@ -308,8 +372,8 @@ export interface components {
         };
         /** HistoryEntryResponse */
         HistoryEntryResponse: {
-            /** Hotkey Id */
-            hotkey_id: string;
+            /** Action Id */
+            action_id: string;
             /** Timestamp */
             timestamp: number;
             /** Duration */
@@ -322,70 +386,6 @@ export interface components {
             model_id: string;
             /** Status */
             status: string;
-        };
-        /** HotkeyDefinition */
-        HotkeyDefinition: {
-            /** Id */
-            id?: string;
-            /**
-             * Kind
-             * @enum {string}
-             */
-            kind: "builtin" | "custom" | "user";
-            /**
-             * Mode
-             * @enum {string}
-             */
-            mode: "ai_transform" | "local_transform" | "static_text_paste" | "prompt_prefill_only";
-            /** Display Key */
-            display_key: string;
-            /** Description Key */
-            description_key: string;
-            /** Icon */
-            icon?: string | null;
-            /**
-             * Enabled
-             * @default false
-             */
-            enabled: boolean;
-            /**
-             * Sequence
-             * @default 0
-             */
-            sequence: number;
-            /** Direct Hotkey */
-            direct_hotkey?: string | null;
-            /** Panel Quick Key */
-            panel_quick_key?: number | null;
-            /**
-             * Capability Requirements
-             * @default []
-             */
-            capability_requirements: components["schemas"]["CapabilityRequirement"][];
-            /**
-             * Input Requirements
-             * @default []
-             */
-            input_requirements: components["schemas"]["InputRequirement"][];
-            /** Llm Connection Id */
-            llm_connection_id?: string | null;
-            /** Stt Connection Id */
-            stt_connection_id?: string | null;
-            /** Prompt Template */
-            prompt_template?: string | null;
-            /** Static Text Template */
-            static_text_template?: string | null;
-            local_transform_config?: components["schemas"]["LocalTransformConfig"] | null;
-            /**
-             * Created At
-             * Format: date-time
-             */
-            created_at?: string;
-            /**
-             * Updated At
-             * Format: date-time
-             */
-            updated_at?: string;
         };
         /** InputRequirement */
         InputRequirement: {
@@ -534,7 +534,7 @@ export interface operations {
             };
         };
     };
-    get_hotkeys_hotkeys_get: {
+    get_actions_actions_get: {
         parameters: {
             query?: never;
             header?: never;
@@ -549,12 +549,12 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["HotkeyDefinition"][];
+                    "application/json": components["schemas"]["ActionDefinition"][];
                 };
             };
         };
     };
-    create_hotkey_hotkeys_post: {
+    create_action_actions_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -563,7 +563,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["HotkeyDefinition"];
+                "application/json": components["schemas"]["ActionDefinition"];
             };
         };
         responses: {
@@ -573,7 +573,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["HotkeyDefinition"];
+                    "application/json": components["schemas"]["ActionDefinition"];
                 };
             };
             /** @description Validation Error */
@@ -587,18 +587,18 @@ export interface operations {
             };
         };
     };
-    update_hotkey_hotkeys__hotkey_id__put: {
+    update_action_actions__action_id__put: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                hotkey_id: string;
+                action_id: string;
             };
             cookie?: never;
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["HotkeyDefinition"];
+                "application/json": components["schemas"]["ActionDefinition"];
             };
         };
         responses: {
@@ -608,7 +608,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["HotkeyDefinition"];
+                    "application/json": components["schemas"]["ActionDefinition"];
                 };
             };
             /** @description Validation Error */
@@ -622,12 +622,12 @@ export interface operations {
             };
         };
     };
-    delete_hotkey_hotkeys__hotkey_id__delete: {
+    delete_action_actions__action_id__delete: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                hotkey_id: string;
+                action_id: string;
             };
             cookie?: never;
         };
@@ -653,12 +653,12 @@ export interface operations {
             };
         };
     };
-    execute_hotkey_hotkeys__hotkey_id__execute_post: {
+    execute_action_actions__action_id__execute_post: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                hotkey_id: string;
+                action_id: string;
             };
             cookie?: never;
         };

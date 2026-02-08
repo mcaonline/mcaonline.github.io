@@ -1,7 +1,35 @@
 # Changelog
 
-All notable changes to HotKeyAI are documented in this file.
+All notable changes to PasteSuiteAI are documented in this file.
 Format: `[YYYY-MM-DD HH:MM UTC] — Category — Summary`
+
+---
+
+## [2026-02-08 — App Rename + Hotkeys→Actions Refactor]
+
+### App Rename: HotKeyAI → PasteSuiteAI
+- **[2026-02-08]** Renamed product from "Paste & Speech AI" / "HotKeyAI" to **PasteSuiteAI** across all layers
+- `app_constants.py`: APP_NAME, SERVICE_NAME, APP_DIR_NAME → "PasteSuiteAI"; APP_IDENTIFIER → "com.pastesuite.ai"; ENV_PREFIX → "PASTE_SUITE_AI_"
+- `sync_constants.py` stamped new name into `tauri.conf.json` (productName, title, identifier)
+- `ui_text.py`: APP_NAME constant propagates to UiTextCatalog defaults
+
+### Concept Rename: Hotkeys → Actions
+- **[2026-02-08]** Renamed "Hotkeys" to "Actions" across entire codebase (~287 occurrences, ~27 files)
+- **Domain layer**: `HotkeyId` → `ActionId`, `HotkeyDefinition` → `ActionDefinition`, `HotkeyMode` → `ActionMode`, `HotkeyKind` → `ActionKind`, `HotkeyCatalog` → `ActionCatalog`, `HotkeyChanged` → `ActionChanged`
+- **Application layer**: `PipelineContext.hotkey` → `.action`, `HotkeySync` → `ActionSync`
+- **Infrastructure**: `hotkeys.py` → `actions.py` (`HotkeyAgent` → `ActionAgent`), `hotkey_catalog.py` → `action_catalog.py` (`HotkeyCatalogService` → `ActionCatalogService`)
+- **Config**: `HotkeysConfig` → `ActionsConfig`, settings key `hotkeys` → `actions`
+- **API endpoints**: `/hotkeys` → `/actions` (all CRUD + execute)
+- **Frontend**: All types, state, API methods, component references renamed accordingly
+- **JSON files**: `hotkeys.json` → `actions.json` (both backend and frontend/src-tauri)
+- **Data migrations**: Added backward-compat migrations in `settings.py`, `action_catalog.py`, `history.py` for existing data files with old key names
+- **UI text**: "Hotkeys" → "Actions" in UiTextCatalog
+- **Product rule**: Updated from `"Hotkeys" (never "Actions")` to `"Actions" (never "Hotkeys")`
+
+### Documentation
+- **[2026-02-08]** Rewrote `CLAUDE.md` — all references updated to PasteSuiteAI + Actions terminology
+- **[2026-02-08]** Updated `VIOLATIONS.md` — renamed references
+- **[2026-02-08]** Regenerated OpenAPI schema + TypeScript types — `ActionDefinition` in generated-types.ts
 
 ---
 
