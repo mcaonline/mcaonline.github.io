@@ -25,6 +25,20 @@ class UiTextKey(str, Enum):
     # General UI
     STATUS_NOT_READY = "status.not_ready"
     LABEL_HOTKEYS = "label.hotkeys"
+    LABEL_SETTINGS = "label.settings"
+    LABEL_SAVE = "label.save"
+    LABEL_DELETE = "label.delete"
+    LABEL_ADD_CONNECTION = "label.add_connection"
+    
+    # Built-in Hotkeys
+    HK_PASTE_PLAIN = "builtin.paste_plain_unformatted_text"
+    HK_PASTE_PLAIN_DESC = "builtin.paste_plain_desc"
+    HK_OCR = "builtin.paste_image_to_text_ocr"
+    HK_OCR_DESC = "builtin.paste_image_to_text_ocr_desc"
+    HK_STT_MIC = "builtin.paste_audio_microphone_to_text"
+    HK_STT_MIC_DESC = "builtin.paste_audio_microphone_to_text_desc"
+    HK_STT_FILE = "builtin.paste_audio_file_to_text"
+    HK_STT_FILE_DESC = "builtin.paste_audio_file_to_text_desc"
 
 class UiTextCatalog:
     """
@@ -47,6 +61,20 @@ class UiTextCatalog:
         UiTextKey.ERR_CONNECTION_REQUIRED: "This action needs an API provider connection. You can add your API key now; until then this action stays unavailable.",
         UiTextKey.STATUS_NOT_READY: "Not ready",
         UiTextKey.LABEL_HOTKEYS: "Hotkeys",
+        UiTextKey.LABEL_SETTINGS: "Settings",
+        UiTextKey.LABEL_SAVE: "Save",
+        UiTextKey.LABEL_DELETE: "Delete",
+        UiTextKey.LABEL_ADD_CONNECTION: "Add Connection",
+        
+        # Built-in Hotkeys
+        UiTextKey.HK_PASTE_PLAIN: "Paste as Plain Text",
+        UiTextKey.HK_PASTE_PLAIN_DESC: "Strips formatting and pastes unformatted text.",
+        UiTextKey.HK_OCR: "Image to Text (OCR)",
+        UiTextKey.HK_OCR_DESC: "Extracts text from the latest image on your clipboard.",
+        UiTextKey.HK_STT_MIC: "Microphone to Text",
+        UiTextKey.HK_STT_MIC_DESC: "Transcribes audio from your microphone.",
+        UiTextKey.HK_STT_FILE: "Audio File to Text",
+        UiTextKey.HK_STT_FILE_DESC: "Transcribes the latest audio file on your clipboard.",
     }
 
     @classmethod

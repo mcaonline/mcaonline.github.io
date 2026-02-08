@@ -2,6 +2,7 @@ from pynput import keyboard
 from typing import Callable, Optional, Dict
 import time
 import threading
+import os
 from loguru import logger
 
 class HotkeyAgent:
@@ -28,7 +29,8 @@ class HotkeyAgent:
         self._lock = threading.Lock()
 
     def start(self):
-        logger.info("Starting HotkeyAgent hook...")
+        pid = os.getpid()
+        logger.info(f"[{pid}] Starting HotkeyAgent hook...")
         self.listener = keyboard.Listener(
             on_press=self._on_press,
             on_release=self._on_release
@@ -36,10 +38,11 @@ class HotkeyAgent:
         self.listener.start()
 
     def stop(self):
+        pid = os.getpid()
         if self.listener:
             self.listener.stop()
             self.listener = None
-        logger.info("HotkeyAgent hook stopped.")
+        logger.info(f"[{pid}] HotkeyAgent hook stopped.")
 
     def _reset_chord(self):
         self._first_v_pressed = False

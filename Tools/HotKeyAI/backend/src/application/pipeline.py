@@ -72,7 +72,30 @@ class ExecutionPipeline:
             "clipboard": clipboard_text or ""
         }
         
-        # 2. Resolve Connection
+        # 2. Resolve Connection & Context
+        if hotkey.mode == 'local_transform':
+            # Local logic: Apply transformation directly
+            config = hotkey.local_transform_config or {}
+            transform_type = config.get('type', 'regex')
+            
+            if transform_type == 'regex':
+                pattern = config.get('pattern', '.*')
+                replacement = config.get('replacement', '$0')
+                try:
+                    # Very basic regex replacement for MVP
+                    # Replace $0, $1 etc with groups if we want to be fancy, 
+                    # but for "Paste as Plain Text" we just return the text.
+                    # In this app, Contract A1 says paste_plain just strips formatting.
+                    # Since we gathered context as strings, formatting is already gone.
+                    source = context_data['selected_text'] or context_data['clipboard']
+                    yield source
+                except Exception as e:
+                    yield f"Error in local transform: {e}"
+            else:
+                yield f"Error: Unknown local transform type {transform_type}"
+            return
+
+        # AI Transform Logic
         connection_id = hotkey.llm_connection_id
         if not connection_id:
              connection_id = self.settings.routing_defaults.default_llm_connection_id
@@ -93,13 +116,12 @@ class ExecutionPipeline:
         # 3. Get Secret
         secret = self.secret_store.read(connection.connection_id, "api_key")
         if not secret:
-            yield "Error: API Key not found for this connection."
+            yield "Error: API Key not found for this connection. Please check your settings."
             return
 
         # 4. Prepare Provider
         provider = ProviderFactory.create(connection, secret)
         config = ProviderFactory.create_config(connection, secret, hotkey)
-        
         # 5. Build Prompt
         user_prompt = hotkey.prompt_template or "{selected_text}"
         for k, v in context_data.items():

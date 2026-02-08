@@ -7,10 +7,12 @@ import uvicorn
 import secrets
 import os
 from pathlib import Path
+from loguru import logger
 
 from src.config.settings import settings, SETTINGS_FILE
 from src.domain.models import HotkeyDefinition, ConnectionDefinition
 from src.domain.hotkey_catalog import HotkeyCatalogService
+from src.domain.ui_text import UiTextCatalog
 from src.infrastructure.hotkeys import HotkeyAgent
 from src.infrastructure.clipboard import clipboard
 from src.infrastructure.secrets import secret_store
@@ -49,11 +51,14 @@ hotkey_agent = HotkeyAgent(on_trigger=on_hotkey_trigger)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    print("Starting Hotkey Agent...")
-    print(f"Session Token: {SESSION_TOKEN}")  # For Tauri to capture
+    pid = os.getpid()
+    logger.info(f"[{pid}] LIFESPAN START")
+    logger.info(f"[{pid}] Starting Hotkey Agent...")
+    logger.info(f"[{pid}] Session Token: {SESSION_TOKEN}")
     hotkey_agent.start()
     yield
-    print("Stopping Hotkey Agent...")
+    logger.info(f"[{pid}] LIFESPAN STOP")
+    logger.info(f"[{pid}] Stopping Hotkey Agent...")
     hotkey_agent.stop()
 
 app = FastAPI(title="HotKeyAI Core", lifespan=lifespan)
@@ -79,6 +84,10 @@ app.add_middleware(
 @app.get("/health")
 def health_check():
     return {"status": "ok", "version": "0.1.0"}
+
+@app.get("/ui-text")
+def get_ui_text():
+    return UiTextCatalog._DEFAULTS
 
 @app.get("/session-token")
 def get_session_token(request: Request):
@@ -133,14 +142,62 @@ def get_history():
 
 @app.get("/settings", dependencies=[Depends(verify_session_token)])
 def get_settings():
-    # Redact sensitive fields
-    safe_settings = settings.model_dump()
-    # Don't expose connection secrets metadata
-    return safe_settings
+    return settings.model_dump()
 
 @app.post("/settings", dependencies=[Depends(verify_session_token)])
 def update_settings(new_settings: Dict[str, Any]):
-    return {"status": "updated (mock)"}
+    # In a real app, we'd validate and merge
+    # For MVP, we just update the global settings object
+    for k, v in new_settings.items():
+        if hasattr(settings, k):
+            setattr(settings, k, v)
+    settings.save(SETTINGS_FILE)
+    return {"status": "updated"}
+
+# --- Connection Management ---
+
+@app.get("/connections", dependencies=[Depends(verify_session_token)])
+def get_connections():
+    return settings.connections
+
+@app.post("/connections", dependencies=[Depends(verify_session_token)])
+def create_connection(connection: ConnectionDefinition):
+    # Check if duplicate
+    if any(c['connection_id'] == connection.connection_id for c in settings.connections):
+        raise HTTPException(status_code=400, detail="Connection ID already exists")
+    
+    settings.connections.append(connection.model_dump())
+    settings.save(SETTINGS_FILE)
+    return connection
+
+@app.put("/connections/{connection_id}", dependencies=[Depends(verify_session_token)])
+def update_connection(connection_id: str, connection: ConnectionDefinition):
+    for i, c in enumerate(settings.connections):
+        if c['connection_id'] == connection_id:
+            settings.connections[i] = connection.model_dump()
+            settings.save(SETTINGS_FILE)
+            return connection
+    raise HTTPException(status_code=404, detail="Connection not found")
+
+@app.delete("/connections/{connection_id}", dependencies=[Depends(verify_session_token)])
+def delete_connection(connection_id: str):
+    settings.connections = [c for c in settings.connections if c['connection_id'] != connection_id]
+    # Also delete secret from store
+    secret_store.delete(connection_id, "api_key")
+    settings.save(SETTINGS_FILE)
+    return {"status": "deleted"}
+
+# --- Secret Management ---
+
+@app.post("/secrets", dependencies=[Depends(verify_session_token)])
+def save_secret(connection_id: str, secret_value: str):
+    """Securely save a secret to the system keyring."""
+    try:
+        secret_store.save(connection_id, "api_key", secret_value)
+        return {"status": "saved"}
+    except Exception as e:
+        logger.error(f"Failed to save secret: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to save secret: {str(e)}")
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
