@@ -226,10 +226,12 @@ export default function Settings({ onBack, t }: SettingsProps) {
         }, "Löschen");
     };
 
-    const availableProviders = PROVIDERS.filter(p => p.capabilities.includes(capability));
+    const availableProviders = (PROVIDERS || []).filter(p => p.capabilities?.includes(capability));
+
+    if (!capability) return null;
 
     return (
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}>
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: "400px" }}>
             <header data-tauri-drag-region style={{ display: "flex", alignItems: "center", gap: "20px", marginBottom: "32px", cursor: "move" }}>
                 <button className="secondary" onClick={onBack} style={{ padding: "8px 12px" }}>&larr; Back</button>
                 <h1 data-tauri-drag-region style={{ margin: 0, fontSize: "1.8rem", flex: 1 }}>{t("label.settings")}</h1>

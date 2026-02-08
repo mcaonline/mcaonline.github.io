@@ -56,7 +56,10 @@ export default function Panel() {
                 // We add a bit more buffer and ensure we calculate from the glass pane if needed
                 const height = containerRef.current.offsetHeight;
                 const width = 900;
-                getCurrentWindow().setSize(new LogicalSize(width, height + 20));
+                // Only resize if we have a valid height to prevent "blank" windows
+                if (height > 100) {
+                    getCurrentWindow().setSize(new LogicalSize(width, height + 20));
+                }
             }
         };
 
@@ -94,7 +97,13 @@ export default function Panel() {
 
     return (
         <div className="container" ref={containerRef} style={{ background: "transparent" }}>
-            <div className="glass-pane" style={{ background: `rgba(255, 255, 255, ${opacity})`, backdropFilter: `blur(${opacity < 1 ? 10 + opacity * 15 : 0}px)` }}>
+            <div
+                className="glass-pane"
+                style={{
+                    background: `rgba(255, 255, 255, ${opacity})`,
+                    backdropFilter: `blur(${opacity < 1 ? 10 + opacity * 15 : 0}px)`
+                }}
+            >
                 {showSettings ? (
                     <Settings onBack={() => setShowSettings(false)} t={t} />
                 ) : (
