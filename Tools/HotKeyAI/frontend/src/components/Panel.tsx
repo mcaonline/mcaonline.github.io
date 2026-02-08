@@ -7,21 +7,34 @@ export default function Panel() {
     const [lastOutput, setLastOutput] = useState("");
 
     useEffect(() => {
-        // Poll for status or just load hotkeys
-        apiClient.healthCheck()
-            .then(() => {
-                setStatus("Connected");
-                loadHotkeys();
-            })
-            .catch(() => setStatus("Offline"));
+        const checkConnection = async (retries = 5) => {
+            for (let i = 0; i < retries; i++) {
+                try {
+                    console.log(`Checking connection (attempt ${i + 1})...`);
+                    await apiClient.healthCheck();
+                    console.log("Connected to backend");
+                    setStatus("Connected");
+                    loadHotkeys();
+                    return;
+                } catch (e) {
+                    console.warn("Backend not ready yet, retrying...", e);
+                    await new Promise(r => setTimeout(r, 1000));
+                }
+            }
+            setStatus("Offline");
+        };
+
+        checkConnection();
     }, []);
 
     const loadHotkeys = async () => {
         try {
+            console.log("Loading hotkeys...");
             const list = await apiClient.getHotkeys();
+            console.log("Hotkeys loaded:", list);
             setHotkeys(list);
         } catch (e) {
-            console.error(e);
+            console.error("Failed to load hotkeys:", e);
         }
     };
 
