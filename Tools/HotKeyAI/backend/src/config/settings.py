@@ -3,6 +3,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import Dict, List, Optional
 import json
 import os
+import stat
 from pathlib import Path
 
 class MainTriggerConfig(BaseModel):
@@ -11,9 +12,6 @@ class MainTriggerConfig(BaseModel):
 
 class HotkeysConfig(BaseModel):
     main_trigger: MainTriggerConfig = Field(default_factory=MainTriggerConfig)
-    # catalog will be loaded from HotkeyCatalog SSoT, not duplicated here in full
-    # but we might store overrides or simple enabled states here if needed.
-    # For now, following SSoT, the catalog file is separate.
 
 class RoutingDefaults(BaseModel):
     default_stt_connection_id: Optional[str] = None
@@ -42,7 +40,7 @@ class SettingsSchema(BaseSettings):
     privacy: PrivacyConfig = Field(default_factory=PrivacyConfig)
     diagnostics: DiagnosticsConfig = Field(default_factory=DiagnosticsConfig)
     
-    # Store Connection Metadta (Not secrets)
+    # Store Connection Metadata (Not secrets)
     connections: List[Dict] = Field(default_factory=list)
 
     model_config = SettingsConfigDict(
@@ -53,8 +51,24 @@ class SettingsSchema(BaseSettings):
     )
 
     def save(self, path: Path):
+        """Save settings with secure file permissions."""
         with open(path, "w", encoding="utf-8") as f:
             f.write(self.model_dump_json(indent=2))
+        
+        # Set file permissions to user-only read/write (Windows-safe)
+        try:
+            if os.name == 'nt':
+                # Windows: Remove inheritance and set user-only access
+                import subprocess
+                subprocess.run(
+                    ['icacls', str(path), '/inheritance:r', '/grant:r', f'{os.getlogin()}:F'],
+                    capture_output=True, check=False
+                )
+            else:
+                # Unix: chmod 600
+                os.chmod(path, stat.S_IRUSR | stat.S_IWUSR)
+        except Exception:
+            pass  # Best effort security
 
     @classmethod
     def load(cls, path: Path) -> "SettingsSchema":
@@ -65,10 +79,20 @@ class SettingsSchema(BaseSettings):
                 data = json.load(f)
             return cls.model_validate(data)
         except Exception as e:
-            # Fallback to defaults on error, or re-raise depending on policy
             print(f"Error loading settings: {e}")
             return cls()
 
+def get_settings_path() -> Path:
+    """Get secure settings path in user's AppData."""
+    if os.name == 'nt':
+        base = Path(os.environ.get('APPDATA', Path.home()))
+    else:
+        base = Path.home() / '.config'
+    
+    app_dir = base / 'HotKeyAI'
+    app_dir.mkdir(parents=True, exist_ok=True)
+    return app_dir / 'settings.json'
+
 # Global settings instance
-SETTINGS_FILE = Path("settings.json")
+SETTINGS_FILE = get_settings_path()
 settings = SettingsSchema.load(SETTINGS_FILE)

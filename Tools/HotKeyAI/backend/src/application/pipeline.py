@@ -1,24 +1,37 @@
 from typing import Dict, Optional, Iterator
-from .providers.base import IProvider, MockProvider, OpenAIProvider, ProviderConfig, Message, StreamChunk
+from ..infrastructure.providers.base import IProvider, MockProvider, OpenAIProvider, ProviderConfig, Message, StreamChunk
 from ..domain.models import HotkeyDefinition, ConnectionDefinition
-from .clipboard import ClipboardManager
-from .history import HistoryRepository, HistoryEntry
+from ..infrastructure.clipboard import ClipboardManager
+from ..infrastructure.history import HistoryRepository, HistoryEntry
 import time
+import re
 from loguru import logger
+
+# Sensitive data patterns to redact from logs
+SENSITIVE_PATTERNS = [
+    r'sk-[a-zA-Z0-9]{20,}',  # OpenAI API keys
+    r'[a-zA-Z0-9+/]{40,}={0,2}',  # Base64 encoded secrets
+    r'password\s*[:=]\s*\S+',  # Passwords
+    r'api[_-]?key\s*[:=]\s*\S+',  # API keys
+]
+
+def redact_sensitive(text: str) -> str:
+    """Redact sensitive information from text before logging."""
+    if not text:
+        return text
+    result = text
+    for pattern in SENSITIVE_PATTERNS:
+        result = re.sub(pattern, '[REDACTED]', result, flags=re.IGNORECASE)
+    return result
 
 class ProviderFactory:
     @staticmethod
     def create(connection: ConnectionDefinition, secret_key: Optional[str] = None) -> IProvider:
-        # Check connection.provider_id or capability to decide class
-        # Ideally we'd look up ProviderCatalog, but for now we hardcode types
-        # connection.provider_id like "openai-gpt4", "mock-provider"
-        
         if "mock" in connection.provider_id.lower():
             return MockProvider()
         elif "openai" in connection.provider_id.lower():
             return OpenAIProvider()
         else:
-            # Fallback or error
             logger.warning(f"Unknown provider type for {connection.provider_id}, defaulting to OpenAI structure")
             return OpenAIProvider()
 
@@ -29,7 +42,7 @@ class ProviderFactory:
             api_key=secret_key,
             endpoint_url=connection.endpoint_url,
             system_prompt=connection.system_prompt,
-            temperature=0.7 # Could come from HotkeyDefinition
+            temperature=0.7
         )
 
 class ExecutionPipeline:
@@ -59,15 +72,9 @@ class ExecutionPipeline:
             "clipboard": clipboard_text or ""
         }
         
-        # Validation: check input requirements
-        # e.g. input_requirements=['text'] -> if no selected text, fail or fallback?
-        # Contract says: "If no selected text -> clipboard is used" (usually)
-        # For now, we assume we have what we need or the prompt handles empty strings.
-        
         # 2. Resolve Connection
         connection_id = hotkey.llm_connection_id
         if not connection_id:
-             # Try default?
              connection_id = self.settings.routing_defaults.default_llm_connection_id
         
         if not connection_id:
@@ -76,8 +83,6 @@ class ExecutionPipeline:
 
         # Find Connection Def
         connection = next((c for c in self.settings.connections if c['connection_id'] == connection_id), None)
-        # Note: SettingsSchema.connections is List[Dict], need to cast or parse? 
-        # Models defines ConnectionDefinition.
         if isinstance(connection, dict):
             connection = ConnectionDefinition(**connection)
             
@@ -86,7 +91,6 @@ class ExecutionPipeline:
             return
 
         # 3. Get Secret
-        # Assuming single secret for now
         secret = self.secret_store.read(connection.connection_id, "api_key")
         if not secret:
             yield "Error: API Key not found for this connection."
@@ -97,7 +101,6 @@ class ExecutionPipeline:
         config = ProviderFactory.create_config(connection, secret, hotkey)
         
         # 5. Build Prompt
-        # Simple Jinja-style replacement?
         user_prompt = hotkey.prompt_template or "{selected_text}"
         for k, v in context_data.items():
             user_prompt = user_prompt.replace(f"{{{k}}}", v)
@@ -117,15 +120,21 @@ class ExecutionPipeline:
             logger.error(f"Execution failed: {e}")
             yield f"\n[Error: {str(e)}]"
             
-        # 7. Log History
+        # 7. Log History (with privacy protection)
         duration = time.time() - start_time
-        self.history.add(HistoryEntry(
-            hotkey_id=hotkey.id,
-            timestamp=start_time,
-            duration=duration,
-            input_preview=user_prompt[:50],
-            output_preview=full_response[:50],
-            model_id=connection.model_id,
-            status="success"
-        ))
-
+        
+        # Only log if history is enabled and user has acknowledged privacy
+        if self.settings.history.enabled:
+            # Redact sensitive data from previews
+            safe_input = redact_sensitive(user_prompt[:50]) if user_prompt else ""
+            safe_output = redact_sensitive(full_response[:50]) if full_response else ""
+            
+            self.history.add(HistoryEntry(
+                hotkey_id=hotkey.id,
+                timestamp=start_time,
+                duration=duration,
+                input_preview=safe_input,
+                output_preview=safe_output,
+                model_id=connection.model_id,
+                status="success"
+            ))

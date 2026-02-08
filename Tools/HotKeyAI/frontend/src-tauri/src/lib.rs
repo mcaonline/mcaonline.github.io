@@ -1,9 +1,9 @@
-use std::process::Child;
 use std::sync::Mutex;
-use tauri::Manager;
+use tauri_plugin_shell::ShellExt;
+use tauri_plugin_shell::process::CommandEvent;
 
 // Store sidecar process handle
-static SIDECAR_HANDLE: Mutex<Option<Child>> = Mutex::new(None);
+static SIDECAR_HANDLE: Mutex<Option<tauri_plugin_shell::process::CommandChild>> = Mutex::new(None);
 
 #[tauri::command]
 fn greet(name: &str) -> String {
@@ -20,7 +20,7 @@ fn spawn_sidecar(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
     // Log sidecar output
     tauri::async_runtime::spawn(async move {
         while let Some(event) = rx.recv().await {
-            if let tauri::plugin::shell::process::CommandEvent::Stdout(line) = event {
+            if let CommandEvent::Stdout(line) = event {
                 println!("[backend] {}", String::from_utf8_lossy(&line));
             }
         }

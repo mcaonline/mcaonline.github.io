@@ -8,13 +8,13 @@
   "permissions": [
     "core:default",
     "opener:default",
-    "shell:allow-spawn",
-    "shell:allow-execute",
+    "shell:default",
     {
-      "identifier": "shell:allow-sidecar",
+      "identifier": "shell:allow-spawn",
       "allow": [
         {
-          "name": "backend"
+          "name": "binaries/backend",
+          "sidecar": true
         }
       ]
     }
